@@ -90,7 +90,7 @@ class User extends CI_Controller{
 		$id = $_POST['id'];
 		$username = $_POST['username'];
 		$password = $_POST['password'];
-		$level = $_POST['level'];
+		$hak_akses = $_POST['hak_akses'];
 		$aktif = $_POST['aktif'];
 
 		if ($password !=="") {
@@ -104,7 +104,7 @@ class User extends CI_Controller{
 		$data = array(
 						'username'=> $username,
 						'password'=> $password_fix,
-						'level'=> $level,
+						'hak_akses'=> $hak_akses,
 						'aktif' => $aktif
 					);
 

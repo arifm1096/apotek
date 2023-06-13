@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	loadUser();
-	level();
+	hak_akses();
 	status_aktif();
 	$("#loading").hide();
 });
@@ -56,37 +56,27 @@ function loadUser() {
 	});
 }
 
-function level(p_id_level) {
+function hak_akses(p_id_hak_akses) {
 	var html = "<option value='pil'> Pilih Level </option>";
-	var data = [
-		{
-			id: "1",
-			title: "Admin",
+	$.ajax({
+		type: "POST",
+		url: URL + "user/get_hak_akses",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			res.result.forEach((e) => {
+				html +=
+					'<option value="' +
+					e.id_hak_akses +
+					'"' +
+					(e.id_hak_akses === p_id_hak_akses ? 'selected="selected"' : "") +
+					">" +
+					e.nama +
+					"</option>";
+			});
+			$("#select_level").html(html);
 		},
-		{
-			id: "2",
-			title: "Peminjam",
-		},
-		{
-			id: "3",
-			title: "Operator",
-		},
-		{
-			id: "4",
-			title: "Approval",
-		},
-	];
-	data.forEach((e) => {
-		html +=
-			'<option value="' +
-			e.id +
-			'"' +
-			(e.id === p_id_level ? 'selected="selected"' : "") +
-			">" +
-			e.title +
-			"</option>";
 	});
-	$("#select_level").html(html);
 }
 
 function status_aktif(p_status) {
@@ -119,11 +109,11 @@ function save() {
 	var username = $("#username").val();
 	var password = $("#password").val();
 	var aktif = $("#select_aktif").val();
-	var level = $("#select_level").val();
+	var hak_akses = $("#select_level").val();
 	$("#save-button").hide();
 	$("#send-button").show();
 
-	if (username !== "" || aktif !== "pil" || level !== "pil") {
+	if (username !== "" || aktif !== "pil" || hak_akses !== "pil") {
 		$.ajax({
 			url: URL + "user/save_user",
 			type: "POST",
@@ -132,7 +122,7 @@ function save() {
 				username: username,
 				password: password,
 				aktif: aktif,
-				level: level,
+				hak_akses: hak_akses,
 			},
 			success: function (res) {
 				var res = JSON.parse(res);
@@ -180,7 +170,7 @@ function hapus(id, username, level) {
 			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> User Nama : " +
 			username +
 			"<br> " +
-			"Level : " +
+			"hak_akses : " +
 			level,
 		icon: "warning",
 		showCancelButton: true,
