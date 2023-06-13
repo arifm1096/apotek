@@ -2,7 +2,7 @@
     <!-- style="background:#dc3545" -->
     <!-- Brand Logo -->
     <a href="<?php echo base_url();?>" class="brand-link" style="border-bottom: 1px solid #efefef;">
-        <img src="<?php echo base_url();?>assets/images/logo.jpeg" alt="AdminLTE Logo"
+        <img src="<?php echo base_url();?>assets/images/logo/logo.png" alt="apotek logo"
             class="brand-image img-circle elevation-5" style="opacity: .8">
         <span class="brand-text font-weight-light">
             Nawasena
@@ -19,8 +19,7 @@
             </div>
             <div class="info">
                 <a href="<?php echo base_url(); ?>" class="d-block"><b style="text-transform: uppercase;">
-                        <?php echo $this->session->username." || kasir ". $this->session->level;?> </b></a> <br>
-                <!-- <p class="text-muted text-md"><u><?php echo $this->session->level;?></u> </p> -->
+                        <?php echo $this->session->username." || ". $this->session->hak_akses;?> </b></a> <br>
             </div>
         </div>
 
@@ -39,6 +38,41 @@
                     </a>
                 </li>
 
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-toolbox"></i></i>
+                        <p>
+                            Data Master
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Satuan Barang</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Supplier</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Pelanggan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> User</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>

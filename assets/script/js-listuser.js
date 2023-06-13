@@ -26,7 +26,7 @@ function loadUser() {
 				},
 			},
 			{ data: "username" },
-			{ data: "nama_level" },
+			{ data: "nama" },
 			{ data: "is_aktif" },
 			{
 				data: null,
@@ -38,7 +38,7 @@ function loadUser() {
 						"','" +
 						row.username +
 						"','" +
-						row.level +
+						row.hak_akses +
 						"','" +
 						row.id_aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
@@ -47,7 +47,7 @@ function loadUser() {
 						"','" +
 						row.username +
 						"','" +
-						row.nama_level +
+						row.nama +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -155,8 +155,8 @@ function save() {
 	}
 }
 
-function edit(p_id, p_username, p_level, p_aktif) {
-	level(p_level);
+function edit(p_id, p_username, p_id_hak_akses, p_aktif) {
+	hak_akses(p_id_hak_akses);
 	status_aktif(p_aktif);
 	$("#mediumModalLabel").html("Edit User");
 	$("#id").val(p_id);
@@ -164,14 +164,14 @@ function edit(p_id, p_username, p_level, p_aktif) {
 	$("#modal_input_user").modal("show");
 }
 
-function hapus(id, username, level) {
+function hapus(id, username, hak_akses) {
 	Swal.fire({
 		html:
 			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> User Nama : " +
 			username +
 			"<br> " +
-			"hak_akses : " +
-			level,
+			"Hak Akses : " +
+			hak_akses,
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
@@ -211,6 +211,6 @@ $("#modal_input_user").on("hide.bs.modal", function () {
 	$("#id").val("");
 	$("#username").val("");
 	$("#password").val("");
-	level((id_level = "pil"));
+	hak_akses((id_level = "pil"));
 	status_aktif((id_status = "pil"));
 });

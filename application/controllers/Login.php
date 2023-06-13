@@ -22,12 +22,11 @@ class Login extends CI_Controller
             $sub_ep = substr($encrypt_password,9,20);
             $user = $this->db->escape($data['username']);
             $check_login = $this->model_login->check_login($user,$sub_ep);
-
             if($check_login['total'] > 0) {
 
                 $data_session = array(
                 'id_user' => $check_login['id_user'],
-                'hak_akses' => $check_login['nama'],
+                'hak_akses' => $check_login['hak_akses'],
                 'id_hak_akses' => $check_login['id_hak_akses'],
                 'username' => $check_login['username'],
                 'aktif' => $check_login['aktif'],

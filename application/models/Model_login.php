@@ -3,7 +3,7 @@
 class Model_login extends CI_Model{
     
     function check_login($username, $password){
-        $filed = "count(a.username) as total, h.nama_level as level,h.id_level,
+        $filed = "count(a.username) as total, h.nama as hak_akses,h.id_hak_akses,
         a.username as username, a.id_user, a.aktif ";
 
         $data=	$this->db
@@ -12,7 +12,8 @@ class Model_login extends CI_Model{
                 ->join('tm_hak_akses as h','a.hak_akses = h.id_hak_akses')
                 ->where('a.is_delete',0)
                 ->where('a.aktif','y')
-                ->where("a.username like '%".$username."%' AND a.password like '%".$password."%'")
+                ->where('a.username ='.$username)
+                ->where('a.password',$password)
                 ->get();
         if($data->num_rows()>0){
             return $data->row_array();

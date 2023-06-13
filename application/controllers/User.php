@@ -8,9 +8,9 @@ class User extends CI_Controller{
 		$this->load->model('model_master');
 		date_default_timezone_set("Asia/Bangkok");
 
-		// if($this->session->userdata('status') != "islogin_admin"){
-		// 	redirect(base_url("login"));
-		// }
+		if($this->session->userdata('status') != "login"){
+			redirect(base_url("login"));
+		}
     }
 
     public function dataUser() {
