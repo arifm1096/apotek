@@ -75,7 +75,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-toolbox"></i></i>
+                        <i class="fas fa-user"></i></i>
                         <p>
                             Data User
                             <i class="fas fa-angle-left right"></i>
@@ -86,6 +86,18 @@
                             <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> User</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/data_hak_akses'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Hak Akses</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('user/data_wilayah'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Wilayah</p>
                             </a>
                         </li>
                     </ul>

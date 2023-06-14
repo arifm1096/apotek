@@ -2,6 +2,7 @@ $(document).ready(function () {
 	loadUser();
 	hak_akses();
 	status_aktif();
+	wilayah();
 	$("#loading").hide();
 });
 
@@ -25,8 +26,10 @@ function loadUser() {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
+			{ data: "nama_akun" },
 			{ data: "username" },
 			{ data: "nama" },
+			{ data: "nama_wilayah" },
 			{ data: "is_aktif" },
 			{
 				data: null,
@@ -39,6 +42,10 @@ function loadUser() {
 						row.username +
 						"','" +
 						row.hak_akses +
+						"','" +
+						row.wilayah +
+						"','" +
+						row.nama_akun +
 						"','" +
 						row.id_aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
@@ -79,6 +86,29 @@ function hak_akses(p_id_hak_akses) {
 	});
 }
 
+function wilayah(p_wilayah) {
+	var html = "<option value='pil'> Pilih Level </option>";
+	$.ajax({
+		type: "POST",
+		url: URL + "user/get_wilayah",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			res.result.forEach((e) => {
+				html +=
+					'<option value="' +
+					e.id_wilayah +
+					'"' +
+					(e.id_wilayah === p_wilayah ? 'selected="selected"' : "") +
+					">" +
+					e.nama_wilayah +
+					"</option>";
+			});
+			$("#select_wilayah").html(html);
+		},
+	});
+}
+
 function status_aktif(p_status) {
 	var html = "<option value='pil'> Pilih Status </option>";
 	var data = [
@@ -106,10 +136,12 @@ function status_aktif(p_status) {
 
 function save() {
 	var id = $("#id").val();
+	var nama = $("#nama").val();
 	var username = $("#username").val();
 	var password = $("#password").val();
 	var aktif = $("#select_aktif").val();
 	var hak_akses = $("#select_level").val();
+	var wilayah = $("#select_wilayah").val();
 	$("#save-button").hide();
 	$("#send-button").show();
 
@@ -123,6 +155,8 @@ function save() {
 				password: password,
 				aktif: aktif,
 				hak_akses: hak_akses,
+				nama: nama,
+				wilayah: wilayah,
 			},
 			success: function (res) {
 				var res = JSON.parse(res);
@@ -155,12 +189,14 @@ function save() {
 	}
 }
 
-function edit(p_id, p_username, p_id_hak_akses, p_aktif) {
+function edit(p_id, p_username, p_id_hak_akses, p_wilayah, p_nama, p_aktif) {
 	hak_akses(p_id_hak_akses);
 	status_aktif(p_aktif);
+	wilayah(p_wilayah);
 	$("#mediumModalLabel").html("Edit User");
 	$("#id").val(p_id);
 	$("#username").val(p_username);
+	$("#nama").val(p_nama);
 	$("#modal_input_user").modal("show");
 }
 
@@ -211,6 +247,7 @@ $("#modal_input_user").on("hide.bs.modal", function () {
 	$("#id").val("");
 	$("#username").val("");
 	$("#password").val("");
+	$("#nama").val("");
 	hak_akses((id_level = "pil"));
 	status_aktif((id_status = "pil"));
 });

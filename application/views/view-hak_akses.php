@@ -9,7 +9,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Data User</a></li>
-                    <li class="breadcrumb-item active">User</li>
+                    <li class="breadcrumb-item active">Hak Akses</li>
                 </ol>
             </div>
         </div>
@@ -27,10 +27,8 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Nama Akun</th>
-                            <th>Username</th>
-                            <th>Hak Akses</th>
-                            <th>Wilayah</th>
+                            <th>Nama Hak Akses</th>
+                            <th>Keterangan</th>
                             <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
