@@ -1,8 +1,6 @@
 $(document).ready(function () {
-	loadUser();
-	hak_akses();
 	status_aktif();
-	wilayah();
+	load_hak_akses();
 	$("#loading").hide();
 });
 
@@ -34,11 +32,59 @@ function status_aktif(p_status) {
 	$("#select_aktif").html(html);
 }
 
-$("#add_wilayah").submit(function (e) {
+function load_hak_akses() {
+	$("#tbl_hak_akses").DataTable({
+		ajax: {
+			url: URL + "user/load_hak_akses",
+			type: "POST",
+			data: {},
+		},
+		processing: true,
+		serverSide: true,
+		serverMethod: "POST",
+		columns: [
+			{
+				data: "id_hak_akses",
+				render: function (data, type, row, meta) {
+					return meta.row + meta.settings._iDisplayStart + 1;
+				},
+			},
+			{ data: "nama" },
+			{ data: "ket" },
+			{ data: "is_aktif" },
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					return (
+						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
+						row.id_hak_akses +
+						"','" +
+						row.nama +
+						"','" +
+						row.ket +
+						"','" +
+						row.aktif +
+						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
+						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
+						row.id_hak_akses +
+						"','" +
+						row.nama +
+						"','" +
+						row.ket +
+						'\')"><i class="fa fa-trash"></i></button>'
+					);
+				},
+			},
+		],
+	});
+}
+
+$("#add_hak_akses").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "user/load_wilayah",
+		url: URL + "user/save_hak_akses",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -46,7 +92,7 @@ $("#add_wilayah").submit(function (e) {
 		cache: false,
 		async: false,
 		beforeSend: function () {
-			$("#add_wilayah").find("span.error-text").text();
+			$("#add_hak_akses").find("span.error-text").text();
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
@@ -57,9 +103,9 @@ $("#add_wilayah").submit(function (e) {
 					text: res.message,
 				});
 
-				$("#tbl_barang").DataTable().clear().destroy();
-				load_barang();
-				$("#modal_input_barang").modal("hide");
+				$("#tbl_hak_akses").DataTable().clear().destroy();
+				load_hak_akses();
+				$("#modal_input_hak_akses").modal("hide");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -71,25 +117,23 @@ $("#add_wilayah").submit(function (e) {
 	});
 });
 
-function edit(p_id, p_username, p_id_hak_akses, p_wilayah, p_nama, p_aktif) {
-	hak_akses(p_id_hak_akses);
+function edit(p_id_hak_akses, p_nama, p_ket, p_aktif) {
 	status_aktif(p_aktif);
-	wilayah(p_wilayah);
-	$("#mediumModalLabel").html("Edit User");
-	$("#id").val(p_id);
-	$("#username").val(p_username);
+	$("#mediumModalLabel").html("Edit Hak Akses");
+	$("#id_hak_akses").val(p_id_hak_akses);
+	$("#ket").val(p_ket);
 	$("#nama").val(p_nama);
-	$("#modal_input_user").modal("show");
+	$("#modal_input_hak_akses").modal("show");
 }
 
-function hapus(id, username, hak_akses) {
+function hapus(id, hak_akses, ket) {
 	Swal.fire({
 		html:
-			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> User Nama : " +
-			username +
+			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Hak Akses  : " +
+			hak_akses +
 			"<br> " +
-			"Hak Akses : " +
-			hak_akses,
+			"Keterangan: " +
+			ket,
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
@@ -98,7 +142,7 @@ function hapus(id, username, hak_akses) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "user/hapususer",
+				url: URL + "user/hapus_hak_akses",
 				type: "POST",
 				data: {
 					id: id,
@@ -109,8 +153,8 @@ function hapus(id, username, hak_akses) {
 						//success show success modal
 
 						Swal.fire("Terhapus!", "Data Telah Dihapus", "success");
-						$("#tbl_user").DataTable().clear().destroy();
-						loadUser();
+						$("#tbl_hak_akses").DataTable().clear().destroy();
+						load_hak_akses();
 					} else {
 						Swal.fire({
 							icon: "error",
@@ -126,10 +170,8 @@ function hapus(id, username, hak_akses) {
 
 $("#modal_input_user").on("hide.bs.modal", function () {
 	$("#mediumModalLabel").html("Add New Data");
-	$("#id").val("");
-	$("#username").val("");
-	$("#password").val("");
+	$("#id_hak_akses").val("");
+	$("#ket").val("");
 	$("#nama").val("");
-	hak_akses((id_level = "pil"));
 	status_aktif((id_status = "pil"));
 });

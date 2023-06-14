@@ -298,8 +298,8 @@ class User extends CI_Controller{
 		// Search
 		$searchQuery = "";
 		if ($searchValue != '') {
-			$searchQuery .= " and (nama_hak_akses like '%" . $searchValue . "%'
-								 OR alamat like '%" . $searchValue . "%'					
+			$searchQuery .= " and (nama like '%" . $searchValue . "%'
+								 OR ket like '%" . $searchValue . "%'					
 			) ";
 		}
 	
@@ -319,7 +319,10 @@ class User extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT nama_hak_akses,alamat FROM `tm_hak_akses`
+		$sql = "SELECT id_hak_akses,nama,ket,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
+		END) as is_aktif 
+		FROM `tm_hak_akses`
 		WHERE $where
 		order by id_hak_akses " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
@@ -335,7 +338,7 @@ class User extends CI_Controller{
 	}
 	public function save_hak_akses(){
 		$data = $this->input->post();
-		$cek = $this->db->get_where('tm_hak_akses',array('nama_hak_akses'=>$_POST['nama_hak_akses'],'is_delete'=>0));
+		$cek = $this->db->get_where('tm_hak_akses',array('nama'=>$_POST['nama'],'is_delete'=>0));
 
 		if(empty($data['id_hak_akses'])){
 			if($cek->num_rows() == 0){
