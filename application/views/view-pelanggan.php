@@ -4,12 +4,12 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data Supplier</h4>
+                <h4>Data pelanggan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Data Master</a></li>
-                    <li class="breadcrumb-item active">Supplier</li>
+                    <li class="breadcrumb-item active">pelanggan</li>
                 </ol>
             </div>
         </div>
@@ -17,19 +17,20 @@
         <div class="card">
             <div class="card-header">
                 <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
-                    data-target="#modal_input_supplier" data-backdrop="static" data-keyboard="false">
+                    data-target="#modal_input_pelanggan" data-backdrop="static" data-keyboard="false">
                     <i class="fa fa-plus"></i> Add Data
                 </button>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="tbl_supplier" class="table table-bordered table-striped">
+                <table id="tbl_pelanggan" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Kode Supplier</th>
-                            <th>Nama Supplier</th>
+                            <th>Kode pelanggan</th>
+                            <th>Nama pelanggan</th>
                             <th>Alamat</th>
+                            <th>No. HP</th>
                             <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
@@ -45,7 +46,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_input_supplier">
+<div class="modal fade" id="modal_input_pelanggan">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-info">
@@ -57,22 +58,21 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Data Supplier</h5>
+                        <h5>Data Pelanggan</h5>
                         <hr>
-
-                        <form id="add_supplier">
+                        <form id="add_pelanggan">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_supplier" id="id_supplier">
+                            <input type="hidden" name="id_pelanggan" id="id_pelanggan">
                             <div class="form-group">
-                                <label>Kode Supplier</label>
-                                <input type="text" id="kode_supplier" name="kode_supplier" class="form-control"
-                                    placeholder="Inputkan Kode Supplier">
+                                <label>Kode pelanggan</label>
+                                <input type="text" id="kode_pelanggan" name="kode_pelanggan" class="form-control"
+                                    placeholder="Inputkan Pelanggan">
                             </div>
                             <div class="form-group">
-                                <label>Nama Supplier</label>
-                                <input type="text" id="nama_supplier" name="nama_supplier" class="form-control"
-                                    placeholder="Inputkan Nama Supplier">
+                                <label>Nama Pelanggan</label>
+                                <input type="text" id="nama_pelanggan" name="nama_pelanggan" class="form-control"
+                                    placeholder="Inputkan Nama Pelanggan">
                             </div>
                             <div class="form-group">
                                 <label>Alamat</label>

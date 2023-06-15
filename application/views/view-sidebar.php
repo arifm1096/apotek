@@ -48,7 +48,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_pelanggan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Satuan Barang</p>
                             </a>
@@ -60,7 +60,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('master/dataUser'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_pelanggan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Pelanggan</p>
                             </a>
