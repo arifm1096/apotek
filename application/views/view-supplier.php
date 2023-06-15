@@ -4,12 +4,12 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data User</h4>
+                <h4>Data Supplier</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Data User</a></li>
-                    <li class="breadcrumb-item active">Hak Akses</li>
+                    <li class="breadcrumb-item"><a href="#">Data Master</a></li>
+                    <li class="breadcrumb-item active">Supplier</li>
                 </ol>
             </div>
         </div>
@@ -17,18 +17,19 @@
         <div class="card">
             <div class="card-header">
                 <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
-                    data-target="#modal_input_hak_akses" data-backdrop="static" data-keyboard="false">
+                    data-target="#modal_input_supplier" data-backdrop="static" data-keyboard="false">
                     <i class="fa fa-plus"></i> Add Data
                 </button>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="tbl_hak_akses" class="table table-bordered table-striped">
+                <table id="tbl_supplier" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Nama Hak Akses</th>
-                            <th>Keterangan</th>
+                            <th>Kode Supplier</th>
+                            <th>Nama Supplier</th>
+                            <th>Alamat</th>
                             <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
@@ -44,7 +45,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_input_hak_akses">
+<div class="modal fade" id="modal_input_supplier">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-info">
@@ -56,21 +57,26 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Data Hak Akses</h5>
+                        <h5>Data Supplier</h5>
                         <hr>
 
-                        <form id="add_hak_akses">
+                        <form id="add_supplier">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_hak_akses" id="id_hak_akses">
+                            <input type="hidden" name="id_supplier" id="id_supplier">
                             <div class="form-group">
-                                <label>Nama Hak Akses</label>
-                                <input type="text" id="nama" name="nama" class="form-control"
-                                    placeholder="Inputkan Hak Akses">
+                                <label>Kode Supplier</label>
+                                <input type="text" id="kode_supplier" name="kode_supplier" class="form-control"
+                                    placeholder="Inputkan Username">
                             </div>
                             <div class="form-group">
-                                <label>Keterangan</label>
-                                <textarea class="form-control" name="ket" id="ket" cols="30" rows="3"></textarea>
+                                <label>Nama Supplier</label>
+                                <input type="text" id="nama_supplier" name="nama_supplier" class="form-control"
+                                    placeholder="Inputkan Username">
+                            </div>
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea class="form-control" name="alamat" id="alamat" cols="30" rows="3"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Status Aktif</label>

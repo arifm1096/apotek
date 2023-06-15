@@ -54,13 +54,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_supplier'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Supplier</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('user/dataUser'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/dataUser'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Pelanggan</p>
                             </a>
