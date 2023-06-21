@@ -37,6 +37,29 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>
+                            Data Produk
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Add Produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Produk</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
@@ -46,6 +69,7 @@
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
+
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url('master/data_pelanggan'); ?>" class="nav-link">
