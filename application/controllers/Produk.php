@@ -40,6 +40,10 @@ class Produk extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
+	public function get_data_master(){
+		
+	}
+
 	public function cek(){
 		echo "cek";
 	}

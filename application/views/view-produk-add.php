@@ -35,12 +35,19 @@
                                 <input type="text" id="nama_produk" name="nama_produk" class="form-control"
                                     placeholder="Inputkan Nama Produk">
                             </div>
+                            <div class="form-group">
+                                <label>Jenis Produk :</label>
+                                <select name="id_jenis_produk" id="id_jenis_produk" class="form-control select2">
+                                    <option value=""> Pilih asdsad</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
-                                <label>Jumlah Utama</label>
-                                <input type="text" id="jumlah_utama" name="jumlah_utama" class="form-control"
-                                    placeholder="Inputkan Jumlah Utama">
+                                <label>Rak :</label>
+                                <select name="id_rak" id="id_rak" class="form-control select2">
+                                    <option value=""> Pilih asdsad</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Satuan Utama :</label>
@@ -49,11 +56,16 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Rak :</label>
-                                <select name="id_rak" id="id_rak" class="form-control select2">
-                                    <option value=""> Pilih asdsad</option>
-                                </select>
+                                <label>Jumlah Utama</label>
+                                <input type="text" id="jumlah_utama" name="jumlah_utama" class="form-control"
+                                    placeholder="Inputkan Jumlah Utama">
                             </div>
+                            <div class="form-group">
+                                <label>Jumlah Minimal</label>
+                                <input type="text" id="jumlah_minimal" name="jumlah_minimal" class="form-control"
+                                    placeholder="Inputkan Jumlah Utama">
+                            </div>
+
                         </div>
                         <div class="col-md-1">
 
@@ -61,8 +73,8 @@
                     </div>
                     <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
                     <div class="row">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-6">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-4">
                             <button class="btn btn-block btn-primary" type="submit">
                                 <i class="fa fa-save fa-lg"></i> &nbsp;
                                 <span id="save-button">Tambakan Produk</span>
@@ -76,8 +88,9 @@
                 <div class="row">
                     <div class="col-md-10">
                         <div class="form-group">
-                            <p>Detail Satuan Produk :</p>
-                            <button class="btn btn-secondary btn-sm"><i class="fa fa-plus"> Add Satuan</i></button>
+                            <p class="font-weight-bold">Detail Satuan Produk :</p>
+                            <button class="btn btn-secondary btn-sm"><i class="fa fa-plus"> Tambah Satuan</i></button>
+                            <p>*Klik <b>Tambahkan Satuan</b>, Untuk menambah Detail Satuan Produk</p>
                         </div>
                         <form id="add_detail_produk">
                             <div class="row">
@@ -85,17 +98,10 @@
                                     <p class="font-weight-bold">Jumlah Produk</p>
                                 </div>
                                 <div class="col-md-3">
-                                    <select name="id_satuan" id="id_satuan" class="form-control select2">
-                                        <option value=""> Pilih Satuan</option>
-                                    </select>
+                                    <p class="font-weight-bold">Stauan Produk</p>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="satuan_utama">Satuan</span>
-                                        </div>
-                                    </div>
+                                    <p class="font-weight-bold">Jumlah Produk Persatuan</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -110,11 +116,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control">
+                                        <input type="text" class="form-control" placeholder="Inputkan Produk Persatuan">
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="satuan_utama">Satuan</span>
+                                            <button type="button" class="btn btn-sm bg-gradient-danger"><i
+                                                    class="fa fa-trash"></i></button>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </form>
@@ -124,30 +133,32 @@
                 <!-- Jenis Harga Satuan -->
                 <div class="row">
                     <div class="col-md-9">
+                        <div class="form-group">
+                            <p><b>Jenis Multi Harga :</b></p>
+                        </div>
                         <div class="card card-primary card-tabs">
                             <div class="card-header p-0 pt-1">
                                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                            aria-selected="true">Home</a>
+                                        <a class="nav-link active" id="tabs-fleksibel" data-toggle="pill"
+                                            href="#tabs-fleksibel-in" role="tab" aria-controls="tabs-fleksibel-in"
+                                            aria-selected="true">Harga Fleksibel</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-profile" role="tab"
-                                            aria-controls="custom-tabs-one-profile" aria-selected="false">Profile</a>
+                                        <a class="nav-link" id="tabs-grosir" data-toggle="pill" href="#tabs-grosir-in"
+                                            role="tab" aria-controls="tabs-grosir-in" aria-selected="false">Harga
+                                            Grosir</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="custom-tabs-one-messages-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-messages" role="tab"
-                                            aria-controls="custom-tabs-one-messages" aria-selected="false">Messages</a>
+                                        <a class="nav-link" id="tabs-member" data-toggle="pill" href="#tabs-memeber-in"
+                                            role="tab" aria-controls="tabs-memeber-in" aria-selected="false">Member</a>
                                     </li>
                                 </ul>
                             </div>
                             <div class="card-body">
                                 <div class="tab-content" id="custom-tabs-one-tabContent">
-                                    <div class="tab-pane fade active show" id="custom-tabs-one-home" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-home-tab">
+                                    <div class="tab-pane fade active show" id="tabs-fleksibel-in" role="tabpanel"
+                                        aria-labelledby="tabs-fleksibel">
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="form-group">
@@ -164,10 +175,8 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <select name="satuan_harga" id="satuan_harga"
-                                                        class="form-control select2">
-                                                        <option value=""> Pilih Satuan</option>
-                                                    </select>
+                                                    <input type="text" id="ket" name="ket" class="form-control"
+                                                        placeholder="Inputkan Keterangan">
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
@@ -175,28 +184,112 @@
                                                         class="fa fa-trash"></i></button>
                                             </div>
                                         </div>
+                                        <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-block btn-primary" type="submit">
+                                                    <i class="fa fa-save fa-lg"></i> &nbsp;
+                                                    <span id="save-button">Tambakan Harga Fleksibel</span>
+                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-profile-tab">
-                                        Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris
-                                        pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor
-                                        sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus
-                                        orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a
-                                        luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus.
-                                        Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc
-                                        euismod pellentesque diam.
+                                    <div class="tab-pane fade" id="tabs-grosir-in" role="tabpanel"
+                                        aria-labelledby="tabs-grosir">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Rp.</span>
+                                                        </div>
+                                                        <input type="text" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">.00</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">>=</span>
+                                                        </div>
+                                                        <input type="text" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">Satuan</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-sm bg-gradient-danger"><i
+                                                        class="fa fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                        <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-block btn-primary" type="submit">
+                                                    <i class="fa fa-save fa-lg"></i> &nbsp;
+                                                    <span id="save-button">Tambakan Harga Grosir</span>
+                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="tab-pane fade" id="custom-tabs-one-messages" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-messages-tab">
-                                        Morbi turpis dolor, vulputate vitae felis non, tincidunt congue mauris.
-                                        Phasellus volutpat augue id mi placerat mollis. Vivamus faucibus eu massa eget
-                                        condimentum. Fusce nec hendrerit sem, ac tristique nulla. Integer vestibulum
-                                        orci odio. Cras nec augue ipsum. Suspendisse ut velit condimentum, mattis urna
-                                        a, malesuada nunc. Curabitur eleifend facilisis velit finibus tristique. Nam
-                                        vulputate, eros non luctus efficitur, ipsum odio volutpat massa, sit amet
-                                        sollicitudin est libero sed ipsum. Nulla lacinia, ex vitae gravida fermentum,
-                                        lectus ipsum gravida arcu, id fermentum metus arcu vel metus. Curabitur eget sem
-                                        eu risus tincidunt eleifend ac ornare magna.
+                                    <div class="tab-pane fade" id="tabs-memeber-in" role="tabpanel"
+                                        aria-labelledby="tabs-member">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Rp.</span>
+                                                        </div>
+                                                        <input type="text" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">.00</span>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" type="checkbox"
+                                                                id="customCheckbox1" value="option1">
+                                                            <label for="customCheckbox1"
+                                                                class="custom-control-label">Aktifkan</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-sm bg-gradient-danger"><i
+                                                        class="fa fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                        <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-block btn-primary" type="submit">
+                                                    <i class="fa fa-save fa-lg"></i> &nbsp;
+                                                    <span id="save-button">Tambakan Harga Member</span>
+                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
