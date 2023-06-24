@@ -41,10 +41,62 @@ class Produk extends CI_Controller {
 	}
 
 	public function get_data_master(){
-		
+		$sql_jenis_produk = $this->db->select('id_jenis_produk,nama_jenis_produk')
+									 ->from('tm_jenis_produk')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		$sql_rak = $this->db->select('id_rak,nama_rak')
+									 ->from('tm_rak')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		$sql_satuan = $this->db->select('id_satuan,nama_satuan')
+									 ->from('tm_jenis_produk')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		if(!empty($sql_jenis_produk) || !empty($sql_rak) || !empty($sql_satuan)){
+			echo json_encode(array(
+									'status'=>1,
+									'msg'=>'data is find',
+									'jeins_produk'=>$sql_jenis_produk->result(),
+									'rak'=>$sql_rak->result(),
+									'satuan'=>$sql_satuan->result()
+								)
+							);
+		}else{
+			echo json_encode(array(
+									'status'=>0,
+									'msg'=>'data not found',
+									'jeins_produk'=>null,
+									'rak'=>null,
+									'satuan'=>null
+								)
+							);
+		}
 	}
 
-	public function cek(){
-		echo "cek";
+	public function get_master_satuan(){
+		$sql_satuan = $this->db->select('id_satuan,nama_satuan')
+									 ->from('tm_jenis_produk')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		if( !empty($sql_satuan)){
+			echo json_encode(array(
+									'status'=>1,
+									'msg'=>'data is find',
+									'satuan'=>$sql_satuan->result()
+								)
+							);
+		}else{
+			echo json_encode(array(
+									'status'=>0,
+									'msg'=>'data not found',
+									'satuan'=>null
+								)
+							);
+		}
 	}
 }

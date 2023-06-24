@@ -75,7 +75,7 @@
                     <div class="row">
                         <div class="col-md-3"></div>
                         <div class="col-md-4">
-                            <button class="btn btn-block btn-primary" type="submit">
+                            <button class="btn btn-block btn-info" type="submit">
                                 <i class="fa fa-save fa-lg"></i> &nbsp;
                                 <span id="save-button">Tambakan Produk</span>
                                 <span id="send-button" style="display:none;">Sending…</span>
@@ -119,6 +119,11 @@
                                         <input type="text" class="form-control" placeholder="Inputkan Produk Persatuan">
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="satuan_utama">Satuan</span>
+                                            <button type="button" class="btn btn-sm bg-gradient-info"><i
+                                                    class="fa fa-save"></i></button>
+                                            <button type="button" class="btn btn-sm bg-gradient-warning"
+                                                data-toggle="modal" data-target=".bd-example-modal-sm"><i
+                                                    class="fa fa-pencil-alt"></i></button>
                                             <button type="button" class="btn btn-sm bg-gradient-danger"><i
                                                     class="fa fa-trash"></i></button>
                                         </div>
@@ -136,7 +141,7 @@
                         <div class="form-group">
                             <p><b>Jenis Multi Harga :</b></p>
                         </div>
-                        <div class="card card-primary card-tabs">
+                        <div class="card card-info card-tabs">
                             <div class="card-header p-0 pt-1">
                                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                                     <li class="nav-item">
@@ -189,7 +194,7 @@
                                         <div class="row">
                                             <div class="col-md-3"></div>
                                             <div class="col-md-4">
-                                                <button class="btn btn-block btn-primary" type="submit">
+                                                <button class="btn btn-block btn-info" type="submit">
                                                     <i class="fa fa-save fa-lg"></i> &nbsp;
                                                     <span id="save-button">Tambakan Harga Fleksibel</span>
                                                     <span id="send-button" style="display:none;">Sending…</span>
@@ -303,3 +308,24 @@
     </div>
     </div><!-- /.container-fluid -->
 </section>
+
+
+<div class="modal bd-example-modal-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
