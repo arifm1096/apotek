@@ -52,7 +52,7 @@ class Produk extends CI_Controller {
 									 ->where('aktif','y')
 									 ->get();
 		$sql_satuan = $this->db->select('id_satuan,nama_satuan')
-									 ->from('tm_jenis_produk')
+									 ->from('tm_satuan')
 									 ->where('is_delete',0)
 									 ->where('aktif','y')
 									 ->get();
@@ -60,7 +60,7 @@ class Produk extends CI_Controller {
 			echo json_encode(array(
 									'status'=>1,
 									'msg'=>'data is find',
-									'jeins_produk'=>$sql_jenis_produk->result(),
+									'jenis_produk'=>$sql_jenis_produk->result(),
 									'rak'=>$sql_rak->result(),
 									'satuan'=>$sql_satuan->result()
 								)
@@ -97,6 +97,60 @@ class Produk extends CI_Controller {
 									'satuan'=>null
 								)
 							);
+		}
+	}
+
+	public function save_produk_name(){
+		$data = $this->input->post();
+		$user = $this->session->userdata('id_user');
+		$time = date('Y-m-d H:m');
+		$param = 0;
+
+		if($data['id_produk']==""){
+			$data['insert_by'] = $user;
+			$data['insert_date'] = $time;
+			$sql = $this->db->insert('tx_produk',$data);
+			if($sql){
+				$param += 1;
+			}
+		}else{
+			$data['update_by'] = $user;
+			$data['update_date'] = $time;
+			$sql = $this->db->where('id_produk',$data)->update('tx_produk',$data);
+			if($sql){
+				$param += 1;
+			}
+		}
+
+		$id_param = $this->db->select('id_produk')
+							 ->from('tx_produk')
+							 ->where('is_delete',0)
+							 ->where('insert_by',$user)
+							 ->order_by('id_produk',"desc")
+							 ->get();
+							 $param = $id_param->row();
+		if($param == 1){
+			echo json_encode(array('status'=>1,'msg'=>'Success Save Data','param'=>$param));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Filed Save Data','param'=>null));
+		}
+	}
+
+	public function hapus_produk(){
+		$data = $this->input->post();
+		$user = $this->session->userdata('id_user');
+		$time = date('Y-m-d H:m');
+		$data['is_delete'] = 1;
+
+		if(!empty($data['id_produk'])){
+			$sql = $this->db->where('id_produk',$data['id_produk'])->update('tx_produk',$data);
+			if($sql){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Success'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Delete Data Filed'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data | Code 2312'));
 		}
 	}
 }

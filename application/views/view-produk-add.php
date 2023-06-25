@@ -21,9 +21,11 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label>Kode Produk / SKU</label>
+                                <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                    value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                 <input type="hidden" name="id_produk">
                                 <input type="text" id="sku_kode_produk" name="sku_kode_produk" class="form-control"
-                                    placeholder="Inputkan Kode Produk / SKU">
+                                    placeholder="Inputkan Kode Produk / SKU" required>
                             </div>
                             <div class="form-group">
                                 <label>Barcode</label>
@@ -33,37 +35,36 @@
                             <div class="form-group">
                                 <label>Nama Produk</label>
                                 <input type="text" id="nama_produk" name="nama_produk" class="form-control"
-                                    placeholder="Inputkan Nama Produk">
+                                    placeholder="Inputkan Nama Produk" required>
                             </div>
                             <div class="form-group">
                                 <label>Jenis Produk :</label>
-                                <select name="id_jenis_produk" id="id_jenis_produk" class="form-control select2">
-                                    <option value=""> Pilih asdsad</option>
+                                <select name="id_jenis_produk" id="id_jenis_produk" class="form-control select2"
+                                    required>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label>Rak :</label>
-                                <select name="id_rak" id="id_rak" class="form-control select2">
-                                    <option value=""> Pilih asdsad</option>
+                                <select name="id_rak" id="id_rak" class="form-control select2" required>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Satuan Utama :</label>
-                                <select name="satuan_utama" id="satuan_utama" class="form-control select2">
-                                    <option value=""> Pilih asdsad</option>
+                                <select name="satuan_utama" id="satuan_utama" class="form-control select2" required>
+
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Jumlah Utama</label>
-                                <input type="text" id="jumlah_utama" name="jumlah_utama" class="form-control"
-                                    placeholder="Inputkan Jumlah Utama">
+                                <input type="number" id="jumlah_utama" name="jumlah_utama" class="form-control"
+                                    placeholder="Inputkan Jumlah Utama" required>
                             </div>
                             <div class="form-group">
                                 <label>Jumlah Minimal</label>
-                                <input type="text" id="jumlah_minimal" name="jumlah_minimal" class="form-control"
-                                    placeholder="Inputkan Jumlah Utama">
+                                <input type="number" id="jumlah_minimal" name="jumlah_minimal" class="form-control"
+                                    placeholder="Inputkan Jumlah Utama" required>
                             </div>
 
                         </div>
@@ -77,8 +78,8 @@
                         <div class="col-md-4">
                             <button class="btn btn-block btn-info" type="submit">
                                 <i class="fa fa-save fa-lg"></i> &nbsp;
-                                <span id="save-button">Tambakan Produk</span>
-                                <span id="send-button" style="display:none;">Sending…</span>
+                                <span id="save-button-produk">Tambakan Produk</span>
+                                <span id="send-button-produk" style="display:none;">Sending…</span>
                             </button>
                         </div>
                     </div>
@@ -93,6 +94,8 @@
                             <p>*Klik <b>Tambahkan Satuan</b>, Untuk menambah Detail Satuan Produk</p>
                         </div>
                         <form id="add_detail_produk">
+                            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                             <div class="row">
                                 <div class="col-md-3">
                                     <p class="font-weight-bold">Jumlah Produk</p>
@@ -118,7 +121,7 @@
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" placeholder="Inputkan Produk Persatuan">
                                         <div class="input-group-append">
-                                            <span class="input-group-text" id="satuan_utama">Satuan</span>
+                                            <span class="input-group-text">Satuan</span>
                                             <button type="button" class="btn btn-sm bg-gradient-info"><i
                                                     class="fa fa-save"></i></button>
                                             <button type="button" class="btn btn-sm bg-gradient-warning"
@@ -171,7 +174,8 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">Rp.</span>
                                                         </div>
-                                                        <input type="text" class="form-control">
+                                                        <input type="text" name="harga_jual" id="harga_jual_fleksibel"
+                                                            class="form-control">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">.00</span>
                                                         </div>
@@ -196,8 +200,9 @@
                                             <div class="col-md-4">
                                                 <button class="btn btn-block btn-info" type="submit">
                                                     <i class="fa fa-save fa-lg"></i> &nbsp;
-                                                    <span id="save-button">Tambakan Harga Fleksibel</span>
-                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                    <span id="save-button-fleksibel">Tambakan Harga Fleksibel</span>
+                                                    <span id="send-button-fleksibel"
+                                                        style="display:none;">Sending…</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -211,7 +216,7 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">Rp.</span>
                                                         </div>
-                                                        <input type="text" class="form-control">
+                                                        <input type="text" id="harga_jual_grosir" class="form-control">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">.00</span>
                                                         </div>
@@ -224,7 +229,7 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">>=</span>
                                                         </div>
-                                                        <input type="text" class="form-control">
+                                                        <input type="text" id="harga_jual_grosir" class="form-control">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Satuan</span>
                                                         </div>
@@ -243,8 +248,8 @@
                                             <div class="col-md-4">
                                                 <button class="btn btn-block btn-primary" type="submit">
                                                     <i class="fa fa-save fa-lg"></i> &nbsp;
-                                                    <span id="save-button">Tambakan Harga Grosir</span>
-                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                    <span id="save-button-grosir">Tambakan Harga Grosir</span>
+                                                    <span id="send-button-grosir" style="display:none;">Sending…</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -258,7 +263,7 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">Rp.</span>
                                                         </div>
-                                                        <input type="text" class="form-control">
+                                                        <input type="text" id="harga_jual_memeber" class="form-control">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">.00</span>
 
@@ -290,8 +295,8 @@
                                             <div class="col-md-4">
                                                 <button class="btn btn-block btn-primary" type="submit">
                                                     <i class="fa fa-save fa-lg"></i> &nbsp;
-                                                    <span id="save-button">Tambakan Harga Member</span>
-                                                    <span id="send-button" style="display:none;">Sending…</span>
+                                                    <span id="save-button-member">Tambakan Harga Member</span>
+                                                    <span id="send-button-member" style="display:none;">Sending…</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -308,24 +313,3 @@
     </div>
     </div><!-- /.container-fluid -->
 </section>
-
-
-<div class="modal bd-example-modal-sm" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Modal body text goes here.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
