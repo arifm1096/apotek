@@ -90,7 +90,8 @@
                     <div class="col-md-10">
                         <div class="form-group">
                             <p class="font-weight-bold">Detail Satuan Produk :</p>
-                            <button class="btn btn-secondary btn-sm"><i class="fa fa-plus"> Tambah Satuan</i></button>
+                            <button class="btn btn-secondary btn-sm" onclick="loop_satuan();"><i class="fa fa-plus">
+                                    Tambah Satuan</i></button>
                             <p>*Klik <b>Tambahkan Satuan</b>, Untuk menambah Detail Satuan Produk</p>
                         </div>
                         <form id="add_detail_produk">
@@ -107,34 +108,22 @@
                                     <p class="font-weight-bold">Jumlah Produk Persatuan</p>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <input type="text" id="jumlah_produk" name="jumlah_produk" class="form-control"
-                                        placeholder="Inputkan Jumlah Produk">
-                                </div>
-                                <div class="col-md-3">
-                                    <select name="id_satuan" id="id_satuan" class="form-control select2">
-                                        <option value=""> Pilih Satuan</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="Inputkan Produk Persatuan">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Satuan</span>
-                                            <button type="button" class="btn btn-sm bg-gradient-info"><i
-                                                    class="fa fa-save"></i></button>
-                                            <button type="button" class="btn btn-sm bg-gradient-warning"
-                                                data-toggle="modal" data-target=".bd-example-modal-sm"><i
-                                                    class="fa fa-pencil-alt"></i></button>
-                                            <button type="button" class="btn btn-sm bg-gradient-danger"><i
-                                                    class="fa fa-trash"></i></button>
-                                        </div>
-                                    </div>
+                            <input type="hidden" id="id_produk_detail_p">
+                            <input type="hidden" id="param_row">
+                            <div id="satuan-html"></div>
 
-                                </div>
-                            </div>
+
                         </form>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-4">
+                                <button class="btn btn-block btn-info" type="button" onclick="save_satuan();">
+                                    <i class="fa fa-save fa-lg"></i> &nbsp;
+                                    <span id="save-button-satuan">Tambakan Satuan</span>
+                                    <span id="send-button-satuan" style="display:none;">Sending…</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr>

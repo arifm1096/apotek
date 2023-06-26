@@ -1,5 +1,7 @@
 $(document).ready(function () {
+	$("#param_row").val(1);
 	load_select();
+	loop_satuan();
 	$("#loading").hide();
 });
 
@@ -91,6 +93,114 @@ $("#add_produk").submit(function (e) {
 		},
 	});
 });
+
+function load_satuan(p_id_satuan) {
+	var html = "<option value='pil'>-- Pilih Satuan --</option>";
+	$.ajax({
+		url: URL + "produk/get_master_satuan",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.satuan.forEach((e) => {
+					html +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === p_id_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
+						"</option>";
+				});
+			}
+			$(".p_satuan").html(html);
+		},
+	});
+}
+
+function loop_satuan(
+	p_jumlah_produk1 = "",
+	p_satuan = "",
+	p_jumlah_produk2 = ""
+) {
+	var row = $("#param_row").val();
+	load_satuan(p_satuan);
+	var el_satuan =
+		` <div class="row" id="row_` +
+		row +
+		`">
+								
+                                <div class="col-md-3"><input type="text" name="jumlah_produk" value="` +
+		p_jumlah_produk1 +
+		`" class="form-control"
+                                        placeholder="Inputkan Jumlah Produk">
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="id_satuan" class="form-control select2 p_satuan">
+                                        <option value=""> Pilih Satuan</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="jumlah_produk" value="` +
+		p_jumlah_produk2 +
+		`" class="form-control"
+                                            placeholder="Inputkan Produk Persatuan">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Satuan</span>
+                                            <button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
+		row +
+		`);"><i
+                                                    class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>`;
+
+	$("#satuan-html").append(el_satuan);
+	row++;
+	$("#param_row").val(row);
+}
+
+function remove_satuan(row) {
+	$("#row_" + row + "").remove();
+}
+
+function save_satuan() {
+	var jumlah_produk = [];
+	var satuan = [];
+	var jumlah_produk_p = [];
+
+	$("input[name=jumlah_produk]").each(function () {
+		jumlah_produk.push($(this).text());
+	});
+
+	$("select[name=jumlah_produk]").each(function () {
+		satuan.push($(this).text());
+	});
+
+	$("input[name=jumlah_produk]").each(function () {
+		jumlah_produk_p.push($(this).text());
+	});
+
+	$.ajax({
+		url: URL + "produk/save_produk_name",
+		type: "POST",
+		data: {
+			jumlah_produk: jumlah_produk,
+			id_satuan: satuan,
+			jumlah_produk_p: jumlah_produk_p,
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+			} else {
+			}
+		},
+	});
+}
 
 function edit(
 	p_id_pelanggan,
