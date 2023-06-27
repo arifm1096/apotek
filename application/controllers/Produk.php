@@ -105,36 +105,36 @@ class Produk extends CI_Controller {
 		$user = $this->session->userdata('id_user');
 		$time = date('Y-m-d H:m');
 		$param = 0;
-		var_dump($data);
 
-		// if($data['id_produk']==""){
-		// 	$data['insert_by'] = $user;
-		// 	$data['insert_date'] = $time;
-		// 	$sql = $this->db->insert('tx_produk',$data);
-		// 	if($sql){
-		// 		$param += 1;
-		// 	}
-		// }else{
-		// 	$data['update_by'] = $user;
-		// 	$data['update_date'] = $time;
-		// 	$sql = $this->db->where('id_produk',$data)->update('tx_produk',$data);
-		// 	if($sql){
-		// 		$param += 1;
-		// 	}
-		// }
+		if($data['id_produk']==""){
+			$data['insert_by'] = $user;
+			$data['insert_date'] = $time;
+			$sql = $this->db->insert('tx_produk',$data);
+			if($sql){
+				$param += 1;
+			}
+		}else{
+			$data['update_by'] = $user;
+			$data['update_date'] = $time;
+			$sql = $this->db->where('id_produk',$data)->update('tx_produk',$data);
+			if($sql){
+				$param += 1;
+			}
+		}
 
-		// $id_param = $this->db->select('id_produk')
-		// 					 ->from('tx_produk')
-		// 					 ->where('is_delete',0)
-		// 					 ->where('insert_by',$user)
-		// 					 ->order_by('id_produk',"desc")
-		// 					 ->get();
-		// 					 $param = $id_param->row();
-		// if($param == 1){
-		// 	echo json_encode(array('status'=>1,'msg'=>'Success Save Data','param'=>$param));
-		// }else{
-		// 	echo json_encode(array('status'=>0,'msg'=>'Filed Save Data','param'=>null));
-		// }
+		$id_param = $this->db->select('id_produk,s.nama_satuan')
+							 ->from('tx_produk as p')
+							 ->join('tm_satuan as s','p.satuan_utama = s.id_satuan','left')
+							 ->where('p.is_delete',0)
+							 ->where('p.insert_by',$user)
+							 ->order_by('p.id_produk',"desc")
+							 ->get();
+							 $param_id = $id_param->row();
+		if($param >= 1){
+			echo json_encode(array('status'=>1,'msg'=>'Success Save Data','param'=>$param_id));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Filed Save Data','param'=>null));
+		}
 	}
 
 	public function hapus_produk(){
@@ -153,5 +153,51 @@ class Produk extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error Data | Code 2312'));
 		}
+	}
+
+	public function save_satuan(){
+		$no = 0;
+		$user = $this->session->userdata('id_user');
+		$sql = "SELECT NOW() as jam";
+		$time = $this->db->query($sql)->row();
+		$id_satuan = $_POST['id_satuan'];
+		$jumlah_produk = $_POST['jumlah_produk'];
+		$jumlah_produk_p = $_POST['jumlah_produk_p'];
+		$data_in = $this->input->post();
+		$arr_fix =[];
+		$count = 0;
+		  foreach ($jumlah_produk as $key => $value) {
+			'"'.array_push($arr_fix, '("'.$_POST['id_produk'].'"',
+				'"'.$id_satuan[$count].'"',
+				'"'.$jumlah_produk[$count].'"',
+				'"'.$jumlah_produk_p[$count].'"',
+				'"'.$user.'"',
+				'"'.$time->jam.'")',
+			);
+			$count++;
+		 }
+		 
+		 $data_fix = implode(",",$arr_fix);
+		 
+		 $str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
+		 			$data_fix";
+					
+		 $sql = $this->db->query($str_sql);
+			if ($sql) {
+				$no++;
+			}
+		 	$data_param = $this->db->select('id_produk_detail')
+						->from('tx_produk_detail')
+						->where('id_produk',$_POST['id_produk'])
+						->get();
+			$param = $data_param->result();
+
+		 if($no > 0){
+			echo json_encode(array('status'=> 1,'msg'=>'Save Data Satuan Berhasil','param'=>$param));
+		 }else{
+			echo json_encode(array('status'=> 1,'msg'=>'Save Data Satuan Berhasil','param'=>0));
+		 }
+
+		
 	}
 }

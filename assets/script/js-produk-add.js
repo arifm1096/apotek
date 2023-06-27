@@ -3,6 +3,7 @@ $(document).ready(function () {
 	load_select();
 	loop_satuan();
 	$("#loading").hide();
+	$("#sat_param").html("satuan");
 });
 
 //Initialize Select2 Elements
@@ -63,7 +64,7 @@ function load_select(p_jenis_produk, p_rak, p_satuan) {
 
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
-	$("#save-button-produk").html("Sending...");
+
 	$.ajax({
 		url: URL + "produk/save_produk_name",
 		type: "post",
@@ -83,12 +84,17 @@ $("#add_produk").submit(function (e) {
 					title: "Success",
 					text: res.msg,
 				});
+				$("#id_produk_detail_p").val(res.param.id_produk);
+				$("#sat_param_row").val(res.param.nama_satuan);
+				$("#sat_param").html(res.param.nama_satuan);
+				$("#save-button-produk").html("Tambah Produk");
 			} else {
 				Swal.fire({
 					icon: "error",
 					title: "Error",
 					text: res.msg,
 				});
+				$("#save-button-produk").html("Tambah Produk");
 			}
 		},
 	});
@@ -125,30 +131,35 @@ function loop_satuan(
 	p_jumlah_produk2 = ""
 ) {
 	var row = $("#param_row").val();
+	var sat = $("#sat_param_row").val();
+	// $("#sat_param").html(sat);
 	load_satuan(p_satuan);
 	var el_satuan =
 		` <div class="row" id="row_` +
 		row +
 		`">
 								
-                                <div class="col-md-3"><input type="text" name="jumlah_produk" value="` +
+                                <div class="col-md-3"><input type="number" name="jumlah_produk1[]" value="` +
 		p_jumlah_produk1 +
 		`" class="form-control"
                                         placeholder="Inputkan Jumlah Produk">
                                 </div>
                                 <div class="col-md-3">
-                                    <select name="id_satuan" class="form-control select2 p_satuan">
+                                    <select name="id_satuan" class="form-control select2 p_satuan[]">
                                         <option value=""> Pilih Satuan</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="input-group mb-3">
-                                        <input type="text" name="jumlah_produk" value="` +
+                                        <input type="number" name="jumlah_produk2[]" value="` +
 		p_jumlah_produk2 +
 		`" class="form-control"
                                             placeholder="Inputkan Produk Persatuan">
                                         <div class="input-group-append">
-                                            <span class="input-group-text">Satuan</span>
+                                            <span class="input-group-text" id="sat_param">` +
+		sat +
+		`
+		</span>
                                             <button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
 		row +
 		`);"><i
@@ -168,38 +179,172 @@ function remove_satuan(row) {
 	$("#row_" + row + "").remove();
 }
 
+function loop_fleksibel(param) {
+	var html = "";
+	param.forEach((e) => {
+		html += `<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" name="harga_jual" id="harga_jual_fleksibel"
+									class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<input type="text" id="ket" name="ket" class="form-control"
+								placeholder="Inputkan Keterangan">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+	});
+
+	$("#flaksibel_list").html(html);
+}
+
+function loop_grosir(param) {
+	var html = "";
+	param.forEach((e) => {
+		html += `<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" id="harga_jual_grosir" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">>=</span>
+								</div>
+								<input type="text" id="harga_jual_grosir" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">Satuan</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+	});
+
+	$("#grosir_list").html(html);
+}
+
+function loop_member(param) {
+	var html = "";
+	param.forEach((e) => {
+		html += ` <div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" id="harga_jual_memeber" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="custom-control custom-checkbox">
+									<input class="custom-control-input" type="checkbox"
+										id="customCheckbox1" value="option1">
+									<label for="customCheckbox1"
+										class="custom-control-label">Aktifkan</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+	});
+
+	$("#grosir_list").html(html);
+}
+
 function save_satuan() {
 	var jumlah_produk = [];
 	var satuan = [];
 	var jumlah_produk_p = [];
+	var id_produk = $("#id_produk_detail_p").val();
 
-	$("input[name=jumlah_produk]").each(function () {
-		jumlah_produk.push($(this).text());
+	$("input[name=jumlah_produk1]").each(function () {
+		jumlah_produk.push($(this).val());
 	});
 
-	$("select[name=jumlah_produk]").each(function () {
-		satuan.push($(this).text());
+	$(".p_satuan").each(function () {
+		satuan.push($(this).val());
 	});
 
-	$("input[name=jumlah_produk]").each(function () {
-		jumlah_produk_p.push($(this).text());
+	$("input[name=jumlah_produk2]").each(function () {
+		jumlah_produk_p.push($(this).val());
 	});
 
-	$.ajax({
-		url: URL + "produk/save_produk_name",
-		type: "POST",
-		data: {
-			jumlah_produk: jumlah_produk,
-			id_satuan: satuan,
-			jumlah_produk_p: jumlah_produk_p,
-		},
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-			} else {
-			}
-		},
-	});
+	if (id_produk !== "") {
+		$.ajax({
+			url: URL + "produk/save_satuan",
+			type: "POST",
+			data: {
+				jumlah_produk: jumlah_produk,
+				id_satuan: satuan,
+				jumlah_produk_p: jumlah_produk_p,
+				id_produk: id_produk,
+			},
+			success: function (data) {
+				var res = JSON.parse(data);
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Success",
+						text: res.msg,
+					});
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Perhatian..!!",
+						text: res.msg,
+					});
+				}
+			},
+		});
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian..!!",
+			text: "Input Data Produk Terlebih Dahulu",
+		});
+	}
 }
 
 function edit(

@@ -110,6 +110,7 @@
                             </div>
                             <input type="hidden" id="id_produk_detail_p">
                             <input type="hidden" id="param_row">
+                            <input type="hidden" id="sat_param_row">
                             <div id="satuan-html"></div>
 
 
@@ -156,32 +157,7 @@
                                 <div class="tab-content" id="custom-tabs-one-tabContent">
                                     <div class="tab-pane fade active show" id="tabs-fleksibel-in" role="tabpanel"
                                         aria-labelledby="tabs-fleksibel">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text">Rp.</span>
-                                                        </div>
-                                                        <input type="text" name="harga_jual" id="harga_jual_fleksibel"
-                                                            class="form-control">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text">.00</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <input type="text" id="ket" name="ket" class="form-control"
-                                                        placeholder="Inputkan Keterangan">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-sm bg-gradient-danger"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </div>
-                                        </div>
+                                        <div id="fleksibel_list"></div>
                                         <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
                                         </p>
                                         <div class="row">
@@ -198,39 +174,9 @@
                                     </div>
                                     <div class="tab-pane fade" id="tabs-grosir-in" role="tabpanel"
                                         aria-labelledby="tabs-grosir">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text">Rp.</span>
-                                                        </div>
-                                                        <input type="text" id="harga_jual_grosir" class="form-control">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text">.00</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text">>=</span>
-                                                        </div>
-                                                        <input type="text" id="harga_jual_grosir" class="form-control">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text">Satuan</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-sm bg-gradient-danger"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </div>
-                                        </div>
-                                        <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
+                                        <div id="grosir_list"></div>
+
+                                        <p>*Klik <b>Tambahkan Harga Grosir</b>, Untuk menambahkan data master harga.
                                         </p>
                                         <div class="row">
                                             <div class="col-md-3"></div>
@@ -245,39 +191,8 @@
                                     </div>
                                     <div class="tab-pane fade" id="tabs-memeber-in" role="tabpanel"
                                         aria-labelledby="tabs-member">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text">Rp.</span>
-                                                        </div>
-                                                        <input type="text" id="harga_jual_memeber" class="form-control">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text">.00</span>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" type="checkbox"
-                                                                id="customCheckbox1" value="option1">
-                                                            <label for="customCheckbox1"
-                                                                class="custom-control-label">Aktifkan</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-sm bg-gradient-danger"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </div>
-                                        </div>
-                                        <p>*Klik <b>Tambahkan Harga Fleksibel</b>, Untuk menambahkan data master harga.
+                                        <div id="member_list"></div>
+                                        <p>*Klik <b>Tambahkan Harga Member</b>, Untuk menambahkan data master harga.
                                         </p>
                                         <div class="row">
                                             <div class="col-md-3"></div>
