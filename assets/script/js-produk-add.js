@@ -139,19 +139,19 @@ function loop_satuan(
 		row +
 		`">
 								
-                                <div class="col-md-3"><input type="number" name="jumlah_produk1[]" value="` +
+                                <div class="col-md-3"><input type="number" name="jumlah_produk1" value="` +
 		p_jumlah_produk1 +
 		`" class="form-control"
                                         placeholder="Inputkan Jumlah Produk">
                                 </div>
                                 <div class="col-md-3">
-                                    <select name="id_satuan" class="form-control select2 p_satuan[]">
+                                    <select name="id_satuan" class="form-control select2 p_satuan">
                                         <option value=""> Pilih Satuan</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="input-group mb-3">
-                                        <input type="number" name="jumlah_produk2[]" value="` +
+                                        <input type="number" name="jumlah_produk2" value="` +
 		p_jumlah_produk2 +
 		`" class="form-control"
                                             placeholder="Inputkan Produk Persatuan">
@@ -182,13 +182,18 @@ function remove_satuan(row) {
 function loop_fleksibel(param) {
 	var html = "";
 	param.forEach((e) => {
-		html += `<div class="row">
+		html +=
+			`<div class="row` +
+			e.id_detail_produk +
+			`">
 					<div class="col-md-4">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
+								<input type="text" name="id_detail_produk" id="id_detail_produk_fleksibel"
+									class="form-control">
 								<input type="text" name="harga_jual" id="harga_jual_fleksibel"
 									class="form-control">
 								<div class="input-group-append">
@@ -204,7 +209,9 @@ function loop_fleksibel(param) {
 						</div>
 					</div>
 					<div class="col-md-2">
-						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_flek(` +
+			e.id_detail_produk +
+			`);"><i
 								class="fa fa-trash"></i></button>
 					</div>
 				</div>`;
@@ -329,6 +336,9 @@ function save_satuan() {
 						title: "Success",
 						text: res.msg,
 					});
+					loop_fleksibel(res.param);
+					loop_grosir(res.param);
+					loop_member(res.param);
 				} else {
 					Swal.fire({
 						icon: "error",
