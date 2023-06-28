@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	status_aktif();
-	load_pelanggan();
+	load_produk();
 	$("#loading").hide();
 });
 
@@ -32,12 +32,14 @@ function status_aktif(p_status) {
 	$("#select_aktif").html(html);
 }
 
-function load_pelanggan() {
-	$("#tbl_pelanggan").DataTable({
+function load_produk() {
+	var status_jual = $("#filter_status_jual").val();
+	var id_rak = $("#filter_rak").val();
+	$("#tbl_produk").DataTable({
 		ajax: {
-			url: URL + "master/load_pelanggan",
+			url: URL + "produk/load_produk",
 			type: "POST",
-			data: {},
+			data: { status_jual: status_jual, id_rak: id_rak },
 		},
 		processing: true,
 		serverSide: true,
@@ -49,22 +51,34 @@ function load_pelanggan() {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{ data: "kode_pelanggan" },
-			{ data: "nama_pelanggan" },
-			{ data: "alamat" },
-			{ data: "no_hp" },
-			{ data: "is_aktif" },
+			{ data: "nama_produk" },
+			{ data: "sku_kode_produk" },
+			{ data: "barcode" },
+			{ data: "produk_by" },
+			{ data: "nama_rak" },
+			{ data: "jumlah_minimal" },
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					if (row.status_jual == "y") {
+						return '<span class="right badge badge-succss"> Dijual</span>';
+					} else {
+						return '<span class="right badge badge-danger">Tidak Dijual</span>';
+					}
+				},
+			},
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
-						row.id_pelanggan +
+						row.id_produk +
 						"','" +
-						row.kode_pelanggan +
+						row.kode_produk +
 						"','" +
-						row.nama_pelanggan +
+						row.nama_produk +
 						"','" +
 						row.alamat +
 						"','" +
@@ -73,11 +87,11 @@ function load_pelanggan() {
 						row.aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_pelanggan +
+						row.id_produk +
 						"','" +
-						row.nama_pelanggan +
+						row.nama_produk +
 						"','" +
-						row.kode_pelanggan +
+						row.kode_produk +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},

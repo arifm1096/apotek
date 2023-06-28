@@ -206,7 +206,7 @@
         </div>
         <!-- /.content-wrapper -->
         <footer class="main-footer">
-            <strong>Copyright &copy; <?php echo date('Y')?> | MUS</strong>
+            <strong>Copyright &copy; <?php echo date('Y')?> | NAWASENA</strong>
             All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
                 <b>Version</b> 1.0

@@ -40,27 +40,29 @@
                     </div>
                     <div class="col-md-3">
                         <label>Filter Jual:</label>
-                        <select name="status_jual" id="status_jual" class="form-control select2">
-                            <option value=""> Pilih asdsad</option>
+                        <select name="filter_status_jual" id="filter_status_jual" class="form-control select2">
+                            <option value="pil"> Pilih Filter Jual</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label>Filter rak:</label>
-                        <select name="rak" id="rak" class="form-control select2">
-                            <option value=""> Pilih asdsad</option>
+                        <select name="filter_rak" id="filter_rak" class="form-control select2">
+                            <option value="pil"> Pilih Filter Rak</option>
                         </select>
                     </div>
                 </div>
                 <hr>
-                <table id="tbl_pelanggan" class="table table-bordered table-striped">
+                <table id="tbl_produk" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Kode pelanggan</th>
-                            <th>Nama pelanggan</th>
-                            <th>Alamat</th>
-                            <th>No. HP</th>
-                            <th>Status Aktif</th>
+                            <th>Nama Produk</th>
+                            <th>Kode Produk</th>
+                            <th>Barcode</th>
+                            <th>Nama Pabrik</th>
+                            <th>Rak</th>
+                            <th>Stok Minimal</th>
+                            <th>Status</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>

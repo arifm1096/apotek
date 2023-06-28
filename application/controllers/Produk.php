@@ -34,6 +34,76 @@ class Produk extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
+	public function load_produk(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+		$jual ='';
+		$rak ='';
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.barcode like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR p.produk_by like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR s.nama_satuan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		if($_POST['status_jual'] !='pil'){
+			$jual .= " AND p.status_jual ='".$_POST['status_jual']."'";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$rak .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+	
+		$where = " p.is_delete = 0 " . $searchQuery .$jual.$rak. "";
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_produk` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM tx_produk as p
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,p.status_jual,
+		r.nama_rak,s.nama_satuan
+		FROM tx_produk as p
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+		WHERE $where
+		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
 	public function tambah_data(){
 		$var['content'] = 'view-produk-add';
 		$var['js'] = 'js-produk-add';

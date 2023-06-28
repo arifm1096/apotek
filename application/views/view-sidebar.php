@@ -41,6 +41,167 @@
                     <a href="#" class="nav-link">
                         <i class="fas fa-cogs"></i></i>
                         <p>
+                            Master
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Memeber Ship</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Gudang</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Rak / Penyimpanan</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>
+                            Persediaan
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Daftar produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> kartu stok per item produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Defecta</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Stok Kadaluarsa/ED</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Stok Opname</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Riwayat Stok Opname</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>Pembelian
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Rencana Pembelian</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Membuat Pesanan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Retur Pembelian</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>Penjualan
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Kasir</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Daftar Penjulan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Penjualan Tertolak</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>
+                            Konsiyasi
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Konsi Masuk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Status Konsinyasi</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cogs"></i></i>
+                        <p>
                             Data Produk
                             <i class="fas fa-angle-left right"></i>
                         </p>
