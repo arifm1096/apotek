@@ -140,7 +140,7 @@
             <ul class="navbar-nav ml-auto">
 
                 <!-- Notifications Dropdown Menu -->
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fa fa-envelope"></i>
                         <span class="badge badge-info navbar-badge"> <i class="fa fa-check"></i> </span>
@@ -152,11 +152,10 @@
                         <div class="dropdown-divider"></div>
                         <a href="" class="dropdown-item dropdown-footer">Close</a>
                     </div>
-                </li>
+                </li> -->
 
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <!-- <i class="fas fa-warning"></i> -->
                         <i class="fa fa-exclamation-triangle "></i>
                         <span class="badge badge-warning navbar-badge"> <i class="fa fa-check"></i> </span>
                     </a>
@@ -167,7 +166,7 @@
                         <div class="dropdown-divider"></div>
                         <a href="" class="dropdown-item dropdown-footer">Close</a>
                     </div>
-                </li>
+                </li> -->
 
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">

@@ -170,6 +170,25 @@ class Produk extends CI_Controller {
 		}
 	}
 
+	function get_kode_ksu(){
+		// $str_name = $_POST['nama_obat'];
+		$str_name = "Obat Amoxilin 50mg";
+		$arr = (explode(" ",$str_name));
+		$str_ksu ="";
+		$arrlength = count($arr);
+	
+		for($x = 0; $x < $arrlength; $x++) {
+			$str_lop = strtoupper($arr[$x]);
+			$str_ksu .=substr($str_lop,0,2);
+		}
+		$cek = $this->db->get_where('tx_produk',array('sku_kode_produk',$str_ksu));
+		if($cek->num_rows()>0){
+			echo json_encode(array('status'=>0,'msg'=>'Tambahakan Karater Dibelakang Untuk Pembeda','result' => $str_ksu));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Data find','result'=>$str_ksu));
+		}
+	}
+
 	public function save_produk_name(){
 		$data = $this->input->post();
 		$user = $this->session->userdata('id_user');

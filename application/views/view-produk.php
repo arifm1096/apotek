@@ -4,33 +4,26 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data pelanggan</h4>
+                <h4>Master Produk</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Data Master</a></li>
-                    <li class="breadcrumb-item active">pelanggan</li>
+                    <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
+                        data-target="#modal_input_pelanggan" data-backdrop="static" data-keyboard="false">
+                        <i class="fa fa-plus"></i> Add Data
+                    </button>
                 </ol>
             </div>
         </div>
         <!-- head end -->
         <div class="card">
-            <div class="card-header">
-                <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
-                    data-target="#modal_input_pelanggan" data-backdrop="static" data-keyboard="false">
-                    <i class="fa fa-plus"></i> Add Data
-                </button>
-            </div>
-
-
-            <!-- /.card-header -->
-            <div class="card-body">
+            <div class="card-header bg-danger">
                 <div class="row">
                     <div class="col-md-5">
                         <label>All Colom :</label>
                         <div class="input-group">
-                            <input type="search" class="form-control form-control"
-                                placeholder="Type your keywords here">
+                            <input type="search" class="form-control form-control" id="filter_text"
+                                placeholder="Masukan Pencarian Anda">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-default">
                                     <i class="fa fa-search"></i>
@@ -51,7 +44,11 @@
                         </select>
                     </div>
                 </div>
-                <hr>
+            </div>
+
+
+            <!-- /.card-header -->
+            <div class="card-body">
                 <table id="tbl_produk" class="table table-bordered table-striped">
                     <thead>
                         <tr>
@@ -80,7 +77,7 @@
 <div class="modal fade" id="modal_input_pelanggan">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-info">
+            <div class="modal-header bg-danger">
                 <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Add Data</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -89,51 +86,100 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Data Pelanggan</h5>
+                        <h5>Data Produk</h5>
                         <hr>
-                        <form id="add_pelanggan">
-                            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
-                                value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_pelanggan" id="id_pelanggan">
-                            <div class="form-group">
-                                <label>Kode pelanggan</label>
-                                <input type="text" id="kode_pelanggan" name="kode_pelanggan" class="form-control"
-                                    placeholder="Inputkan Pelanggan">
-                            </div>
-                            <div class="form-group">
-                                <label>Nama Pelanggan</label>
-                                <input type="text" id="nama_pelanggan" name="nama_pelanggan" class="form-control"
-                                    placeholder="Inputkan Nama Pelanggan">
-                            </div>
-                            <div class="form-group">
-                                <label>Alamat</label>
-                                <textarea class="form-control" name="alamat" id="alamat" cols="30" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>No. HP</label>
-                                <input type="text" id="no_hp" name="no_hp" class="form-control"
-                                    placeholder="Inputkan No. HP">
-                            </div>
-                            <div class="form-group">
-                                <label>Status Aktif</label>
-                                <select class="form-control" id="select_aktif" name="aktif" style="width: 100%;">
-                                </select>
-                            </div>
-                            <div class="social-auth-links text-center mb-1">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <button class="btn btn-block btn-primary" type="submit">
-                                            <i class="fa fa-save fa-lg"></i> &nbsp;
-                                            <span id="save-button">Save</span>
-                                            <span id="send-button" style="display:none;">Sending…</span>
-                                        </button>
+                        <form id="add_produk">
+                            <div class="row p-2">
+                                <div class="col-md-12">
+                                    <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+                                        <label class="btn btn-danger active">
+                                            <input type="radio" name="options" id="obat" value="obat" autocomplete="off"
+                                                checked>
+                                            Obat
+                                        </label>
+                                        <label class="btn btn-danger">
+                                            <input type="radio" name="options" id="alkes" value="alkes"
+                                                autocomplete="off"> Alat
+                                            Kesehatan
+                                        </label>
+                                        <label class="btn btn-danger">
+                                            <input type="radio" name="options" id="umum" value="umum"
+                                                autocomplete="off"> Umum
+                                        </label>
                                     </div>
-                                    <div class="col-md-6">
-                                        <button class="btn btn-block btn-danger" data-dismiss="modal">
-                                            <i class="fa fa-times fa-lg"></i> &nbsp;
-                                            <span>Batal</span>
-                                        </button>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Nama Produk</label>
+                                        <input type="text" id="nama_produk" name="nama_produk" class="form-control"
+                                            placeholder="Inputkan Nama Produk" required>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Nama Pabrik</label>
+                                        <input type="text" id="produk_by" name="produk_by" class="form-control"
+                                            placeholder="Inputkan Nama Produk" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kode Produk / SKU</label>
+                                        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                            value="<?=$this->security->get_csrf_hash();?>" style="display: none">
+                                        <input type="hidden" name="id_produk">
+                                        <input type="text" id="sku_kode_produk" name="sku_kode_produk"
+                                            class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Barcode</label>
+                                        <input type="text" id="barcode" name="barcode" class="form-control"
+                                            placeholder="Inputkan Barcode">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Rak :</label>
+                                        <select name="id_rak" id="id_rak" class="form-control select2" required>
+                                        </select>
+                                    </div>
+                                    <div class="form-group row">
+
+                                        <label>Satuan Utama :</label>
+                                        <div class="col-md-11">
+                                            <select name="satuan_utama" id="satuan_utama" class="form-control select2"
+                                                required>
+
+                                            </select>
+                                            <input type="hidden" id="p_satuan_utama">
+                                            <input type="hidden" id="p_sat_row">
+                                            <input type="hidden" id="sat_param_row">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="loop_satuan();"> <i class="fa fa-plus"></i></button>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <div id="satuan-html"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Jumlah Minimal</label>
+                                        <input type="number" id="jumlah_minimal" name="jumlah_minimal"
+                                            class="form-control" placeholder="Inputkan Jumlah Utama" required>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-block btn-info" type="submit">
+                                        <i class="fa fa-save fa-lg"></i> &nbsp;
+                                        <span id="save-button-produk">Tambakan Produk</span>
+                                        <span id="send-button-produk" style="display:none;">Sending…</span>
+                                    </button>
                                 </div>
                             </div>
                         </form>

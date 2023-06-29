@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	status_aktif();
 	load_produk();
+	load_select();
 	$("#loading").hide();
 });
 
@@ -30,6 +31,134 @@ function status_aktif(p_status) {
 			"</option>";
 	});
 	$("#select_aktif").html(html);
+}
+
+function load_select(p_jenis_produk, p_rak, p_satuan) {
+	var html_jn_pro = "<option value='pil'>-- Pilih Jenis Porduk --</option>";
+	var html_rak = "<option value='pil'>-- Pilih Rak --</option>";
+	var html_satuan = "<option value='pil'>-- Pilih Satuan --</option>";
+	$.ajax({
+		url: URL + "produk/get_data_master",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.jenis_produk.forEach((e) => {
+					html_jn_pro +=
+						'<option value="' +
+						e.id_jenis_produk +
+						'"' +
+						(e.id_jenis_produk === p_jenis_produk
+							? 'selected="selected"'
+							: "") +
+						">" +
+						e.nama_jenis_produk +
+						"</option>";
+				});
+
+				res.rak.forEach((e) => {
+					html_rak +=
+						'<option value="' +
+						e.id_rak +
+						'"' +
+						(e.id_rak === p_rak ? 'selected="selected"' : "") +
+						">" +
+						e.nama_rak +
+						"</option>";
+				});
+
+				res.satuan.forEach((e) => {
+					html_satuan +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === p_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
+						"</option>";
+				});
+			}
+			$("#id_jenis_produk").html(html_jn_pro);
+			$("#satuan_utama").html(html_satuan);
+			$("#id_rak").html(html_rak);
+		},
+	});
+}
+
+function load_satuan(p_id_satuan) {
+	var html = "<option value='pil'>-- Pilih Satuan --</option>";
+	$.ajax({
+		url: URL + "produk/get_master_satuan",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.satuan.forEach((e) => {
+					html +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === p_id_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
+						"</option>";
+				});
+			}
+			$(".p_satuan").html(html);
+		},
+	});
+}
+
+function loop_satuan(
+	p_jumlah_produk1 = "",
+	p_satuan = "",
+	p_jumlah_produk2 = ""
+) {
+	var row = $("#param_row").val();
+	var sat = $("#sat_param_row").val();
+	// $("#sat_param").html(sat);
+	load_satuan(p_satuan);
+	var el_satuan =
+		` <div class="row" id="row_` +
+		row +
+		`">
+								
+                                <div class="col-md-3"><input type="number" name="jumlah_produk1" value="` +
+		p_jumlah_produk1 +
+		`" class="form-control"
+                                        placeholder="Inputkan Jumlah Produk">
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="id_satuan" class="form-control select2 p_satuan">
+                                        <option value=""> Pilih Satuan</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <input type="number" name="jumlah_produk2" value="` +
+		p_jumlah_produk2 +
+		`" class="form-control"
+                                            placeholder="Inputkan Produk Persatuan">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="sat_param">` +
+		sat +
+		`
+		</span>
+                                            <button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
+		row +
+		`);"><i
+                                                    class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>`;
+
+	$("#satuan-html").append(el_satuan);
+	row++;
+	$("#param_row").val(row);
 }
 
 function load_produk() {
@@ -62,7 +191,7 @@ function load_produk() {
 				orderable: false,
 				render: function (data, type, row) {
 					if (row.status_jual == "y") {
-						return '<span class="right badge badge-succss"> Dijual</span>';
+						return '<span class="right badge badge-success"> Dijual</span>';
 					} else {
 						return '<span class="right badge badge-danger">Tidak Dijual</span>';
 					}
@@ -98,6 +227,12 @@ function load_produk() {
 			},
 		],
 	});
+}
+
+function filter_data() {
+	var text = $("#filter_text").val();
+	var jual = $("#filter_jual").val();
+	var rak = $("#rak").val();
 }
 
 $("#add_pelanggan").submit(function (e) {
