@@ -109,6 +109,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <hr>
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -136,19 +137,16 @@
                                             placeholder="Inputkan Barcode">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label>Rak :</label>
-                                        <select name="id_rak" id="id_rak" class="form-control select2" required>
-                                        </select>
-                                    </div>
+
                                     <div class="form-group row">
 
                                         <label>Satuan Utama :</label>
                                         <div class="col-md-11">
                                             <select name="satuan_utama" id="satuan_utama" class="form-control select2"
                                                 required>
-
                                             </select>
+                                            <h6>Pilih <b>Satuan Utama</b> terlebih dahulu sebelum menambahkan satuan
+                                                lainnya.</h6>
                                             <input type="hidden" id="p_satuan_utama">
                                             <input type="hidden" id="p_sat_row">
                                             <input type="hidden" id="sat_param_row">
@@ -157,10 +155,15 @@
                                             <button type="button" class="btn btn-sm btn-danger"
                                                 onclick="loop_satuan();"> <i class="fa fa-plus"></i></button>
                                         </div>
-
                                     </div>
                                     <div class="form-group">
                                         <div id="satuan-html"></div>
+                                    </div>
+                                    <p class="text-danger"><b>#Informasi Harga Produk</b></p>
+                                    <div class="form-group">
+                                        <label>Rak :</label>
+                                        <select name="id_rak" id="id_rak" class="form-control select2" required>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Jumlah Minimal</label>
