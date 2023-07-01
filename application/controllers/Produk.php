@@ -42,9 +42,11 @@ class Produk extends CI_Controller {
 		$columnIndex = $_POST['order'][0]['column']; // Column index
 		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-		$searchValue = $_POST['search']['value'];
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
 		$jual ='';
 		$rak ='';
+		$where = " p.is_delete = 0 ";
 	
 		// Search
 		$searchQuery = "";
@@ -60,14 +62,14 @@ class Produk extends CI_Controller {
 		}
 
 		if($_POST['status_jual'] !='pil'){
-			$jual .= " AND p.status_jual ='".$_POST['status_jual']."'";
+			$where .= " AND p.status_jual ='".$_POST['status_jual']."'";
 		}
 
 		if($_POST['id_rak'] !='pil'){
-			$rak .= " AND p.id_rak ='".$_POST['id_rak']."'";
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
 		}
 	
-		$where = " p.is_delete = 0 " . $searchQuery .$jual.$rak. "";
+		$where .=  $searchQuery .$jual.$rak;
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
@@ -93,6 +95,7 @@ class Produk extends CI_Controller {
 		WHERE $where
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
+		// echo $this->db->last_query();
 	
 		// Response
 		$output = array(
@@ -147,6 +150,37 @@ class Produk extends CI_Controller {
 		}
 	}
 
+	public function get_data_master_filter(){
+		$sql_rak = $this->db->select('id_rak,nama_rak')
+									 ->from('tm_rak')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		$sql_jual = $this->db->select('id_jual,nama_jual')
+									 ->from('tm_jual')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get();
+		
+		if(!empty($sql_jenis_produk) || !empty($sql_rak) || !empty($sql_satuan)){
+			echo json_encode(array(
+									'status'=>1,
+									'msg'=>'data is find',
+									'jual'=>$sql_jual->result(),
+									'rak'=>$sql_rak->result()
+								)
+							);
+		}else{
+			echo json_encode(array(
+									'status'=>0,
+									'msg'=>'data not found',
+									'jual'=>null,
+									'rak'=>null
+								)
+							);
+		}
+	}
+
 	public function get_master_satuan(){
 		$sql_satuan = $this->db->select('id_satuan,nama_satuan')
 									 ->from('tm_satuan')
@@ -171,8 +205,7 @@ class Produk extends CI_Controller {
 	}
 
 	function get_kode_ksu(){
-		// $str_name = $_POST['nama_obat'];
-		$str_name = "Obat Amoxilin 50mg";
+		$str_name = $_POST['jenis_produk']." ".$_POST['nama_produk']  ;
 		$arr = (explode(" ",$str_name));
 		$str_ksu ="";
 		$arrlength = count($arr);
@@ -189,12 +222,20 @@ class Produk extends CI_Controller {
 		}
 	}
 
+	public function insert_produk($post_data){
+		$this->db->insert('posts', $post_data);
+		$insert_id = $this->db->insert_id();
+		return  $insert_id;
+
+	}
+
 	public function save_produk_name(){
 		$data = $this->input->post();
 		$user = $this->session->userdata('id_user');
 		$time = date('Y-m-d H:m');
 		$param = 0;
 
+		
 		if($data['id_produk']==""){
 			$data['insert_by'] = $user;
 			$data['insert_date'] = $time;

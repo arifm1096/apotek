@@ -8,7 +8,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
+                    <button type="button" class="btn btn-danger btn-sm" style="align-items: right;" data-toggle="modal"
                         data-target="#modal_input_pelanggan" data-backdrop="static" data-keyboard="false">
                         <i class="fa fa-plus"></i> Add Data
                     </button>
@@ -21,9 +21,24 @@
                 <div class="row">
                     <div class="col-md-5">
                         <label>All Colom :</label>
+
+                    </div>
+                    <div class="col-md-3">
+                        <label>Filter Jual:</label>
+
+                    </div>
+                    <div class="col-md-3">
+                        <label>Filter rak:</label>
+
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+
                         <div class="input-group">
                             <input type="search" class="form-control form-control" id="filter_text"
-                                placeholder="Masukan Pencarian Anda">
+                                placeholder="Masukan Pencarian Anda" oninput="filter_data();">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-default">
                                     <i class="fa fa-search"></i>
@@ -32,16 +47,23 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label>Filter Jual:</label>
-                        <select name="filter_status_jual" id="filter_status_jual" class="form-control select2">
+
+                        <select name="filter_status_jual" id="filter_status_jual" class="form-control select2"
+                            onchange="filter_data();">
                             <option value="pil"> Pilih Filter Jual</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label>Filter rak:</label>
-                        <select name="filter_rak" id="filter_rak" class="form-control select2">
+
+                        <select name="filter_rak" id="filter_rak" class="form-control select2"
+                            onchange="filter_data();">
                             <option value="pil"> Pilih Filter Rak</option>
                         </select>
+                    </div>
+                    <div class="col-md-1">
+
+                        <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
+                                class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
@@ -93,17 +115,17 @@
                                 <div class="col-md-12">
                                     <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                         <label class="btn btn-danger active">
-                                            <input type="radio" name="options" id="obat" value="obat" autocomplete="off"
-                                                checked>
+                                            <input type="radio" name="jnp_options" id="obat" value="obat"
+                                                autocomplete="off" checked>
                                             Obat
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="options" id="alkes" value="alkes"
+                                            <input type="radio" name="jnp_options" id="alkes" value="alkes"
                                                 autocomplete="off"> Alat
                                             Kesehatan
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="options" id="umum" value="umum"
+                                            <input type="radio" name="jnp_options" id="umum" value="umum"
                                                 autocomplete="off"> Umum
                                         </label>
                                     </div>
@@ -115,6 +137,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Nama Produk</label>
+                                        <input type="hidden" id="jenis_produk">
                                         <input type="text" id="nama_produk" name="nama_produk" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
@@ -123,13 +146,19 @@
                                         <input type="text" id="produk_by" name="produk_by" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group row">
                                         <label>Kode Produk / SKU</label>
                                         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                             value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                         <input type="hidden" name="id_produk">
-                                        <input type="text" id="sku_kode_produk" name="sku_kode_produk"
-                                            class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
+                                        <div class="col-md-11">
+                                            <input type="text" id="sku_kode_produk" name="sku_kode_produk"
+                                                class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="get_ksu();"> <i
+                                                    class="fa fa-download"></i></button>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label>Barcode</label>
@@ -150,6 +179,7 @@
                                             <input type="hidden" id="p_satuan_utama">
                                             <input type="hidden" id="p_sat_row">
                                             <input type="hidden" id="sat_param_row">
+                                            <input type="hidden" id="param_row">
                                         </div>
                                         <div class="col-md-1">
                                             <button type="button" class="btn btn-sm btn-danger"
@@ -158,8 +188,61 @@
                                     </div>
                                     <div class="form-group">
                                         <div id="satuan-html"></div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-block btn-danger" type="button"
+                                                    onclick="loop_satuan();">
+                                                    Tambah Satuan Lain
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <p class="text-danger"><b>#Informasi Harga Produk</b></p>
+                                    <div class="form-group">
+                                        <label>Harga Beli :</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Jual Satuan :</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row p-2">
+                                            <div class="col-md-12">
+                                                <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+                                                    <label class="btn btn-danger active">
+                                                        <input type="radio" name="harga_option" id="fleksibel"
+                                                            value="fleksibel" autocomplete="off" checked>
+                                                        Fleksibel
+                                                    </label>
+                                                    <label class="btn btn-danger">
+                                                        <input type="radio" name="harga_option" id="grosir"
+                                                            value="grosir" autocomplete="off"> Grosir
+                                                    </label>
+                                                    <label class="btn btn-danger">
+                                                        <input type="radio" name="harga_option" id="member"
+                                                            value="member" autocomplete="off"> Membership
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label>Rak :</label>
                                         <select name="id_rak" id="id_rak" class="form-control select2" required>

@@ -1,8 +1,11 @@
 $(document).ready(function () {
 	status_aktif();
-	load_produk();
+	load_produk((text = ""), (jual = "pil"), (rak = "pil"));
 	load_select();
+	load_select_filter();
 	$("#loading").hide();
+	$("#param_row").val(1);
+	$("#jenis_produk").val("obat");
 });
 
 //Initialize Select2 Elements
@@ -31,6 +34,44 @@ function status_aktif(p_status) {
 			"</option>";
 	});
 	$("#select_aktif").html(html);
+}
+
+function load_select_filter(p_rak, p_status) {
+	var html_rak = "<option value='pil'>-- Pilih Rak --</option>";
+	var html_status_jual = "<option value='pil'>-- Pilih Filter Jual --</option>";
+	$.ajax({
+		url: URL + "produk/get_data_master_filter",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.rak.forEach((e) => {
+					html_rak +=
+						'<option value="' +
+						e.id_rak +
+						'"' +
+						(e.id_rak === p_rak ? 'selected="selected"' : "") +
+						">" +
+						e.nama_rak +
+						"</option>";
+				});
+
+				res.jual.forEach((e) => {
+					html_status_jual +=
+						'<option value="' +
+						e.id_jual +
+						'"' +
+						(e.id_jual === p_status ? 'selected="selected"' : "") +
+						">" +
+						e.nama_jual +
+						"</option>";
+				});
+			}
+			$("#filter_status_jual").html(html_status_jual);
+			$("#filter_rak").html(html_rak);
+		},
+	});
 }
 
 function load_select(p_jenis_produk, p_rak, p_satuan) {
@@ -161,17 +202,20 @@ function loop_satuan(
 	$("#param_row").val(row);
 }
 
-function load_produk() {
-	var status_jual = $("#filter_status_jual").val();
-	var id_rak = $("#filter_rak").val();
+function remove_satuan(row) {
+	$("#row_" + row + "").remove();
+}
+
+function load_produk(text, jual, rak) {
 	$("#tbl_produk").DataTable({
 		ajax: {
 			url: URL + "produk/load_produk",
 			type: "POST",
-			data: { status_jual: status_jual, id_rak: id_rak },
+			data: { text: text, status_jual: jual, id_rak: rak },
 		},
 		processing: true,
 		serverSide: true,
+		searching: false,
 		serverMethod: "POST",
 		columns: [
 			{
@@ -231,8 +275,17 @@ function load_produk() {
 
 function filter_data() {
 	var text = $("#filter_text").val();
-	var jual = $("#filter_jual").val();
-	var rak = $("#rak").val();
+	var jual = $("#filter_status_jual").val();
+	var rak = $("#filter_rak").val();
+	$("#tbl_produk").DataTable().destroy();
+	load_produk(text, jual, rak);
+}
+
+function clear_filter() {
+	$("#tbl_produk").DataTable().destroy();
+	load_produk((text = ""), (jual = "pil"), (rak = "pil"));
+	$("#filter_text").val("");
+	load_select_filter("pil", "pil");
 }
 
 $("#add_pelanggan").submit(function (e) {
@@ -331,6 +384,34 @@ function hapus(id, supplier, ket) {
 		}
 	});
 }
+
+function get_ksu() {
+	var jenis_produk = $("#jenis_produk").val();
+	var nama_produk = $("#nama_produk").val();
+	$.ajax({
+		type: "POST",
+		url: URL + "produk/get_kode_ksu",
+		data: { jenis_produk: jenis_produk, nama_produk: nama_produk },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == "1") {
+				$("#sku_kode_produk").val(res.result);
+			} else {
+				$("#sku_kode_produk").val(res.result);
+				Swal.fire({
+					icon: "error",
+					title: "Warning",
+					text: res.msg,
+				});
+			}
+		},
+	});
+}
+
+$("input[type=radio][name=jnp_options]").change(function () {
+	var val = this.value;
+	$("#jenis_produk").val(val);
+});
 
 $("#modal_input_pelanggan").on("hide.bs.modal", function () {
 	$("#mediumModalLabel").html("Add New Data");
