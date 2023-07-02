@@ -216,31 +216,56 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control">
                                             <div class="input-group-append">
-                                                <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                                <span class="input-group-text" id="satuan_harga_jual">/Satuan</span>
                                             </div>
                                         </div>
                                     </div>
+                                    <p class="text-danger"><b>#Informasi Harga Alternatif</b></p>
                                     <div class="form-group">
                                         <div class="row p-2">
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="fleksibel"
-                                                            value="fleksibel" autocomplete="off" checked>
+                                                        <input type="radio" name="harga_option" id="fleksibel" value="1"
+                                                            autocomplete="off" checked>
                                                         Fleksibel
+                                                        <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
+                                                            aria-controls="custom-tabs-one-home"
+                                                            aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="grosir"
-                                                            value="grosir" autocomplete="off"> Grosir
+                                                        <input type="radio" name="harga_option" id="grosir" value="2"
+                                                            autocomplete="off"> Grosir
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="member"
-                                                            value="member" autocomplete="off"> Membership
+                                                        <input type="radio" name="harga_option" id="member" value="3"
+                                                            autocomplete="off"> Membership
                                                     </label>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="from-group">
+                                        <input type="hidden" id="harga_option_param">
+                                        <input type="hidden" id="p_fleksibel">
+                                        <input type="hidden" id="p_grosir">
+                                        <input type="hidden" id="p_member">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div id="fleksibel_list"></div>
+                                                <div id="grosir_list"></div>
+                                                <div id="member_list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-block btn-danger" type="button"
+                                                onclick="loop_harga_al();">
+                                                Tambah Harga Alternatif
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -253,17 +278,37 @@
                                         <input type="number" id="jumlah_minimal" name="jumlah_minimal"
                                             class="form-control" placeholder="Inputkan Jumlah Utama" required>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="row p-2">
+                                            <div class="col-md-12">
+                                                <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+                                                    <label class="btn btn-danger active">
+                                                        <input type="radio" name="harga_option" id="fleksibel" value="y"
+                                                            autocomplete="off" checked>
+                                                        Dijual
+                                                        <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
+                                                            aria-controls="custom-tabs-one-home"
+                                                            aria-selected="true"></a>
+                                                    </label>
+                                                    <label class="btn btn-danger">
+                                                        <input type="radio" name="harga_option" id="grosir" value="n"
+                                                            autocomplete="off"> Tidak Dijual
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
 
                             </div>
                             <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
                             <div class="row">
-                                <div class="col-md-3"></div>
-                                <div class="col-md-4">
-                                    <button class="btn btn-block btn-info" type="submit">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-9">
+                                    <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
-                                        <span id="save-button-produk">Tambakan Produk</span>
+                                        <span id="save-button-produk">Simpan Produk</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>
                                     </button>
                                 </div>
