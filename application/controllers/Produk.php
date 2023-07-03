@@ -113,6 +113,12 @@ class Produk extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
+	public function get_satuan(){
+		$sql = $this->db->select('*')->from('tm_satuan')->where('id_satuan',$_POST['id_satuan'])->get()->row();
+		$data = "/ ".$sql->nama_satuan;
+		echo json_encode(array('msg'=>'Data find','res'=>$data));
+	}
+
 	public function get_data_master(){
 		$sql_jenis_produk = $this->db->select('id_jenis_produk,nama_jenis_produk')
 									 ->from('tm_jenis_produk')
@@ -234,6 +240,18 @@ class Produk extends CI_Controller {
 
 	}
 
+	public function update_produk($post_data,$id){
+		$data = $this->db->where('id_produk',$id)
+				 ->update('tx_produk', $post_data);
+		
+		if (!empty($insert_id)) {
+			return  $insert_id;
+		}else{
+			return false;
+		}
+
+	}
+	
 	public function save_produk(){
 		$insert_id ="";
 		$no = 0;
@@ -285,7 +303,7 @@ class Produk extends CI_Controller {
 				$sql = $this->db->insert('tx_produk_harga',
 											array(
 												'harga_jual' => $_POST['harga_jual'],
-												'id_jenis_harga' => $_POST['id_jenis_harga'],
+												'id_jenis_harga' => '5',
 												'insert_by'=>$user,
 												'insert_date'=>$time->jam
 											));
@@ -298,7 +316,7 @@ class Produk extends CI_Controller {
 				$jenis_harga = 1;
 				$arr_fix_flek =[];
 				$count_flek = 0;
-				foreach ($jumlah_produk as $key => $value) {
+				foreach ($harga_fleksibel as $key => $value) {
 					'"'.array_push($arr_fix_flek, '("'.$produk.'"',
 						'"'.$harga_fleksibel[$count_flek].'"',
 						'"'.$ket[$count_flek].'"',
@@ -312,7 +330,7 @@ class Produk extends CI_Controller {
 				$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
 							$data_fix_flek";
 							
-				$sql_flek = $this->db->query($str__flek_flek);
+				$sql_flek = $this->db->query($str_sql_flek);
 				if ($sql_flek) {
 					$no += 1;
 				}
@@ -323,7 +341,7 @@ class Produk extends CI_Controller {
 				$jenis_harga1 = 2;
 				$arr_fix_gros =[];
 				$count_gros = 0;
-				foreach ($jumlah_produk as $key => $value) {
+				foreach ($harga_grosir as $key => $value) {
 					'"'.array_push($arr_fix_gros, '("'.$produk.'"',
 						'"'.$harga_grosir[$count_gros].'"',
 						'"'.$jumlah_satuan[$count_gros].'"',
@@ -334,7 +352,7 @@ class Produk extends CI_Controller {
 					$count_gros++;
 				}
 				$data_fix_gros = implode(",",$arr_fix_gros);
-				$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+				$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_per_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
 							$data_fix_gros";
 							
 				$sql_gros = $this->db->query($str_sql_gros);
@@ -344,16 +362,17 @@ class Produk extends CI_Controller {
 
 			// Member
 				$harga_member = $_POST['harga_member'];
-				if($_POST['status_aktif']!=="y"){
-					$status_ak = "";
-				}else{
-					$status_ak = $_POST['status_aktif'];
-				}
-				$status_aktif = $status_ak;
+				// if($_POST['status_aktif']!=="y"){
+				// 	$status_ak = "n";
+				// }else{
+				// 	$status_ak = $_POST['status_aktif'];
+				// }
+				$status_aktif = $_POST['status_aktif'];
 				$jenis_harga2 = 3;
 				$arr_fix_mem =[];
 				$count_mem = 0;
-				foreach ($jumlah_produk as $key => $value) {
+				foreach ($harga_member as $key => $value) {
+					
 					'"'.array_push($arr_fix_mem, '("'.$produk.'"',
 						'"'.$harga_member[$count_mem].'"',
 						'"'.$status_aktif[$count_mem].'"',
@@ -364,7 +383,7 @@ class Produk extends CI_Controller {
 					$count_mem++;
 				}
 				$data_fix_mem = implode(",",$arr_fix_mem);
-				$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+				$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `aktif`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
 							$data_fix_mem";
 							
 				$sql_mem = $this->db->query($str_sql_mem);
@@ -376,52 +395,14 @@ class Produk extends CI_Controller {
 			echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));
 		}
 		
-	if($no > 1){
-		echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
-	}else{
-		echo json_encode(array('status'=>0,'msg'=>'Error Insert Data'));
-	}
-
-
-
-	}
-
-	public function save_produk_name(){
-		$data = $this->input->post();
-		$user = $this->session->userdata('id_user');
-		$time = date('Y-m-d H:m');
-		$param = 0;
-
-		
-		if($data['id_produk']==""){
-			$data['insert_by'] = $user;
-			$data['insert_date'] = $time;
-			$sql = $this->db->insert('tx_produk',$data);
-			if($sql){
-				$param += 1;
-			}
+		if($no > 1){
+			echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
 		}else{
-			$data['update_by'] = $user;
-			$data['update_date'] = $time;
-			$sql = $this->db->where('id_produk',$data)->update('tx_produk',$data);
-			if($sql){
-				$param += 1;
-			}
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Data'));
 		}
 
-		$id_param = $this->db->select('id_produk,s.nama_satuan')
-							 ->from('tx_produk as p')
-							 ->join('tm_satuan as s','p.satuan_utama = s.id_satuan','left')
-							 ->where('p.is_delete',0)
-							 ->where('p.insert_by',$user)
-							 ->order_by('p.id_produk',"desc")
-							 ->get();
-							 $param_id = $id_param->row();
-		if($param >= 1){
-			echo json_encode(array('status'=>1,'msg'=>'Success Save Data','param'=>$param_id));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Filed Save Data','param'=>null));
-		}
+
+
 	}
 
 	public function hapus_produk(){
@@ -442,49 +423,4 @@ class Produk extends CI_Controller {
 		}
 	}
 
-	public function save_satuan(){
-		$no = 0;
-		$user = $this->session->userdata('id_user');
-		$sql = "SELECT NOW() as jam";
-		$time = $this->db->query($sql)->row();
-		$id_satuan = $_POST['id_satuan'];
-		$jumlah_produk = $_POST['jumlah_produk'];
-		$jumlah_produk_p = $_POST['jumlah_produk_p'];
-		$data_in = $this->input->post();
-		$arr_fix =[];
-		$count = 0;
-		  foreach ($jumlah_produk as $key => $value) {
-			'"'.array_push($arr_fix, '("'.$_POST['id_produk'].'"',
-				'"'.$id_satuan[$count].'"',
-				'"'.$jumlah_produk[$count].'"',
-				'"'.$jumlah_produk_p[$count].'"',
-				'"'.$user.'"',
-				'"'.$time->jam.'")',
-			);
-			$count++;
-		 }
-		 
-		 $data_fix = implode(",",$arr_fix);
-		 
-		 $str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
-		 			$data_fix";
-					
-		 $sql = $this->db->query($str_sql);
-			if ($sql) {
-				$no++;
-			}
-		 	$data_param = $this->db->select('id_produk_detail')
-						->from('tx_produk_detail')
-						->where('id_produk',$_POST['id_produk'])
-						->get();
-			$param = $data_param->result();
-
-		 if($no > 0){
-			echo json_encode(array('status'=> 1,'msg'=>'Save Data Satuan Berhasil','param'=>$param));
-		 }else{
-			echo json_encode(array('status'=> 1,'msg'=>'Save Data Satuan Berhasil','param'=>0));
-		 }
-
-		
-	}
 }

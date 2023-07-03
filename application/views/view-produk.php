@@ -8,8 +8,8 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <button type="button" class="btn btn-danger btn-sm" style="align-items: right;" data-toggle="modal"
-                        data-target="#modal_input_pelanggan" data-backdrop="static" data-keyboard="false">
+                    <button type="button" class="btn btn-danger btn-sm" style="align-items: right;"
+                        onclick="add_data();">
                         <i class="fa fa-plus"></i> Add Data
                     </button>
                 </ol>
@@ -96,7 +96,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_input_pelanggan">
+<div class="modal fade" id="modal_input_produk">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
@@ -172,7 +172,7 @@
                                         <label>Satuan Utama :</label>
                                         <div class="col-md-11">
                                             <select name="satuan_utama" id="satuan_utama" class="form-control select2"
-                                                required>
+                                                onchange="get_satuan_utama()" required>
                                             </select>
                                             <h6>Pilih <b>Satuan Utama</b> terlebih dahulu sebelum menambahkan satuan
                                                 lainnya.</h6>

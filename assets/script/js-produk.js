@@ -292,24 +292,6 @@ function clear_filter() {
 	load_select_filter("pil", "pil");
 }
 
-function edit(
-	p_id_pelanggan,
-	p_kode_pelanggan,
-	p_nama_pelanggan,
-	p_alamat,
-	p_no_hp,
-	p_aktif
-) {
-	status_aktif(p_aktif);
-	$("#mediumModalLabel").html("Edit Supplier");
-	$("#id_pelanggan").val(p_id_pelanggan);
-	$("#kode_pelanggan").val(p_kode_pelanggan);
-	$("#alamat").val(p_alamat);
-	$("#no_hp").val(p_no_hp);
-	$("#nama_pelanggan").val(p_nama_pelanggan);
-	$("#modal_input_pelanggan").modal("show");
-}
-
 function hapus(id, supplier, ket) {
 	Swal.fire({
 		html:
@@ -371,6 +353,20 @@ function get_ksu() {
 					text: res.msg,
 				});
 			}
+		},
+	});
+}
+
+function get_satuan_utama() {
+	var id = $("#satuan_utama").val();
+	$.ajax({
+		type: "POST",
+		url: URL + "produk/get_satuan",
+		data: { id_satuan: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+			$("#satuan_harga_beli").html(res.res);
+			$("#satuan_harga_jual").html(res.res);
 		},
 	});
 }
@@ -478,7 +474,7 @@ function loop_grosir() {
 								<div class="input-group-prepend">
 									<span class="input-group-text">>=</span>
 								</div>
-								<input type="text" id="satuan_jumlah" class="form-control">
+								<input type="text" id="satuan_jumlah" name="satuan_jumlah" class="form-control">
 								<div class="input-group-append">
 									<span class="input-group-text">Satuan</span>
 								</div>
@@ -518,7 +514,7 @@ function loop_member() {
 							<div class="col-md-6">
 								<div class="custom-control custom-checkbox">
 									<input class="custom-control-input" type="checkbox"
-										id="member_aktif" value="y">
+										id="member_aktif" name="member_aktif" value="y">
 									<label for="member_aktif"
 										class="custom-control-label">Aktifkan</label>
 								</div>
@@ -687,7 +683,7 @@ function save_data_produk() {
 	});
 
 	// objeck harga
-	var harga_jual = $("harga_jual").val();
+	var harga_jual = $("#harga_jual").val();
 
 	// object fleksibel
 	var harga_fleksibel = [];
@@ -709,7 +705,7 @@ function save_data_produk() {
 		harga_grosir.push($(this).val());
 	});
 
-	$("input[name=jumlah_satuan]").each(function () {
+	$("input[name=satuan_jumlah]").each(function () {
 		jumlah_satuan.push($(this).val());
 	});
 
@@ -762,6 +758,7 @@ function save_data_produk() {
 				});
 				$("#tbl_produk").DataTable().destroy();
 				load_produk(text, jual, rak);
+				$("#modal_input_produk").modal("hide");
 			} else {
 				Swal.fire({
 					icon: "warning",
@@ -773,11 +770,22 @@ function save_data_produk() {
 	});
 }
 
-$("#modal_input_pelanggan").on("hide.bs.modal", function () {
+$("#modal_input_produk").on("hide.bs.modal", function () {
 	$("#mediumModalLabel").html("Add New Data");
-	$("#id_pelanggan").val("");
-	$("#kode_pelanggan").val("");
-	$("#alamat").val("");
-	$("#nama_pelanggan").val("");
-	status_aktif((id_status = "pil"));
+	$("#id_produk").val("");
+	$("#nama_produk").val("");
+	$("#produk_by").val("");
+	$("#sku_kode_produk").val("");
+	$("#barcode").val("");
+	$("#satuan_utama").val("");
+	$("#id_rak").val("");
+	$("#jumlah_minimal").val("");
+	$("input[type=radio][name=harga_option]").val("");
+	$("#harga_beli").val("");
+	$("#jenis_produk").val("");
+	load_select();
 });
+
+function add_data() {
+	$("#modal_input_produk").modal("show");
+}
