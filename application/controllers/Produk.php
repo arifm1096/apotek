@@ -228,7 +228,7 @@ class Produk extends CI_Controller {
 		}
 	}
 
-	public function insert_produk($post_data){
+	public function insert_produk($post_data){ 
 		$this->db->insert('tx_produk', $post_data);
 		$insert_id = $this->db->insert_id();
 		return  $insert_id;
@@ -253,7 +253,7 @@ class Produk extends CI_Controller {
 	}
 	
 	public function save_produk(){
-		$insert_id ="";
+		$id_produk ="";
 		$no = 0;
 		$user = $this->session->userdata('id_user');
 		$sql = "SELECT NOW() as jam";
@@ -302,6 +302,7 @@ class Produk extends CI_Controller {
 			// harga Utama
 				$sql = $this->db->insert('tx_produk_harga',
 											array(
+												'id_produk' => $produk,
 												'harga_jual' => $_POST['harga_jual'],
 												'id_jenis_harga' => '5',
 												'insert_by'=>$user,
@@ -400,9 +401,10 @@ class Produk extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error Insert Data'));
 		}
+	}
 
-
-
+	public function get_id_produk(){
+		$id_produk
 	}
 
 	public function hapus_produk(){
