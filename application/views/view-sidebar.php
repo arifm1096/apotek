@@ -39,7 +39,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
+                        <i class="fas fa-toolbox"></i></i>
                         <p>
                             Master
                             <i class="fas fa-angle-left right"></i>
@@ -53,9 +53,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_pelanggan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Memeber Ship</p>
+                                <p> Pelanggan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('master/data_satuan'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Satuan Barang</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('master/data_supplier'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Supplier</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -74,7 +86,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
+                        <i class="fas fa-archive "></i></i>
                         <p>
                             Persediaan
                             <i class="fas fa-angle-left right"></i>
@@ -82,7 +94,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('persediaan/'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Daftar produk</p>
                             </a>
@@ -90,7 +102,7 @@
                         <li class="nav-item">
                             <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> kartu stok per item produk</p>
+                                <p> Kartu Stok</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -121,7 +133,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
+                        <i class="fas fa-credit-card"></i></i>
                         <p>Pembelian
                             <i class="fas fa-angle-left right"></i>
                         </p>
@@ -149,7 +161,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
+                        <i class="fas fa-shopping-cart"></i></i>
                         <p>Penjualan
                             <i class="fas fa-angle-left right"></i>
                         </p>
@@ -177,7 +189,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
+                        <i class="fas fa-paper-plane"></i></i>
                         <p>
                             Konsiyasi
                             <i class="fas fa-angle-left right"></i>
@@ -198,31 +210,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
-                        <p>
-                            Data Produk
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Add Produk</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Produk</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item has-treeview">
+                <!-- <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>
                         <p>
@@ -257,7 +245,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-user"></i></i>

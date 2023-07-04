@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	status_aktif();
-	load_produk((text = ""), (jual = "pil"), (rak = "pil"));
+	load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
 	load_select();
 	load_select_filter();
 	$("#loading").hide();
@@ -210,10 +210,10 @@ function remove_satuan(row) {
 	$("#row_" + row + "").remove();
 }
 
-function load_produk(text, jual, rak) {
-	$("#tbl_produk").DataTable({
+function load_persediaan(text, jual, rak) {
+	$("#tbl_presediaan").DataTable({
 		ajax: {
-			url: URL + "produk/load_produk",
+			url: URL + "persediaan/load_persediaan",
 			type: "POST",
 			data: { text: text, status_jual: jual, id_rak: rak },
 		},
@@ -230,10 +230,22 @@ function load_produk(text, jual, rak) {
 			},
 			{ data: "nama_produk" },
 			{ data: "sku_kode_produk" },
-			{ data: "barcode" },
-			{ data: "produk_by" },
-			{ data: "nama_rak" },
-			{ data: "jumlah_minimal" },
+			{ data: "stok" },
+			{ data: "harga_beli" },
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					return "<table><tr><td>" + row.harga_jual + "</td></tr></table>";
+				},
+			},
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					return "<table><tr><td>" + row.marup + "</td></tr></table>";
+				},
+			},
 			{
 				data: null,
 				orderable: false,
@@ -249,28 +261,7 @@ function load_produk(text, jual, rak) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return (
-						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
-						row.id_produk +
-						"','" +
-						row.kode_produk +
-						"','" +
-						row.nama_produk +
-						"','" +
-						row.alamat +
-						"','" +
-						row.no_hp +
-						"','" +
-						row.aktif +
-						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
-						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_produk +
-						"','" +
-						row.nama_produk +
-						"','" +
-						row.kode_produk +
-						'\')"><i class="fa fa-trash"></i></button>'
-					);
+					return '<button type="button" class="btn btn-outline-success btn-sm">Kartu Stok</button>';
 				},
 			},
 		],
@@ -281,13 +272,13 @@ function filter_data() {
 	var text = $("#filter_text").val();
 	var jual = $("#filter_status_jual").val();
 	var rak = $("#filter_rak").val();
-	$("#tbl_produk").DataTable().destroy();
-	load_produk(text, jual, rak);
+	$("#tbl_persediaan").DataTable().destroy();
+	load_persediaan(text, jual, rak);
 }
 
 function clear_filter() {
-	$("#tbl_produk").DataTable().destroy();
-	load_produk((text = ""), (jual = "pil"), (rak = "pil"));
+	$("#tbl_persediaan").DataTable().destroy();
+	load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
 	$("#filter_text").val("");
 	load_select_filter("pil", "pil");
 }

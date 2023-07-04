@@ -71,16 +71,16 @@
 
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="tbl_produk" class="table table-bordered table-striped">
+                <table id="tbl_presediaan" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
                             <th>Nama Produk</th>
-                            <th>Kode Produk</th>
-                            <th>Barcode</th>
-                            <th>Nama Pabrik</th>
-                            <th>Rak</th>
-                            <th>Stok Minimal</th>
+                            <th>SKU </th>
+                            <th>Stok</th>
+                            <th>Harga Pokok (Rp.)</th>
+                            <th>Harga Jual (Rp.)</th>
+                            <th>Markup (Rp.)</th>
                             <th>Status</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>

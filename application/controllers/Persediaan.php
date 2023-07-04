@@ -34,7 +34,7 @@ class Persediaan extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
-	public function load_produk(){
+	public function load_persediaan(){
 		// Read Value 
 		$draw = $_POST['draw'];
 		$row = $_POST['start'];
@@ -87,15 +87,24 @@ class Persediaan extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,p.status_jual,
-		r.nama_rak,s.nama_satuan
-		FROM tx_produk as p
+		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
+		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
+		p.harga_beli,
+		REPLACE(GROUP_CONCAT(phg.harga_jual),',','<br>') as harga_jual,
+		REPLACE(GROUP_CONCAT(phg.marup),',','<br>') as marup
+		FROM tx_produk_stok as ps
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
 		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+		LEFT JOIN (SELECT p.id_produk,ph.id_harga,p.harga_beli,ph.harga_jual,(ph.harga_jual - p.harga_beli) as marup
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk) as phg ON p.id_produk = phg.id_produk
 		WHERE $where
+		GROUP BY p.id_produk
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
-		// echo $this->db->last_query();
+		
+		
 	
 		// Response
 		$output = array(
