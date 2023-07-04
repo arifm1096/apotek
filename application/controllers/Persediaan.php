@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Produk extends CI_Controller {
+class Persediaan extends CI_Controller {
 
 	/**
 	 * Index Page for this controller.
@@ -29,8 +29,8 @@ class Produk extends CI_Controller {
 	}
 
 	public function index(){
-		$var['content'] = 'view-produk';
-		$var['js'] = 'js-produk';
+		$var['content'] = 'view-persediaan';
+		$var['js'] = 'js-persediaan';
 		$this->load->view('view-index',$var);
 	}
 
