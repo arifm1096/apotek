@@ -12,7 +12,12 @@
                         onclick="add_data();">
                         <i class="fa fa-plus"></i> Add Data
                     </button>
+                    <button type="button" class="btn btn-success btn-sm" style="align-items: right;"
+                        onclick="add_data();">
+                        <i class="fa fa-file-excel"></i> Export
+                    </button>
                 </ol>
+
             </div>
         </div>
         <!-- head end -->
@@ -70,7 +75,8 @@
 
 
             <!-- /.card-header -->
-            <div class="card-body">
+
+            <div class="card-body table-responsive">
                 <table id="tbl_presediaan" class="table table-bordered table-striped">
                     <thead>
                         <tr>
@@ -90,10 +96,12 @@
 
                 </table>
             </div>
+
             <!-- /.card-body -->
         </div>
     </div><!-- /.container-fluid -->
 </section>
+
 
 <!-- modal add start -->
 <div class="modal fade" id="modal_input_produk">
@@ -309,6 +317,86 @@
                                     <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
                                         <span id="save-button-produk">Simpan Produk</span>
+                                        <span id="send-button-produk" style="display:none;">Sending…</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.login-card-body -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- modal add end -->
+
+<!-- modal add start -->
+<div class="modal fade" id="modal_stok_produk">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Tambah Stok</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Nama Produk</h5>
+                        <h6><b>Nama Gudang | Satuan Utama</b></h6>
+                        <hr>
+                        <form id="stok_produk">
+
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Kuantitas</label>
+                                        <input type="hidden" id="id_produk">
+                                        <input type="text" id="jumlah_stok" name="jumlah_stok" class="form-control"
+                                            placeholder="Inputkan Nama Produk" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tgl. Expired</label>
+                                        <input type="text" id="exp_date" name="exp_date" class="form-control"
+                                            placeholder="Inputkan Nama Produk" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Satuan</label>
+                                        <select name="id_satuan" id="id_satuan" class="form-control select2" required>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Supplier</label>
+                                        <select name="id_supplier" id="id_supplier" class="form-control select2"
+                                            required>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Beli Per Satuan</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
+                            <div class="row">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-9">
+                                    <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
+                                        <i class="fa fa-save fa-lg"></i> &nbsp;
+                                        <span id="save-button-produk">Simpan Data</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>
                                     </button>
                                 </div>

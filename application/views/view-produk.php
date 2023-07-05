@@ -12,6 +12,10 @@
                         onclick="add_data();">
                         <i class="fa fa-plus"></i> Add Data
                     </button>
+                    <button type="button" class="btn btn-success btn-sm" style="align-items: right;"
+                        onclick="add_data();">
+                        <i class="fa fa-excel"></i> Export
+                    </button>
                 </ol>
             </div>
         </div>

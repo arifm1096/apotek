@@ -92,8 +92,8 @@ class Persediaan extends CI_Controller {
 		p.harga_beli,
 		REPLACE(GROUP_CONCAT(phg.harga_jual),',','<br>') as harga_jual,
 		REPLACE(GROUP_CONCAT(phg.marup),',','<br>') as marup
-		FROM tx_produk_stok as ps
-		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
 		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
 		LEFT JOIN (SELECT p.id_produk,ph.id_harga,p.harga_beli,ph.harga_jual,(ph.harga_jual - p.harga_beli) as marup

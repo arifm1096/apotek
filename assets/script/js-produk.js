@@ -238,7 +238,7 @@ function load_produk(text, jual, rak) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					if (row.status_jual == "y") {
+					if (row.status_jual == "1") {
 						return '<span class="right badge badge-success"> Dijual</span>';
 					} else {
 						return '<span class="right badge badge-danger">Tidak Dijual</span>';

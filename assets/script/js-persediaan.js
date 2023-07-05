@@ -223,7 +223,7 @@ function load_persediaan(text, jual, rak) {
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_supplier",
+				data: "id_produk",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
@@ -236,21 +236,21 @@ function load_persediaan(text, jual, rak) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return "<table><tr><td>" + row.harga_jual + "</td></tr></table>";
+					return "<div>" + row.harga_jual + "</div>";
 				},
 			},
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return "<table><tr><td>" + row.marup + "</td></tr></table>";
+					return "<div>" + row.marup + "</div>";
 				},
 			},
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					if (row.status_jual == "y") {
+					if (row.status_jual == "1") {
 						return '<span class="right badge badge-success"> Dijual</span>';
 					} else {
 						return '<span class="right badge badge-danger">Tidak Dijual</span>';
@@ -261,7 +261,39 @@ function load_persediaan(text, jual, rak) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return '<button type="button" class="btn btn-outline-success btn-sm">Kartu Stok</button>';
+					return (
+						`<div class="row">
+								<div class="col-md-6">
+									<button type="button" class="btn btn-outline-success btn-sm">Kartu Stok</button>
+								</div>
+								<div class="col-md-6">
+									<ul class="navbar-nav ml-3">
+										<li class="nav-item dropdown">
+											<a class="nav-link" data-toggle="dropdown" href="#">
+												<i class="fa fa-ellipsis-v"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+												<div class="dropdown-divider"></div>
+												<button type="button" class="dropdown-item" onclick="stok_produk(` +
+						row.id_produk +
+						`)">
+													<i class="fa fa-plus mr-2"></i> Tambah Stok
+												</button>
+												<div class="dropdown-divider"></div>
+													<button type="button" class="dropdown-item" onclick="edit_produk(` +
+						row.id_produk +
+						`)">
+														<i class="fa fa-edit mr-2"></i> Edit
+													</button>
+												<div class="dropdown-divider"></div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+							
+							`
+					);
 				},
 			},
 		],
@@ -272,15 +304,19 @@ function filter_data() {
 	var text = $("#filter_text").val();
 	var jual = $("#filter_status_jual").val();
 	var rak = $("#filter_rak").val();
-	$("#tbl_persediaan").DataTable().destroy();
+	$("#tbl_presediaan").DataTable().destroy();
 	load_persediaan(text, jual, rak);
 }
 
 function clear_filter() {
-	$("#tbl_persediaan").DataTable().destroy();
+	$("#tbl_presediaan").DataTable().destroy();
 	load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
 	$("#filter_text").val("");
 	load_select_filter("pil", "pil");
+}
+
+function stok_produk(id) {
+	$("#modal_stok_produk").modal("show");
 }
 
 function hapus(id, supplier, ket) {
