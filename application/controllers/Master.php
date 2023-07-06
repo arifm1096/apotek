@@ -13,6 +13,59 @@ class Master extends CI_Controller{
 		}
     }
 
+	public function get_filter_stok(){
+		$sql = $this->db->select('*')
+						->from('tm_bulan')
+						->get();
+		$data = $sql->result();
+
+		$sql_gud = $this->db->select('*')
+						->from('tm_gudang')
+						->where('is_delete',0)
+						->where('aktif','y')
+						->get();
+		$data_gud = $sql_gud->result();
+
+		if(!empty($sql)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data,'gudang'=>$data_gud));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','result'=>null));
+		}
+	}
+
+	public function get_filter_defecta(){
+		
+		$kondisi = array(
+					array('id'=>1,'nama_kondisi'=>'Stok Dibawah Minimal'),
+					array('id'=>2,'nama_kondisi'=>'Stok Kosong')
+				);
+
+		$sql_gud = $this->db->select('*')
+						->from('tm_gudang')
+						->where('is_delete',0)
+						->where('aktif','y')
+						->get();
+		$data_gud = $sql_gud->result();
+
+		if(!empty($sql_gud)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','kondisi'=>$kondisi,'gudang'=>$data_gud));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','kondisi'=>null,'gudang'=>null));
+		}
+	}
+
+	public function get_filter_kadaluarsa(){
+		$sql_gud = $this->db->select('*')
+						->from('tm_kadaluarsa')
+						->get();
+		$kondisi = $sql_gud->result();
+
+		if(!empty($sql_gud)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','kondisi'=>$kondisi));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','kondisi'=>null));
+		}
+	}
 
 // Star Hak Akses
 	public function data_supplier(){

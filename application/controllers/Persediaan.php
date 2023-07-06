@@ -304,9 +304,29 @@ class Persediaan extends CI_Controller {
 
 	public function kartu_stok(){
 		$id = $this->uri->segment(3);
-		$var['content'] = 'view-produk-add';
-		$var['js'] = 'js-produk-add';
+		$var['content'] = 'view-kartu-stok';
+		$var['js'] = 'js-kartu_stok';
 		$this->load->view('view-index',$var);
 	}
+
+	public function defecta(){
+		$var['content'] = 'view-defecta';
+		$var['js'] = 'js-defecta';
+		$this->load->view('view-index',$var);
+	}
+
+	public function stok_kadaluarsa(){
+		$var['content'] = 'view-stok-kadaluarsa';
+		$var['js'] = 'js-stok-kadaluarsa';
+		$this->load->view('view-index',$var);
+	}
+
+	public function stok_opname(){
+		$var['content'] = 'view-opname';
+		$var['js'] = 'js-opname';
+		$this->load->view('view-index',$var);
+	}
+
+	
 
 }
