@@ -30,6 +30,7 @@ class Login extends CI_Controller
                 'id_hak_akses' => $check_login['id_hak_akses'],
                 'username' => $check_login['username'],
                 'aktif' => $check_login['aktif'],
+                'gudang' => $check_login['gudang'],
                 'status' => "login"
                 );
 

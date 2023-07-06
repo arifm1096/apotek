@@ -89,7 +89,7 @@ class Persediaan extends CI_Controller {
 		// Fetch Records
 		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
 		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
-		p.harga_beli,
+		p.harga_beli,ps.id_stok,
 		REPLACE(GROUP_CONCAT(phg.harga_jual),',','<br>') as harga_jual,
 		REPLACE(GROUP_CONCAT(phg.marup),',','<br>') as marup
 		FROM tx_produk as p
@@ -116,12 +116,6 @@ class Persediaan extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	public function tambah_data(){
-		$var['content'] = 'view-produk-add';
-		$var['js'] = 'js-produk-add';
-		$this->load->view('view-index',$var);
-	}
-
 	public function get_satuan(){
 		$sql = $this->db->select('*')->from('tm_satuan')->where('id_satuan',$_POST['id_satuan'])->get()->row();
 		$data = "/ ".$sql->nama_satuan;
@@ -129,11 +123,7 @@ class Persediaan extends CI_Controller {
 	}
 
 	public function get_data_master(){
-		$sql_jenis_produk = $this->db->select('id_jenis_produk,nama_jenis_produk')
-									 ->from('tm_jenis_produk')
-									 ->where('is_delete',0)
-									 ->where('aktif','y')
-									 ->get();
+		
 		$sql_rak = $this->db->select('id_rak,nama_rak')
 									 ->from('tm_rak')
 									 ->where('is_delete',0)
@@ -144,11 +134,10 @@ class Persediaan extends CI_Controller {
 									 ->where('is_delete',0)
 									 ->where('aktif','y')
 									 ->get();
-		if(!empty($sql_jenis_produk) || !empty($sql_rak) || !empty($sql_satuan)){
+		if(!empty($sql_rak) || !empty($sql_satuan)){
 			echo json_encode(array(
 									'status'=>1,
 									'msg'=>'data is find',
-									'jenis_produk'=>$sql_jenis_produk->result(),
 									'rak'=>$sql_rak->result(),
 									'satuan'=>$sql_satuan->result()
 								)
@@ -156,8 +145,7 @@ class Persediaan extends CI_Controller {
 		}else{
 			echo json_encode(array(
 									'status'=>0,
-									'msg'=>'data not found',
-									'jeins_produk'=>null,
+									'msg'=>'data not found',                         
 									'rak'=>null,
 									'satuan'=>null
 								)
@@ -165,273 +153,160 @@ class Persediaan extends CI_Controller {
 		}
 	}
 
-	public function get_data_master_filter(){
-		$sql_rak = $this->db->select('id_rak,nama_rak')
-									 ->from('tm_rak')
+	public function get_data_master_persediaan(){
+		$sql_supplier = $this->db->select('id_supplier,nama_supplier')
+									 ->from('tm_supplier')
 									 ->where('is_delete',0)
 									 ->where('aktif','y')
 									 ->get();
-		$sql_jual = $this->db->select('id_jual,nama_jual')
-									 ->from('tm_jual')
-									 ->where('is_delete',0)
-									 ->where('aktif','y')
-									 ->get();
-		
-		if(!empty($sql_jenis_produk) || !empty($sql_rak) || !empty($sql_satuan)){
-			echo json_encode(array(
-									'status'=>1,
-									'msg'=>'data is find',
-									'jual'=>$sql_jual->result(),
-									'rak'=>$sql_rak->result()
-								)
-							);
-		}else{
-			echo json_encode(array(
-									'status'=>0,
-									'msg'=>'data not found',
-									'jual'=>null,
-									'rak'=>null
-								)
-							);
-		}
-	}
-
-	public function get_master_satuan(){
 		$sql_satuan = $this->db->select('id_satuan,nama_satuan')
 									 ->from('tm_satuan')
 									 ->where('is_delete',0)
 									 ->where('aktif','y')
 									 ->get();
-		if( !empty($sql_satuan)){
+		
+		if(!empty($sql_supplier) || !empty($sql_satuan)){
 			echo json_encode(array(
 									'status'=>1,
 									'msg'=>'data is find',
-									'satuan'=>$sql_satuan->result()
+									'satuan'=>$sql_satuan->result(),
+									'supplier'=>$sql_supplier->result()
 								)
 							);
 		}else{
 			echo json_encode(array(
 									'status'=>0,
 									'msg'=>'data not found',
-									'satuan'=>null
+									'satuan'=>null,
+									'supplier'=>null
 								)
 							);
 		}
 	}
 
-	function get_kode_ksu(){
-		$str_name = $_POST['jenis_produk']." ".$_POST['nama_produk']  ;
-		$arr = (explode(" ",$str_name));
-		$str_ksu ="";
-		$arrlength = count($arr);
-	
-		for($x = 0; $x < $arrlength; $x++) {
-			$str_lop = strtoupper($arr[$x]);
-			$str_ksu .=substr($str_lop,0,2);
-		}
-		$cek = $this->db->get_where('tx_produk',array('sku_kode_produk',$str_ksu));
-		if($cek->num_rows()>0){
-			echo json_encode(array('status'=>0,'msg'=>'Tambahakan Karater Dibelakang Untuk Pembeda','result' => $str_ksu));
+	public function get_produk(){
+		$id = $this->input->post('id_produk');
+		$sql_data = "SELECT p.id_produk,p.nama_produk,p.satuan_utama,s.nama_satuan
+						FROM `tx_produk` as p
+						LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
+						WHERE p.id_produk = $id ";
+		$data = $this->db->query($sql_data);
+
+		$id_gudang = $this->session->userdata('gudang');
+		// var_dump($id_gudang);
+		$data_gudang = $this->db->select('nama_gudang')
+							->from('tm_gudang')
+							->where('id_gudang',$id_gudang)
+							->get();
+
+		if(!empty($data) || $data_gudang){
+			echo json_encode(array('status'=>1,
+								   'msg'=>'data is find',
+								   'produk'=>$data->row(),
+								   'gudang'=>$data_gudang->row(),
+								));
 		}else{
-			echo json_encode(array('status'=>1,'msg'=>'Data find','result'=>$str_ksu));
+			echo json_encode(array('status'=>0,
+								   'msg'=>'data not find',
+								   'produk'=>null,
+								   'gudang'=>null,
+								));
 		}
 	}
 
-	public function insert_produk($post_data){ 
-		$this->db->insert('tx_produk', $post_data);
-		$insert_id = $this->db->insert_id();
-		return  $insert_id;
-		if (!empty($insert_id)) {
-			return  $insert_id;
-		}else{
-			return false;
-		}
-
-	}
-
-	public function update_produk($post_data,$id){
-		$data = $this->db->where('id_produk',$id)
-				 ->update('tx_produk', $post_data);
-		
-		if (!empty($insert_id)) {
-			return  $insert_id;
-		}else{
-			return false;
-		}
-
-	}
-	
-	public function save_produk(){
-		$id_produk ="";
-		$no = 0;
+	public function save_stok_produk(){
+		$ext =0;
+		$msg ="";
 		$user = $this->session->userdata('id_user');
-		$sql = "SELECT NOW() as jam";
-		$time = $this->db->query($sql)->row();
-		$data_produk = array(
-			'nama_produk' => $_POST['nama_produk'],
-			'sku_kode_produk' => $_POST['sku_kode_produk'],
-			'barcode'=> $_POST['barcode'],
-			'satuan_utama' => $_POST['satuan_utama'],
-			'jumlah_minimal'=> $_POST['jumlah_minimal'],
-			'produk_by' =>$_POST['produk_by'],
-			'harga_beli'=>$_POST['harga_beli'],
-			'status_jual'=>$_POST['status_jual'],
-			'id_rak'=>$_POST['id_rak'],
-			'id_jenis_produk'=>$_POST['id_jenis_produk'],
+		$time = "NOW()";
+		$jumlah_stok =0;
+		$id_produk =  $_POST['id_produk'];
+		$id_satuan =  $_POST['id_satuan'];
+		$tgl_exp = date('Y-m-d',strtotime($_POST['exp_date']));
+		$cek = $this ->db->get_where('tx_produk_detail',array('id_satuan'=>$_POST['id_satuan']));
+		if($cek->num_rows()>0){
+			$sql_jum = "SELECT id_produk,id_satuan,jumlah_produk_p FROM `tx_produk_detail` 
+							WHERE id_produk = $id_produk
+							AND id_satuan = $id_satuan";
+			$data_jum = $this->db->query($sql_jum)->row();
+			$sql_jum = "SELECT SUM(jumlah_stok) as stok FROM `tx_produk_stok` WHERE id_produk = $id_produk";
+			$jum = $this->db->query($sql_jum)->row();
+			$jumlah_stok += (int)$_POST['jumlah'] * (int)$data_jum -> jumlah_produk_p + (int)$jum->stok;
+			$ext +=1;
+		}else{
+			$msg .="Data Satuan Tidak Di temukan || Error Code : 9083";
+		}
+
+		$data = array(
+			'id_produk' => $_POST['id_produk'],
+			'id_gudang' => $this->session->userdata('gudang'),
+			'jumlah_stok' => $jumlah_stok,
+			'exp_date' => $tgl_exp,
+			'id_supplier'=> $_POST['supplier'],
+			'insert_by' => $user,
+			'insert_date' => $time
 		);
 
-		$produk = $this->insert_produk($data_produk);
-		if(!empty($produk)){
-			
-			$id_satuan = $_POST['satuan'];
-			$jumlah_produk = $_POST['jumlah_produk'];
-			$jumlah_produk_p = $_POST['jumlah_produk_p'];
-			$arr_fix =[];
-			$count = 0;
-			foreach ($jumlah_produk as $key => $value) {
-				'"'.array_push($arr_fix, '("'.$produk.'"',
-					'"'.$id_satuan[$count].'"',
-					'"'.$jumlah_produk[$count].'"',
-					'"'.$jumlah_produk_p[$count].'"',
-					'"'.$user.'"',
-					'"'.$time->jam.'")',
-				);
-				$count++;
-			}
-			$data_fix = implode(",",$arr_fix);
-			$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
-						$data_fix";
-						
-			$sql = $this->db->query($str_sql);
-			if ($sql) {
-				$no += 1;
-			}
+		$data_his = array(
+			'id_produk' => $_POST['id_produk'],
+			'id_gudang' => $this->session->userdata('gudang'),
+			'jumlah_stok' => $jumlah_stok,
+			'exp_date' => $tgl_exp,
+			'id_supplier'=> $_POST['supplier'],
+			'id_satuan' => $_POST['id_satuan'],
+			'harga_beli' => $_POST['harga_beli'],
+			'id_status_stok' => "1",
+			'insert_by' => $user,
+			'insert_date' => $time
+		);
 
-		// harga Produk
-			// harga Utama
-				$sql = $this->db->insert('tx_produk_harga',
-											array(
-												'id_produk' => $produk,
-												'harga_jual' => $_POST['harga_jual'],
-												'id_jenis_harga' => '5',
-												'insert_by'=>$user,
-												'insert_date'=>$time->jam
-											));
-				if($sql){
-					$no += 1;
+		if($ext > 0){
+			if($_POST['id_stok'] == "null"){
+				$sql_inStok = $this->db->insert('tx_produk_stok',$data);
+				if($sql_inStok){
+					$sql_hisStok = $this->db->insert('tx_produk_stok_his',$data_his);
+					if($sql_hisStok){
+						$ext += 1;
+						$msg .= "Insert Data Success";
+					}else{
+						$msg .= "Gagal Insert Data His || Error Code : 3412";
+					}
+				}else{
+					$msg .= "Gagal Insert Data Stok || Error Code : 3413";
 				}
-			// fleksibel
-				$harga_fleksibel = $_POST['harga_fleksibel'];
-				$ket = $_POST['ket'];
-				$jenis_harga = 1;
-				$arr_fix_flek =[];
-				$count_flek = 0;
-				foreach ($harga_fleksibel as $key => $value) {
-					'"'.array_push($arr_fix_flek, '("'.$produk.'"',
-						'"'.$harga_fleksibel[$count_flek].'"',
-						'"'.$ket[$count_flek].'"',
-						'"'.$jenis_harga.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_flek++;
-				}
-				$data_fix_flek = implode(",",$arr_fix_flek);
-				$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_flek";
-							
-				$sql_flek = $this->db->query($str_sql_flek);
-				if ($sql_flek) {
-					$no += 1;
-				}
-
-			// grosir
-				$harga_grosir = $_POST['harga_grosir'];
-				$jumlah_satuan = $_POST['jumlah_satuan'];
-				$jenis_harga1 = 2;
-				$arr_fix_gros =[];
-				$count_gros = 0;
-				foreach ($harga_grosir as $key => $value) {
-					'"'.array_push($arr_fix_gros, '("'.$produk.'"',
-						'"'.$harga_grosir[$count_gros].'"',
-						'"'.$jumlah_satuan[$count_gros].'"',
-						'"'.$jenis_harga1.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_gros++;
-				}
-				$data_fix_gros = implode(",",$arr_fix_gros);
-				$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_per_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_gros";
-							
-				$sql_gros = $this->db->query($str_sql_gros);
-				if ($sql_gros) {
-					$no += 1;
-				}
-
-			// Member
-				$harga_member = $_POST['harga_member'];
-				// if($_POST['status_aktif']!=="y"){
-				// 	$status_ak = "n";
-				// }else{
-				// 	$status_ak = $_POST['status_aktif'];
-				// }
-				$status_aktif = $_POST['status_aktif'];
-				$jenis_harga2 = 3;
-				$arr_fix_mem =[];
-				$count_mem = 0;
-				foreach ($harga_member as $key => $value) {
-					
-					'"'.array_push($arr_fix_mem, '("'.$produk.'"',
-						'"'.$harga_member[$count_mem].'"',
-						'"'.$status_aktif[$count_mem].'"',
-						'"'.$jenis_harga2.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_mem++;
-				}
-				$data_fix_mem = implode(",",$arr_fix_mem);
-				$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `aktif`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_mem";
-							
-				$sql_mem = $this->db->query($str_sql_mem);
-				if ($sql_mem) {
-					$no += 1;
-				}
-
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));
-		}
-		
-		if($no > 1){
-			echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error Insert Data'));
-		}
-	}
-
-	public function get_id_produk(){
-		// $id_produk
-	}
-
-	public function hapus_produk(){
-		$data = $this->input->post();
-		$user = $this->session->userdata('id_user');
-		$time = date('Y-m-d H:m');
-		$data['is_delete'] = 1;
-
-		if(!empty($data['id_produk'])){
-			$sql = $this->db->where('id_produk',$data['id_produk'])->update('tx_produk',$data);
-			if($sql){
-				echo json_encode(array('status'=>1,'msg'=>'Delete Data Success'));
+				
 			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Delete Data Filed'));
+				$sql_inStok = $this->db->where('id_stok',$_POST['id_stok'])->update('tx_produk_stok',$data);
+				if($sql_inStok){
+					$sql_hisStok = $this->db->insert('tx_produk_stok_his',$data_his);
+					if($sql_hisStok){
+						$ext += 1;
+						$msg .= "Insert Data Success";
+					}else{
+						$msg .= "Gagal Insert Data His || Error Code : 3412";
+					}
+				}else{
+					$msg .= "Gagal Insert Data Stok || Error Code : 3413";
+				}
+
 			}
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error Data | Code 2312'));
 		}
+
+
+		if($ext > 0){
+			echo json_encode(array('status'=>1,'msg'=>$msg));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>$msg));
+		}
+
+		
+	}
+
+	public function kartu_stok(){
+		$id = $this->uri->segment(3);
+		$var['content'] = 'view-produk-add';
+		$var['js'] = 'js-produk-add';
+		$this->load->view('view-index',$var);
 	}
 
 }

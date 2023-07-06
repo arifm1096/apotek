@@ -347,8 +347,25 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Nama Produk</h5>
-                        <h6><b>Nama Gudang | Satuan Utama</b></h6>
+                        <h5>
+                            <div id="nama_produk_stok"></div>
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><b>
+                                        Gudang : <div id="nama_gudang_stok"></div>
+                                    </b></h6>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>
+                                    <b>
+                                        Satuan Utama :<div id="satuan_stok"></div>
+                                    </b>
+                                </h6>
+                            </div>
+                        </div>
+
+
                         <hr>
                         <form id="stok_produk">
 
@@ -357,24 +374,26 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Kuantitas</label>
-                                        <input type="hidden" id="id_produk">
+                                        <input type="hidden" id="id_produk_stok">
+                                        <input type="hidden" id="id_stok">
                                         <input type="text" id="jumlah_stok" name="jumlah_stok" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Tgl. Expired</label>
-                                        <input type="text" id="exp_date" name="exp_date" class="form-control"
+                                        <input type="text" id="exp_date" name="exp_date" class="form-control tgl_piker"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Satuan</label>
-                                        <select name="id_satuan" id="id_satuan" class="form-control select2" required>
+                                        <select name="id_satuan_stok" id="id_satuan_stok" class="form-control select2"
+                                            required>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Supplier</label>
-                                        <select name="id_supplier" id="id_supplier" class="form-control select2"
-                                            required>
+                                        <select name="id_supplier_stok" id="id_supplier_stok"
+                                            class="form-control select2" required>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -384,7 +403,6 @@
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
                                             <input type="text" name="harga_beli" id="harga_beli" class="form-control">
-
                                         </div>
                                     </div>
                                 </div>
@@ -394,7 +412,7 @@
                             <div class="row">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
+                                    <button class="btn btn-block btn-info" type="button" onclick="save_stok_produk()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
                                         <span id="save-button-produk">Simpan Data</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>

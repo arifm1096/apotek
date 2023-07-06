@@ -4,7 +4,7 @@ class Model_login extends CI_Model{
     
     function check_login($username, $password){
         $filed = "count(a.username) as total, h.nama as hak_akses,h.id_hak_akses,
-        a.username as username, a.id_user, a.aktif ";
+        a.username as username, a.id_user, a.aktif, a.gudang ";
 
         $data=	$this->db
                 ->select($filed)
