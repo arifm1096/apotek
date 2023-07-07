@@ -100,25 +100,25 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('persediaan/kartu_stok'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Kartu Stok</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('persediaan/defecta'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Defecta</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('persediaan/stok_kadaluarsa'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Stok Kadaluarsa/ED</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('persediaan/stok_opname'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Stok Opname</p>
                             </a>
