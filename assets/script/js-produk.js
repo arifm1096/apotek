@@ -319,8 +319,8 @@ function hapus(id, supplier, ket) {
 						//success show success modal
 
 						Swal.fire("Terhapus!", "Data Telah Dihapus", "success");
-						$("#tbl_pelanggan").DataTable().clear().destroy();
-						load_pelanggan();
+						$("#tbl_produk").DataTable().destroy();
+						load_produk(text, jual, rak);
 					} else {
 						Swal.fire({
 							icon: "error",

@@ -807,7 +807,9 @@ function load_persediaan(text, jual, rak) {
 					return (
 						`<div class="row">
 								<div class="col-md-6">
-									<button type="button" class="btn btn-outline-success btn-sm">Kartu Stok</button>
+									<button type="button" class="btn btn-outline-success btn-sm" onclick ="kartu_stok('` +
+						row.id_produk +
+						`')">Kartu Stok</button>
 								</div>
 								<div class="col-md-6">
 									<ul class="navbar-nav ml-3">
@@ -929,4 +931,8 @@ function save_stok_produk() {
 			}
 		},
 	});
+}
+
+function kartu_stok(id_produk) {
+	window.open(URL + "persediaan/kartu_stok/" + id_produk, "_blank");
 }

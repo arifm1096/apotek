@@ -100,12 +100,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('persediaan/kartu_stok'); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Kartu Stok</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="<?php echo base_url('persediaan/defecta'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Defecta</p>

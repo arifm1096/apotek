@@ -218,23 +218,27 @@ class Persediaan extends CI_Controller {
 		$ext =0;
 		$msg ="";
 		$user = $this->session->userdata('id_user');
-		$time = "NOW()";
+		$time = date('Y-m-d H:i;s');
 		$jumlah_stok =0;
 		$id_produk =  $_POST['id_produk'];
 		$id_satuan =  $_POST['id_satuan'];
 		$tgl_exp = date('Y-m-d',strtotime($_POST['exp_date']));
-		$cek = $this ->db->get_where('tx_produk_detail',array('id_satuan'=>$_POST['id_satuan']));
+		$sql_jum = "SELECT SUM(jumlah_stok) as stok FROM `tx_produk_stok` WHERE id_produk = $id_produk";
+		$jum = $this->db->query($sql_jum)->row();
+		$cek = $this->db->get_where('tx_produk_detail',array('id_satuan'=>$_POST['id_satuan'],'id_produk'=>$id_produk));
+
 		if($cek->num_rows()>0){
-			$sql_jum = "SELECT id_produk,id_satuan,jumlah_produk_p FROM `tx_produk_detail` 
+			$sql_jum = "SELECT id_produk,id_satuan,jumlah_produk_p 
+							FROM `tx_produk_detail` 
 							WHERE id_produk = $id_produk
 							AND id_satuan = $id_satuan";
 			$data_jum = $this->db->query($sql_jum)->row();
-			$sql_jum = "SELECT SUM(jumlah_stok) as stok FROM `tx_produk_stok` WHERE id_produk = $id_produk";
-			$jum = $this->db->query($sql_jum)->row();
+			
 			$jumlah_stok += (int)$_POST['jumlah'] * (int)$data_jum -> jumlah_produk_p + (int)$jum->stok;
 			$ext +=1;
 		}else{
-			$msg .="Data Satuan Tidak Di temukan || Error Code : 9083";
+			$jumlah_stok += (int)$_POST['jumlah'] * 1 + (int)$jum->stok;
+			$ext +=1;
 		}
 
 		$data = array(
@@ -243,7 +247,6 @@ class Persediaan extends CI_Controller {
 			'jumlah_stok' => $jumlah_stok,
 			'exp_date' => $tgl_exp,
 			'id_supplier'=> $_POST['supplier'],
-			'insert_by' => $user,
 			'insert_date' => $time
 		);
 
@@ -262,9 +265,10 @@ class Persediaan extends CI_Controller {
 
 		if($ext > 0){
 			if($_POST['id_stok'] == "null"){
+				$data['insert_by'] = $user;
 				$sql_inStok = $this->db->insert('tx_produk_stok',$data);
 				if($sql_inStok){
-					$sql_hisStok = $this->db->insert('tx_produk_stok_his',$data_his);
+					$sql_hisStok = $this->db->insert('tx_produk_stok_detail',$data_his);
 					if($sql_hisStok){
 						$ext += 1;
 						$msg .= "Insert Data Success";
@@ -276,9 +280,11 @@ class Persediaan extends CI_Controller {
 				}
 				
 			}else{
+				$data['update_by'] = $user;
 				$sql_inStok = $this->db->where('id_stok',$_POST['id_stok'])->update('tx_produk_stok',$data);
 				if($sql_inStok){
-					$sql_hisStok = $this->db->insert('tx_produk_stok_his',$data_his);
+					$sql_hisStok = $this->db->insert('tx_produk_stok_detail',$data_his);
+					
 					if($sql_hisStok){
 						$ext += 1;
 						$msg .= "Insert Data Success";
@@ -292,7 +298,6 @@ class Persediaan extends CI_Controller {
 			}
 		}
 
-
 		if($ext > 0){
 			echo json_encode(array('status'=>1,'msg'=>$msg));
 		}else{
@@ -304,9 +309,51 @@ class Persediaan extends CI_Controller {
 
 	public function kartu_stok(){
 		$id = $this->uri->segment(3);
+		$var['produk'] = $this->db->select('nama_produk')
+								->from('tx_produk')
+								->where('id_produk',$id)
+								->get()->row();
+		$var['id_produk'] = $id;
 		$var['content'] = 'view-kartu-stok';
 		$var['js'] = 'js-kartu_stok';
 		$this->load->view('view-index',$var);
+	}
+
+	public function get_kartu_stok(){
+		$id = $this->input->post('id_produk');
+		$where = "";
+		if($_POST['bulan'] !=='pil' && $_POST['tahun'] !==""){
+			$bln_th = $_POST['tahun'].'-'.$_POST['bulan'];
+			$where .=" AND DATE_FORMAT(ps.insert_date, '%Y-%m') = '$bln_th'";
+		}
+
+		if($_POST['id_gudang'] !=='pil'){
+			$gd = $_POST['id_gudang'] ;
+			$where .=" AND ps.id_gudang = $gd ";
+		}
+
+		if($_POST['kode_batch'] !==""){
+			$kd = $_POST['kode_batch'];
+			$where .=" OR ps.kode_batch LIKE '%$kd%'";
+		}
+		
+		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, ps.exp_date,u.nama as petugas,
+				sum(case when ps.id_status_stok = 1 then ps.jumlah_stok else 0 end) as masuk, 
+				sum(case when ps.id_status_stok = 2 then ps.jumlah_stok else 0 end) as keluar,
+				CONCAT(s.nama_status,' ','Stok',' ',p.nama_produk) as catat
+				FROM `tx_produk_stok_detail` as ps
+				LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+				LEFT JOIN tm_satus_stok as s ON ps.id_status_stok = s.id_status_stok
+				LEFT JOIN tm_user as u ON ps.insert_by = u.id_user
+				WHERE ps.is_delete = 0 AND p.id_produk =$id $where
+				GROUP BY ps.id_stok_his";
+		$data = $this->db->query($sql);
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','data'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Found','data'=>null));
+		}
 	}
 
 	public function defecta(){
@@ -315,16 +362,254 @@ class Persediaan extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
+	public function load_defecta(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'					
+			) ";
+		}
+
+
+		if($_POST['status_jual'] =='2'){
+			$where .= " AND IFNULL(ps.jumlah_stok, 0) = 0";
+		}else{
+			$where .= " AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+	
+		$where .=  $searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_produk` as p 
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		where p.is_delete = 0 AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.id_produk,ps.id_stok,CONCAT(p.nama_produk,'<br>',p.sku_kode_produk) as nama_sku_produk,
+				p.jumlah_minimal,ps.jumlah_stok as stok,
+				IFNULL(p.jumlah_minimal, 0) as min,
+				IFNULL(ps.jumlah_stok, 0) as sto
+				FROM tx_produk as p
+				LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+		
+		
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
 	public function stok_kadaluarsa(){
 		$var['content'] = 'view-stok-kadaluarsa';
 		$var['js'] = 'js-stok-kadaluarsa';
 		$this->load->view('view-index',$var);
 	}
 
+	public function load_kadaluarsa(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR s.nama_supplier like '%" . $searchValue . "%'	
+								 OR g.nama_gudang like '%" . $searchValue . "%'	
+								 OR pd.exp_date like '%" . $searchValue . "%'					
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'	
+			) ";
+		}
+
+
+		if($_POST['status_jual'] =='2'){
+			$bulan = $_POST['bulan'];
+			$where .= " AND DATE_FORMAT((now(),INTERVAL +$bulan month), '%Y-%m-%d') > pd.exp_date";
+		}else{
+			$where .= " AND DATE_FORMAT(now(), '%Y-%m-%d') > pd.exp_date";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+	
+		$where .= "p.is_delete = 0 ".$searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+				WHERE p.is_delete 0 and DATE_FORMAT(now(), "%Y-%m-%d") > pd.exp_date";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+				FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,s.nama_supplier,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,
+				DATE_FORMAT(now(), '%Y-%m-%d') as now_date
+				FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+		
+		
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
 	public function stok_opname(){
 		$var['content'] = 'view-opname';
 		$var['js'] = 'js-opname';
 		$this->load->view('view-index',$var);
+	}
+
+	public function load_stok_opname(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'					
+			) ";
+		}
+
+
+		if($_POST['status_jual'] =='2'){
+			$where .= " AND IFNULL(ps.jumlah_stok, 0) = 0";
+		}else{
+			$where .= " AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+	
+		$where .=  $searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_produk` as p 
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		where p.is_delete = 0 AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.id_produk,ps.id_stok,CONCAT(p.nama_produk,'<br>',p.sku_kode_produk) as nama_sku_produk,
+				p.jumlah_minimal,ps.jumlah_stok as stok,
+				IFNULL(p.jumlah_minimal, 0) as min,
+				IFNULL(ps.jumlah_stok, 0) as sto
+				FROM tx_produk as p
+				LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+		
+		
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
 	}
 
 	
