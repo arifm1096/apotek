@@ -30,6 +30,7 @@ class Home extends CI_Controller {
 
 	public function index(){
 		$var['content'] = 'view-home';
+		$var['js'] = 'js-home';
 		$this->load->view('view-index',$var);
 	}
 

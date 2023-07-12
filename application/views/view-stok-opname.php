@@ -112,6 +112,7 @@
                                     <div class="form-group">
                                         <label>Gudang</label>
                                         <input type="hidden" id="id_stok">
+                                        <input type="hidden" id="id_stok_opname">
                                         <input type="text" id="nama_gudang" name="nama_gudang" class="form-control"
                                             readonly>
                                     </div>
@@ -143,6 +144,13 @@
                                     <div class="form-group">
                                         <label>Penyesuaian</label>
                                         <input type="text" id="penyesuaian" name="penyesuaian" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Verifikasi</label>
+                                        <select name="verifikasi" id="verifikasi" class="form-control">
+                                            <option value="y"> Ya</option>
+                                            <option value="y"> Tidak</option>
+                                        </select>
                                     </div>
                                 </div>
 

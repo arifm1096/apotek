@@ -110,7 +110,7 @@ function stok_opname(id_stok) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
 				$("#nama_obat").html(res.result.nama_produk);
-				$("#id_stok").html(res.result.id_produk);
+				$("#id_stok").html(res.result.id_stok);
 				$("#nama_gudang").val(res.result.nama_gudang);
 				$("#exp_date").val(res.result.exp_date);
 				$("#catatan").val(res.result.catatan);

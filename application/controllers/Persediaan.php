@@ -346,7 +346,7 @@ class Persediaan extends CI_Controller {
 				LEFT JOIN tm_satus_stok as s ON ps.id_status_stok = s.id_status_stok
 				LEFT JOIN tm_user as u ON ps.insert_by = u.id_user
 				WHERE ps.is_delete = 0 AND p.id_produk =$id $where
-				GROUP BY ps.id_stok_his";
+				GROUP BY ps.id_stok_detail";
 		$data = $this->db->query($sql);
 
 		if(!empty($data)){
@@ -484,7 +484,7 @@ class Persediaan extends CI_Controller {
 		}
 
 		if($_POST['bulan'] =="pil" && $_POST['filter_tanggal'] ==""){
-			$where .= " AND DATE_FORMAT(now(), '%Y-%m-%d') > pd.exp_date";
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +3 month), '%Y-%m') >= DATE_FORMAT(pd.exp_date,'%Y-%m')";
 		}
 	
 		$where .= " AND pd.is_delete = 0 ".$searchQuery;
@@ -530,6 +530,24 @@ class Persediaan extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function load_kadaluarsa_home(){
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,s.nama_supplier,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,p.id_produk,
+				DATE_FORMAT(now(), '%Y-%m-%d') as now_date
+				FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+				WHERE p.is_delete = 0 AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +3 month), '%Y-%m') >= DATE_FORMAT(pd.exp_date,'%Y-%m')
+				order by pd.exp_date asc limit 10";
+		$data = $this->db->query($sql);
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>null));
+		}
 	}
 
 	public function stok_opname(){
@@ -636,12 +654,14 @@ class Persediaan extends CI_Controller {
 
 	public function save_stok_opname(){
 		$data = $this->input->post();
+		$id_so = $_POST['id_stok_opname'];
 		$data_his = $this->input->post();
 
 		if($_POST['id_stok_opname']){
 			$sql = $this->db->insert('tx_produk_stok_opname',$data);
 		}else{
-			$sql = $this->db->where('id_produk_stok_opname',$data)->update('tx_produk_stok_opname',$data);
+			unset($data['id_stok_opname']);
+			$sql = $this->db->where('id_produk_stok_opname',$id_so)->update('tx_produk_stok_opname',$data);
 		}
 	}
 

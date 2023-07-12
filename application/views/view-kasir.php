@@ -46,24 +46,6 @@
                                 </tr>
                             </thead>
                             <tbody id="list_kasir">
-                                <tr>
-                                    <th style="width: 10px; text-align: right;">No.</th>
-                                    <th>Produk</th>
-                                    <th>Kuantitas </th>
-                                    <th>Satuan</th>
-                                    <th>Opsi Harga</th>
-                                    <th>Harga Jual</th>
-                                    <th style="width: 75px; ">Total</th>
-                                </tr>
-                                <tr>
-                                    <th style="width: 10px; text-align: right;">No.</th>
-                                    <th>Produk</th>
-                                    <th>Kuantitas </th>
-                                    <th>Satuan</th>
-                                    <th>Opsi Harga</th>
-                                    <th>Harga Jual</th>
-                                    <th style="width: 75px; ">Total</th>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
