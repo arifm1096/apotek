@@ -472,18 +472,22 @@ class Persediaan extends CI_Controller {
 		}
 
 
-		if($_POST['status_jual'] =='2'){
+		if($_POST['bulan'] !=="pil"){
 			$bulan = $_POST['bulan'];
-			$where .= " AND DATE_FORMAT((now(),INTERVAL +$bulan month), '%Y-%m-%d') > pd.exp_date";
-		}else{
-			$where .= " AND DATE_FORMAT(now(), '%Y-%m-%d') > pd.exp_date";
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +$bulan month), '%Y-%m') = DATE_FORMAT(pd.exp_date,'%Y-%m')";
+		}
+		
+
+		if($_POST['filter_tanggal'] !==""){
+			$tgl = date('Y-m-d',strtotime($_POST['filter_tanggal']));
+			$where .= " AND pd.exp_date < '$tgl' ";
 		}
 
-		if($_POST['id_rak'] !='pil'){
-			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		if($_POST['bulan'] =="pil" && $_POST['filter_tanggal'] ==""){
+			$where .= " AND DATE_FORMAT(now(), '%Y-%m-%d') > pd.exp_date";
 		}
 	
-		$where .= "p.is_delete = 0 ".$searchQuery .$jual.$rak;
+		$where .= " AND pd.is_delete = 0 ".$searchQuery;
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
@@ -491,7 +495,7 @@ class Persediaan extends CI_Controller {
 				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
 				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
 				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
-				WHERE p.is_delete 0 and DATE_FORMAT(now(), "%Y-%m-%d") > pd.exp_date";
+				WHERE p.is_delete = 0";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
 	
@@ -500,25 +504,24 @@ class Persediaan extends CI_Controller {
 				FROM `tx_produk_stok_detail` as pd
 				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
 				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
-				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang $where";
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang 
+				Where $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,s.nama_supplier,g.nama_gudang,
-				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,
+				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,p.id_produk,
 				DATE_FORMAT(now(), '%Y-%m-%d') as now_date
 				FROM `tx_produk_stok_detail` as pd
 				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
 				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
 				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
 		WHERE $where
-		GROUP BY p.id_produk
-		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		GROUP BY pd.id_stok_detail
+		order by pd.id_stok_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
-		
-		
-	
+		// echo $this->db->last_query();
 		// Response
 		$output = array(
 			"draw" => intval($draw),
@@ -530,8 +533,8 @@ class Persediaan extends CI_Controller {
 	}
 
 	public function stok_opname(){
-		$var['content'] = 'view-opname';
-		$var['js'] = 'js-opname';
+		$var['content'] = 'view-stok-opname';
+		$var['js'] = 'js-stok-opname';
 		$this->load->view('view-index',$var);
 	}
 
@@ -554,16 +557,9 @@ class Persediaan extends CI_Controller {
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
 								 OR p.nama_produk like '%" . $searchValue . "%'	
-								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
-								 OR r.nama_rak like '%" . $searchValue . "%'					
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'				
 			) ";
-		}
-
-
-		if($_POST['status_jual'] =='2'){
-			$where .= " AND IFNULL(ps.jumlah_stok, 0) = 0";
-		}else{
-			$where .= " AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
 		}
 
 		if($_POST['id_rak'] !='pil'){
@@ -574,33 +570,39 @@ class Persediaan extends CI_Controller {
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
-		FROM `tx_produk` as p 
-		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
-		where p.is_delete = 0 AND IFNULL(p.jumlah_minimal, 0) > IFNULL(ps.jumlah_stok, 0)";
+		FROM `tx_produk_stok` 
+		where is_delete = 0";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
 	
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
-		FROM tx_produk as p
-		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		FROM `tx_produk_stok` as pd
+		LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+		LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT p.id_produk,ps.id_stok,CONCAT(p.nama_produk,'<br>',p.sku_kode_produk) as nama_sku_produk,
-				p.jumlah_minimal,ps.jumlah_stok as stok,
-				IFNULL(p.jumlah_minimal, 0) as min,
-				IFNULL(ps.jumlah_stok, 0) as sto
-				FROM tx_produk as p
-				LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,p.id_produk,pd.id_stok,r.nama_rak,
+				(CASE WHEN sp.tgl_so !=NULL THEN
+						sp.tgl_so
+					ELSE
+						'Belum Pernah'
+				END) as status_so
+				FROM `tx_produk_stok` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+				LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
-		
-		
 	
 		// Response
 		$output = array(
@@ -610,6 +612,37 @@ class Persediaan extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function get_stok_opname(){
+		$id = $_POST['id_stok'];
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
+				pd.exp_date,p.id_produk,pd.id_stok,pd.jumlah_stok as stok_sistem,sp.stok_fisik,
+				sp.catatan,sp.penyesuaian,pd.kode_batch
+				FROM `tx_produk_stok` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+				LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+				WHERE pd.id_stok = $id";
+		$data = $this->db->query($sql);
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>null));
+		}
+	}
+
+	public function save_stok_opname(){
+		$data = $this->input->post();
+		$data_his = $this->input->post();
+
+		if($_POST['id_stok_opname']){
+			$sql = $this->db->insert('tx_produk_stok_opname',$data);
+		}else{
+			$sql = $this->db->where('id_produk_stok_opname',$data)->update('tx_produk_stok_opname',$data);
+		}
 	}
 
 	

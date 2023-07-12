@@ -67,6 +67,23 @@ class Master extends CI_Controller{
 		}
 	}
 
+	public function get_filter_so(){
+		
+
+		$sql_rak = $this->db->select('*')
+						->from('tm_rak')
+						->where('is_delete',0)
+						->where('aktif','y')
+						->get();
+		$data_rak = $sql_rak->result();
+
+		if(!empty($sql_rak)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','rak'=>$data_rak));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','kondisi'=>null,'gudang'=>null));
+		}
+	}
+
 // Star Hak Akses
 	public function data_supplier(){
 		$var['content'] = 'view-supplier';

@@ -55,7 +55,7 @@
                     <div class="col-md-3">
 
                         <input type="text" id="filter_tanggal" name="filter_tanggal" class="form-control tgl_piker"
-                            placeholder="Inputkan Tanggal" required>
+                            placeholder="Inputkan Tanggal" onchange="filter_data();">
                     </div>
                     <div class="col-md-1">
 
