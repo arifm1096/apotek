@@ -30,8 +30,86 @@ class Penjualan extends CI_Controller {
 
 	public function index(){
 		$var['content'] = 'view-kasir';
-		$var['js'] = 'js-persediaan';
+		$var['js'] = 'js-kasir';
 		$this->load->view('view-index',$var);
+	}
+
+	public function get_produk_barcode(){
+		$param = $_POST['param'];
+		$sql = "SELECT nama_produk FROM `tx_produk` WHERE nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
+		$data = $this->db->query($sql)->result();
+		$str_produk = [];
+		foreach ($data as $key => $val) {
+			array_push($str_produk,$val->nama_produk);
+		}
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Find','result'=>$str_produk));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Find','result'=>null));
+		}
+	}
+
+	public function get_satuan(){
+		$sql_rak = $this->db->select('*')
+						->from('tm_satuan')
+						->where('is_delete',0)
+						->where('aktif','y')
+						->get();
+		$data_rak = $sql_rak->result();
+
+		if(!empty($sql_rak)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','rak'=>$data_rak));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','kondisi'=>null,'gudang'=>null));
+		}
+	}
+
+	public function get_harga(){
+
+	}
+
+	public function get_add_produk(){
+		$produk = $_POST['produk_barcode'];
+
+		if(!empty($produk)){
+			$sql_cek_kasir = "SELECT p.id_produk,SUM(total) as qty FROM `tx_jual` as j
+								LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+								WHERE nama_produk = '$produk' OR barcode = '$produk' 
+								AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
+			$data_cek = $this->db->query($sql_cek_kasir);
+
+			$sql_get_data = "SELECT p.id_produk,p.satuan_utama,p.nama_produk,p.harga_beli,ph.harga_jual 
+								FROM `tx_produk` as p
+								LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
+								WHERE nama_produk = '$produk' OR barcode = '$produk' 
+								AND ph.id_jenis_harga = 4 AND p.is_delete = 0";
+			$data = $this->db->query($sql_get_data);
+
+			if(!empty($data)){
+				$prod_data = $data->row();
+				$r_in = array(
+						'id_produk' => $prod_data->id_produk,
+						'nama_produk' => $prod_data->nama_produk,
+						'harga_beli' => $prod_data->harga_beli,
+						'harga_jual' => $prod_data->harga_jual,
+						'total' => 1
+				);
+
+				if(	$data_cek->num_rows()>1){
+					$insert = $this->db->insert();
+					if($insert){
+
+					}
+				}else{
+
+				}
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Tidak Ada DI Master !!'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Kosong !!'));
+		}
 	}
 
 	public function load_persediaan(){

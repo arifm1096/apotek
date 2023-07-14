@@ -304,7 +304,7 @@ class Produk extends CI_Controller {
 											array(
 												'id_produk' => $produk,
 												'harga_jual' => $_POST['harga_jual'],
-												'id_jenis_harga' => '5',
+												'id_jenis_harga' => '4',
 												'insert_by'=>$user,
 												'insert_date'=>$time->jam
 											));
