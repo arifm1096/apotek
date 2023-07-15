@@ -20,13 +20,6 @@ $("#produk_barcode").on("input", function () {
 	});
 });
 
-$(".tgl_piker").datepicker({
-	todayHighlight: "TRUE",
-	autoclose: true,
-	format: "dd-mm-yyyy",
-	showButtonPanel: true,
-});
-
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
 	$.ajax({
@@ -72,47 +65,8 @@ function status_aktif(p_status) {
 	$("#select_aktif").html(html);
 }
 
-function load_select_filter(p_rak, p_status) {
-	var html_rak = "<option value='pil'>-- Pilih Rak --</option>";
-	var html_status_jual = "<option value='pil'>-- Pilih Filter Jual --</option>";
-	$.ajax({
-		url: URL + "produk/get_data_master_filter",
-		type: "POST",
-		data: {},
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-				res.rak.forEach((e) => {
-					html_rak +=
-						'<option value="' +
-						e.id_rak +
-						'"' +
-						(e.id_rak === p_rak ? 'selected="selected"' : "") +
-						">" +
-						e.nama_rak +
-						"</option>";
-				});
-
-				res.jual.forEach((e) => {
-					html_status_jual +=
-						'<option value="' +
-						e.id_jual +
-						'"' +
-						(e.id_jual === p_status ? 'selected="selected"' : "") +
-						">" +
-						e.nama_jual +
-						"</option>";
-				});
-			}
-			$("#filter_status_jual").html(html_status_jual);
-			$("#filter_rak").html(html_rak);
-		},
-	});
-}
-
-function load_select(p_jenis_produk, p_rak, p_satuan) {
-	var html_jn_pro = "<option value='pil'>-- Pilih Jenis Porduk --</option>";
-	var html_rak = "<option value='pil'>-- Pilih Rak --</option>";
+function load_select(p_id, p_jenis_harga, p_satuan) {
+	var html_harga = "<option value='pil'>-- Pilih Jenis Harga--</option>";
 	var html_satuan = "<option value='pil'>-- Pilih Satuan --</option>";
 	$.ajax({
 		url: URL + "produk/get_data_master",
@@ -121,27 +75,14 @@ function load_select(p_jenis_produk, p_rak, p_satuan) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				res.jenis_produk.forEach((e) => {
-					html_jn_pro +=
+				res.harga.forEach((e) => {
+					html_harga +=
 						'<option value="' +
-						e.id_jenis_produk +
+						e.id_jenis_harga +
 						'"' +
-						(e.id_jenis_produk === p_jenis_produk
-							? 'selected="selected"'
-							: "") +
+						(e.id_jenis_harga === p_jenis_harga ? 'selected="selected"' : "") +
 						">" +
-						e.nama_jenis_produk +
-						"</option>";
-				});
-
-				res.rak.forEach((e) => {
-					html_rak +=
-						'<option value="' +
-						e.id_rak +
-						'"' +
-						(e.id_rak === p_rak ? 'selected="selected"' : "") +
-						">" +
-						e.nama_rak +
+						e.nama_jenis_harga +
 						"</option>";
 				});
 
@@ -156,34 +97,56 @@ function load_select(p_jenis_produk, p_rak, p_satuan) {
 						"</option>";
 				});
 			}
-			$("#id_jenis_produk").html(html_jn_pro);
-			$("#satuan_utama").html(html_satuan);
-			$("#id_rak").html(html_rak);
+
+			$("#satuan_utama_" + p_id).html(html_satuan);
+			$("#id_rak_" + p_id).html(html_harga);
 		},
 	});
 }
 
-function load_satuan(p_id_satuan) {
-	var html = "<option value='pil'>-- Pilih Satuan --</option>";
+function load_kasir(p_id_satuan) {
+	var html = "";
 	$.ajax({
-		url: URL + "produk/get_master_satuan",
+		url: URL + "penjualan/load_data_produk",
 		type: "POST",
 		data: {},
 		success: function (data) {
 			var res = JSON.parse(data);
-			if (res.status == 1) {
-				res.satuan.forEach((e) => {
+			var no = 1;
+			if (res.result == 1) {
+				res.result.forEach((e) => {
 					html +=
-						'<option value="' +
-						e.id_satuan +
-						'"' +
-						(e.id_satuan === p_id_satuan ? 'selected="selected"' : "") +
-						">" +
-						e.nama_satuan +
-						"</option>";
+						`<tr>
+                                    <td style="width: 10px; text-align: right;">` +
+						no +
+						`</td>
+                                    <td>Produk
+                                        <button type="button" class="btn btn-danger btn-xs float-right"
+                                            onclick="hapus_list(` +
+						e.id_produk +
+						`);"><i class="fa fa-trash"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                    <td style="width: 100px; "><input type="number" class="form-control"
+                                            name="jumlah_produk" id="jumlah_produk"> </td>
+                                    <td>
+                                        <select class="form-control" id="satuan">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control" id="satuan">
+                                        </select>
+                                    </td>
+                                    <td style="width: 100px; ">
+                                        <input type="text" class="form-control" name="harga" id="harga">
+                                    </td>
+                                    <td style="width: 130px; ">
+                                        <input type="text" class="form-control" name="total" id="total">
+                                    </td>
+                            </tr>`;
 				});
 			}
-			$(".p_satuan").html(html);
+			$("#list_kasir").html(html);
 		},
 	});
 }

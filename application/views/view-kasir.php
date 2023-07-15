@@ -6,8 +6,8 @@
                     <div class="col-md-6">
                         <form id="add_produk">
                             <div class="input-group">
-                                <input type="search" class="form-control form-control" id="produk_barcode"
-                                    name="produk_barcode" placeholder="Masukan Pencarian Nama Produk Atau Barcode">
+                                <input type="search" class="form-control" id="produk_barcode" name="produk_barcode"
+                                    placeholder="Masukan Pencarian Nama Produk Atau Barcode">
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-default">
                                         <i class="fa fa-plus"></i>
@@ -28,8 +28,8 @@
 
             <div class="card-body table-responsive">
                 <div class="row">
-                    <div class="col-md-8">
-                        <table id="tbl_kasir" class="table table-striped">
+                    <div class="col-md-9">
+                        <table id="tbl_kasir" class="table table-striped" style="font-size: 13px;">
                             <thead>
                                 <tr>
                                     <th style="width: 10px; text-align: right;">No.</th>
@@ -42,10 +42,11 @@
                                 </tr>
                             </thead>
                             <tbody id="list_kasir">
+
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group row">
                             <label for="inputEmail3" class="col-sm-4 col-form-label">Sub Total</label>
                             <div class="col-sm-7">
