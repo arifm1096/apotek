@@ -31,7 +31,7 @@ class Penjualan extends CI_Controller {
 	public function index(){
 		$var['content'] = 'view-kasir';
 		$var['js'] = 'js-kasir';
-		$this->load->view('view-index',$var);
+		$this->load->view('view-index-kasir',$var);
 	}
 
 	public function get_produk_barcode(){
@@ -51,35 +51,47 @@ class Penjualan extends CI_Controller {
 	}
 
 	public function get_satuan(){
-		$sql_rak = $this->db->select('*')
+		$sql_satuan = $this->db->select('*')
 						->from('tm_satuan')
 						->where('is_delete',0)
 						->where('aktif','y')
 						->get();
-		$data_rak = $sql_rak->result();
+		$data_satuan = $sql_satuan->result();
 
-		if(!empty($sql_rak)){
-			echo json_encode(array('status'=>1,'msg'=>'Data is Find','rak'=>$data_rak));
+		$sql_harga = $this->db->select('*')
+						->from('tm_jenis_harga')
+						->where('is_delete',0)
+						->get();
+		$data_harga = $sql_harga->result();
+
+		if(!empty($sql_satuan)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','satuan'=>$data_satuan,'harga'=>$data_harga));
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data not Find','kondisi'=>null,'gudang'=>null));
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','satuan'=>null,'harga'=>null));
 		}
 	}
 
-	public function get_harga(){
-
+	public function load_data_produk(){
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qyt,j.id_jenis_harga,j.harga_jual,
+				SUM(j.total_harga) as total_harga
+				FROM `tx_jual` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				WHERE j.insert_by = $id_user
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
+		$data = $this->db->query($sql);
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data is Find','result'=>null));
+		}
 	}
 
 	public function get_add_produk(){
 		$produk = $_POST['produk_barcode'];
 
 		if(!empty($produk)){
-			$sql_cek_kasir = "SELECT p.id_produk,SUM(total) as qty FROM `tx_jual` as j
-								LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
-								WHERE nama_produk = '$produk' OR barcode = '$produk' 
-								AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
-			$data_cek = $this->db->query($sql_cek_kasir);
-
-			$sql_get_data = "SELECT p.id_produk,p.satuan_utama,p.nama_produk,p.harga_beli,ph.harga_jual 
+			$sql_get_data = "SELECT p.id_produk,p.satuan_utama,p.nama_produk,p.harga_beli,ph.harga_jual,ph.id_jenis_harga
 								FROM `tx_produk` as p
 								LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
 								WHERE nama_produk = '$produk' OR barcode = '$produk' 
@@ -91,18 +103,20 @@ class Penjualan extends CI_Controller {
 				$r_in = array(
 						'id_produk' => $prod_data->id_produk,
 						'nama_produk' => $prod_data->nama_produk,
+						'id_satuan' => $prod_data->satuan_utama,
+						'id_satuan_utama' => $prod_data->satuan_utama,
+						'id_jenis_harga' => $prod_data->id_jenis_harga,
 						'harga_beli' => $prod_data->harga_beli,
 						'harga_jual' => $prod_data->harga_jual,
-						'total' => 1
+						'jumlah_produk' => 1,
+						'total' => $prod_data->harga_jual
 				);
 
-				if(	$data_cek->num_rows()>1){
-					$insert = $this->db->insert();
-					if($insert){
-
-					}
+				$insert = $this->db->insert();
+				if($insert){
+					echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
 				}else{
-
+					echo json_encode(array('status'=>0,'msg'=>'Error Tambah Data.'));
 				}
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Tidak Ada DI Master !!'));
@@ -110,6 +124,15 @@ class Penjualan extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Kosong !!'));
 		}
+	}
+
+	public function get_update_produk(){
+		$sql_cek_kasir = "SELECT p.id_produk,SUM(total) as qty 
+						FROM `tx_jual` as j
+						LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+						WHERE nama_produk = '$produk' OR barcode = '$produk' 
+						AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
+		$data_cek = $this->db->query($sql_cek_kasir);
 	}
 
 	public function load_persediaan(){
@@ -194,11 +217,7 @@ class Penjualan extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	public function get_satuan(){
-		$sql = $this->db->select('*')->from('tm_satuan')->where('id_satuan',$_POST['id_satuan'])->get()->row();
-		$data = "/ ".$sql->nama_satuan;
-		echo json_encode(array('msg'=>'Data find','res'=>$data));
-	}
+	
 
 	public function get_data_master(){
 		
