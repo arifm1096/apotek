@@ -26,6 +26,7 @@ class Penjualan extends CI_Controller {
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
 		}
+		
 	}
 
 	public function index(){
@@ -71,21 +72,42 @@ class Penjualan extends CI_Controller {
 		}
 	}
 
+	public function get_sub_total(){
+		$id_user = $this->session->userdata('id_user');
+		$sql_tot = "SELECT SUM(j.total_harga) as sub_total_harga
+					FROM `tx_jual` as j
+					LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+					WHERE j.insert_by = $id_user
+					AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
+		$data_tot = $this->db->query($sql_tot)->row();
+
+		if(!empty($data_tot)){
+			return $data_tot->sub_total_harga;
+		}else{
+			return null;
+		}
+
+	}
+
 	public function load_data_produk(){
 		$id_user = $this->session->userdata('id_user');
-		$sql = "SELECT p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qyt,j.id_jenis_harga,j.harga_jual,
+		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
 				FROM `tx_jual` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				WHERE j.insert_by = $id_user
-				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_jual
+				ORDER BY j.id_jual DESC";
 		$data = $this->db->query($sql);
+		$sub_tot = $this->get_sub_total();
 		if(!empty($data)){
-			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result()));
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result(),'sub_tot'=>$sub_tot));
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data is Find','result'=>null));
+			echo json_encode(array('status'=>0,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
 		}
 	}
+
 
 	public function get_add_produk(){
 		$produk = $_POST['produk_barcode'];
@@ -98,8 +120,6 @@ class Penjualan extends CI_Controller {
 								AND ph.id_jenis_harga = 4 AND p.is_delete = 0";
 			$data = $this->db->query($sql_get_data);
 			
-
-			if(!empty($data)){
 				$prod_data = $data->row();
 				$r_in = array(
 						'id_produk' => $prod_data->id_produk,
@@ -114,9 +134,44 @@ class Penjualan extends CI_Controller {
 						'insert_by' => $this->session->userdata('id_user'),
 						'insert_date' => date('Y-m-d H:i:s')
 				);
+			$id_user = $this->session->userdata('id_user');
+			$sql_jul ="SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+				SUM(j.total_harga) as total_harga
+				FROM `tx_jual` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				WHERE j.insert_by = $id_user and p.id_produk = $prod_data->id_produk
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_jual";
+			$res_jual = $this->db->query($sql_jul);
+			$data_jual = $res_jual->row();
+			$up_jumlah = 0;
+			$up_total = 0;
+				if($res_jual->num_rows()>0){
+					$up_jumlah += $data_jual->qty + 1;
+					$up_total += $data_jual->total_harga + $prod_data->harga_jual;
+				}
+				
 
-				$insert = $this->db->insert('tx_jual',$r_in);
-				if($insert){
+				$r_up = array(
+					'jumlah_produk' => $up_jumlah,
+					'total_harga' => $up_total
+				);
+
+				$ex = 0;
+			if(!empty($data)){
+				if($res_jual->num_rows()>0){
+					$update = $this->db->where('id_jual',$data_jual->id_jual)->update('tx_jual',$r_up);
+					if($update){
+						$ex +=1;
+					}
+				}else{
+					$insert = $this->db->insert('tx_jual',$r_in);
+					if($insert){
+						$ex +=1;
+					}
+				}
+				
+				if($ex > 0){
 					echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
 				}else{
 					echo json_encode(array('status'=>0,'msg'=>'Error Tambah Data.'));
@@ -126,6 +181,128 @@ class Penjualan extends CI_Controller {
 			}
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Kosong !!'));
+		}
+	}
+
+	public function get_nom_change(){
+		$id_jual = $_POST['id'];
+		$id_user = $this->session->userdata('id_user');
+		$date_time = date('Y-m-d H:i:s');
+		$where = "";
+		$val = $_POST['val'];
+		$nom = 0;
+		
+
+
+		// satuan
+		if($_POST['el']== 2){
+			$sql_cek = "SELECT * FROM `tx_jual` WHERE id_satuan_utama =$val and id_jual =$id_jual";
+			$cek = $this->db->query($sql_cek);
+			if($cek->num_rows()==0){
+				$where .=" AND d.id_satuan = $val ";
+			}else{
+				$where .=" AND j.id_satuan_utama = $val ";
+				$nom +=1;
+			}
+		}
+		// Jenis Harga
+		if($_POST['el']== 3){
+			$where .=" AND h.id_jenis_harga = $val";
+		}
+		
+		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
+				j.harga_jual,h.harga_jual as jual_ex,d.jumlah_produk_p,d.jumlah_produk as jum_p,j.id_satuan_utama
+				FROM `tx_jual` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
+				LEFT JOIN tx_produk_detail as d ON p.id_produk = d.id_produk
+				WHERE j.insert_by = 2 and j.id_jual = $id_jual $where
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_jual";
+		$get_data = $this->db->query($sql);
+		if($get_data->num_rows()>0){
+			$data = $get_data->row();
+			$res_up = array(
+				     'update_by' =>$id_user,
+					 'update_date' => $date_time
+					);
+			$p_kali = 0;
+				$sql_sat = "SELECT j.id_jual,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
+							FROM `tx_jual` as j
+							LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
+							WHERE j.insert_by = $id_user and j.id_jual = $id_jual 
+							AND j.is_delete = 0 AND j.is_selesai = 0";
+				$data_sat = $this->db->query($sql_sat)->row();
+				if($data_sat->jumlah_produk_p==""){
+					$p_kali += 1;
+				}else{
+					$p_kali += (int)$data_sat->jumlah_produk_p;
+				}
+			if($_POST['el']== 1){
+				
+				$tot_qty = (int) $val;
+					$res_up['jumlah_produk'] = $val;
+					$res_up['total_harga'] = (int)$data->harga_jual * (int)$tot_qty * (int)$p_kali;
+			}
+
+			if($_POST['el']== 2){
+				$sum = 0;
+				$val_fix ="";
+				$jum_1 = (int)$data->jum_p;
+				$jum_2 = (int)$data->jumlah_produk_p;
+
+				if($nom == 1){
+					$sum += 1;
+				}else if($jum_1 < $jum_2){
+					$sum += $jum_1 * $jum_2;
+				}else{
+					$sum += $jum_1 / $jum_2;
+				}
+
+					$tot_qty = (int)$sum * (int)$data->qty;
+					$res_up['id_satuan'] = $val;
+					$res_up['total_harga'] = (int)$data->harga_jual * (int)$tot_qty;
+			}
+
+			if($_POST['el']== 3){
+				
+				$tot_qty = (int)$data->qty;
+					$res_up['id_jenis_harga'] = $val;
+					$res_up['harga_jual'] = $data->jual_ex;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
+			}
+
+			$up_ex = $this->db->where('id_jual',$id_jual)->update('tx_jual',$res_up);
+			$result = $this->db->select('harga_jual,total_harga')->from('tx_jual')->where('id_jual',$id_jual)->get();
+			$sub_tot = $this->get_sub_total();
+			if($up_ex){
+				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));
+			}else{
+				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+			}
+
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Tidak Ditemukan'));
+		}
+	}
+
+	public function hapus_produk_kasir(){
+		$id = $this->input->post('id');
+		$user = $this->session->userdata('id_user');
+		if(!empty($id)){
+			$del = $this->db->where('id_jual',$id)
+							->update('tx_jual',array(
+								'is_delete'=>1,
+								'delete_by' => $user,
+								'delete_date' => date('Y-m-d H:i:s')
+							));
+			if($del){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Delete NUll || Error Code : 7232'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
 		}
 	}
 

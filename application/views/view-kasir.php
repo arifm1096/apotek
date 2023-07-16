@@ -37,10 +37,10 @@
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Produk</th>
                                     <th>Kuantitas </th>
-                                    <th>Satuan</th>
-                                    <th>Opsi Harga</th>
-                                    <th>Harga Jual</th>
-                                    <th style="width: 75px; ">Total</th>
+                                    <th style="width: 175px; ">Satuan</th>
+                                    <th style="width: 195px; ">Opsi Harga</th>
+                                    <th style="width: 150px; ">Harga Jual</th>
+                                    <th style="width: 150px; ">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="list_kasir">
@@ -49,45 +49,46 @@
                         </table>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-4 col-form-label">Sub Total</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="Sub Total">
+                        <form action="">
+                            <div class="form-group row">
+                                <label for="inputEmail3" class="col-sm-5 col-form-label">Sub Total</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="sub_tot" id="sub_tot" readonly>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-4 col-form-label">Diskon</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="Sub Total">
+                            <div class="form-group row">
+                                <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Service (Rp.)</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control uang" name="service" id="service">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row ">
-                            <label for="inputEmail3" class="col-sm-4 col-form-label bg-danger">Total</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="Sub Total">
-                                <!-- <h4>Rp. 500.000</h4> -->
+                            <div class="form-group row">
+                                <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Embalase (Rp.)</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control uang" name="embalase" id="embalase">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-4 col-form-label">Bayar</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="Sub Total">
+                            <div class="form-group row">
+                                <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Lain (Rp.)</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control uang" name="lain" id="lain">
+                                    <input type="hidden" name="total" id="total">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-4 col-form-label">Kembali</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="Sub Total">
+                            <hr>
+                            <div class="form-group row">
+                                <h1><b>Total : </b></h1>
+                                <h1 id="str_tot"></h1>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <button class="btn btn-block btn-success" type="button" onclick="save_data_produk()">
-                                <i class="fas fa-shopping-bag "></i> Bayar Cash (F8)
-                            </button>
-                            <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
+                            <div class="form-group row">
+                                <button class="btn btn-block btn-success" type="submit" onclick="payment()">
+                                    <i class="fas fa-shopping-bag "></i> Bayar Pembelian (B)
+                                </button>
+                                <!-- <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
                                 <i class="fa fa-print"></i> Cetak Struk (F9)
-                            </button>
-                        </div>
+                            </button> -->
+                            </div>
+                        </form>
                     </div>
                 </div>
 
