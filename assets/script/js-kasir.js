@@ -23,7 +23,7 @@ $("#produk_barcode").on("input", function () {
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
 	$.ajax({
-		url: URL + "",
+		url: URL + "penjualan/get_add_produk",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -39,31 +39,6 @@ $("#add_produk").submit(function (e) {
 });
 //Initialize Select2 Elements
 $(".select2").select2();
-
-function status_aktif(p_status) {
-	var html = "<option value='pil'> Pilih Status </option>";
-	var data = [
-		{
-			id: "y",
-			title: "Aktif",
-		},
-		{
-			id: "n",
-			title: "Tidak Aktif",
-		},
-	];
-	data.forEach((e) => {
-		html +=
-			'<option value="' +
-			e.id +
-			'"' +
-			(e.id === p_status ? 'selected="selected"' : "") +
-			">" +
-			e.title +
-			"</option>";
-	});
-	$("#select_aktif").html(html);
-}
 
 function load_select(p_id, p_jenis_harga, p_satuan) {
 	var html_harga = "<option value='pil'>-- Pilih Jenis Harga--</option>";
@@ -99,12 +74,12 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 			}
 
 			$("#satuan_utama_" + p_id).html(html_satuan);
-			$("#id_rak_" + p_id).html(html_harga);
+			$("#jenis_harga_" + p_id).html(html_harga);
 		},
 	});
 }
 
-function load_kasir(p_id_satuan) {
+function load_kasir() {
 	var html = "";
 	$.ajax({
 		url: URL + "penjualan/load_data_produk",
@@ -115,6 +90,7 @@ function load_kasir(p_id_satuan) {
 			var no = 1;
 			if (res.result == 1) {
 				res.result.forEach((e) => {
+					load_select(e.id_jual, e.id_jenis_harga, e.satuan_utama);
 					html +=
 						`<tr>
                                     <td style="width: 10px; text-align: right;">` +
@@ -123,25 +99,43 @@ function load_kasir(p_id_satuan) {
                                     <td>Produk
                                         <button type="button" class="btn btn-danger btn-xs float-right"
                                             onclick="hapus_list(` +
-						e.id_produk +
+						e.id_jual +
 						`);"><i class="fa fa-trash"
                                                 aria-hidden="true"></i></button>
                                     </td>
                                     <td style="width: 100px; "><input type="number" class="form-control"
-                                            name="jumlah_produk" id="jumlah_produk"> </td>
+                                            name="jumlah_produk" value="` +
+						e.qty +
+						`" id="jumlah_produk_` +
+						e.id_jual +
+						`" onchange="edit_qty(` +
+						e.id_jual +
+						`)"> </td>
                                     <td>
-                                        <select class="form-control" id="satuan">
+                                        <select class="form-control" id="satuan_` +
+						e.id_jual +
+						`">
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-control" id="satuan">
+                                        <select class="form-control" id="jenis_harga_` +
+						e.id_jual +
+						`">
                                         </select>
                                     </td>
                                     <td style="width: 100px; ">
-                                        <input type="text" class="form-control" name="harga" id="harga">
+                                        <input type="text" class="form-control" name="harga" value="` +
+						e.harga_jual +
+						`" id="harga_` +
+						e.id_jual +
+						`">
                                     </td>
                                     <td style="width: 130px; ">
-                                        <input type="text" class="form-control" name="total" id="total">
+                                        <input type="text" class="form-control" name="total" value="` +
+						e.total_harga +
+						`" id="total_` +
+						e.id_jual +
+						`">
                                     </td>
                             </tr>`;
 				});

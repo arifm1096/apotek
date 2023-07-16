@@ -97,6 +97,7 @@ class Penjualan extends CI_Controller {
 								WHERE nama_produk = '$produk' OR barcode = '$produk' 
 								AND ph.id_jenis_harga = 4 AND p.is_delete = 0";
 			$data = $this->db->query($sql_get_data);
+			
 
 			if(!empty($data)){
 				$prod_data = $data->row();
@@ -109,10 +110,12 @@ class Penjualan extends CI_Controller {
 						'harga_beli' => $prod_data->harga_beli,
 						'harga_jual' => $prod_data->harga_jual,
 						'jumlah_produk' => 1,
-						'total' => $prod_data->harga_jual
+						'total_harga' => $prod_data->harga_jual,
+						'insert_by' => $this->session->userdata('id_user'),
+						'insert_date' => date('Y-m-d H:i:s')
 				);
 
-				$insert = $this->db->insert();
+				$insert = $this->db->insert('tx_jual',$r_in);
 				if($insert){
 					echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
 				}else{

@@ -6,6 +6,8 @@
                     <div class="col-md-6">
                         <form id="add_produk">
                             <div class="input-group">
+                                <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                    value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                 <input type="search" class="form-control" id="produk_barcode" name="produk_barcode"
                                     placeholder="Masukan Pencarian Nama Produk Atau Barcode">
                                 <div class="input-group-append">
