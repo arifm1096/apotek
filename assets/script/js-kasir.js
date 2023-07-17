@@ -234,16 +234,23 @@ function total() {
 	var emb = $("#embalase").val();
 	var lai = $("#lain").val();
 
-	var sub_1 = sub.replace(".", "");
-	var sub_tot = sub_1.replace("Rp. ", "");
-	var ser1 = ser.replace(".", "");
-	var emb1 = emb.replace(".", "");
-	var lai1 = lai.replace(".", "");
-
-	let tot = parseInt(ser1) + parseInt(emb1) + parseInt(lai1);
-	console.log(tot);
-	// $("#total").val(tot);
-	$("#str_tot").html(formatRupiah(tot, "Rp. "));
+	$.ajax({
+		url: URL + "penjualan/get_add_kasir",
+		type: "POST",
+		data: { sub: sub, ser: ser, emb: emb, lai: lai },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#str_tot").html(formatRupiah(tot, "Rp. "));
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !!",
+					text: res.msg,
+				});
+			}
+		},
+	});
 }
 
 $(".uang").on("input", function () {
