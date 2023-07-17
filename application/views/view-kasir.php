@@ -37,7 +37,7 @@
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Produk</th>
                                     <th>Kuantitas </th>
-                                    <th style="width: 175px; ">Satuan</th>
+                                    <th style="width: 125px; ">Satuan</th>
                                     <th style="width: 195px; ">Opsi Harga</th>
                                     <th style="width: 150px; ">Harga Jual</th>
                                     <th style="width: 150px; ">Total</th>
@@ -53,6 +53,7 @@
                             <div class="form-group row">
                                 <label for="inputEmail3" class="col-sm-5 col-form-label">Sub Total</label>
                                 <div class="col-sm-7">
+                                    <input type="hidden" name="id_kasir" id="id_kasir">
                                     <input type="text" class="form-control" name="sub_tot" id="sub_tot" readonly>
                                 </div>
                             </div>

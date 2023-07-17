@@ -270,31 +270,6 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-cogs"></i></i>
-                        <p>
-                            Setting
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?php echo base_url('setting/jenis_pinjaman'); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Suku Bunga</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo base_url('setting/profil'); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Identitas Koperasi</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-
                 <!-- End -->
             </ul>
         </nav>
