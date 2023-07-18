@@ -16,16 +16,22 @@
 		}
 	
 		public function get_no_nota($id){
-			$sql_max = "SELECT k.no_nota,k.id_kasir
+			$sql_max = "SELECT k.no_nota,k.id_kasir,DATE_FORMAT(k.tgl_transaksi,'%Y-%m-%d') as tgl_tran
 					FROM `tx_kasir` as k
 					WHERE k.insert_by = $id
 					ORDER BY k.id_kasir DESC";
 			$data_max = $this->db->query($sql_max);
 			$r_max = $data_max->row();
-
+			$date = date('Y-m-d');
 			if($data_max->num_rows()>0){
-				$no= (int) substr($r_max->no_nota, 11,11);
-				$urutan = $no + 1;
+
+				if($date == $r_max->tgl_tran){
+					$no= (int) substr($r_max->no_nota, 11,11);
+					$urutan = $no + 1;
+				}else{
+					$urutan = 1;
+				}
+				
 			}else{
 				$urutan = 1;
 			}

@@ -316,10 +316,23 @@ class Penjualan extends CI_Controller {
 		$data_cek = $this->db->query($sql_cek_kasir);
 	}
 
+	public function get_add_kasir(){
+		$id_user = $this->session->userdata('id_user');
+		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$data = array(
+						'no_nota' => $noTa
+					);
+	}
+
 	public function get_selesai(){
 		$id_user = $this->session->userdata('id_user');
 		$noTa = $this->Model_penjualan->get_no_nota($id_user);
-		var_dump($noTa);
+		$data = array(
+						'no_nota' => $noTa,
+						'tgl_transaksi' => date('Y-m-d H:i:s'),
+						
+
+					);
 
 	}
 	
@@ -331,7 +344,6 @@ class Penjualan extends CI_Controller {
         $connector = new Escpos\PrintConnectors\WindowsPrintConnector($data->nama_print);
         $printer = new Escpos\Printer($connector);
 
-   // membuat fungsi untuk membuat 1 baris tabel, agar dapat dipanggil berkali-kali dgn mudah
         function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
             $lebar_kolom_1 = 15;
@@ -339,13 +351,11 @@ class Penjualan extends CI_Controller {
             $lebar_kolom_3 = 8;
             $lebar_kolom_4 = 9;
 
-            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
             $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
             $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
             $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
             $kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
 
-            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
             $kolom1Array = explode("\n", $kolom1);
             $kolom2Array = explode("\n", $kolom2);
             $kolom3Array = explode("\n", $kolom3);
@@ -378,8 +388,8 @@ class Penjualan extends CI_Controller {
 
         // Membuat judul
         $printer->initialize();
-        $printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); // Setting teks menjadi lebih besar
-        $printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
+        $printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
+        $printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
         $printer->text("$data->nama_wilayah\n");
 		$printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
         $printer->text("\n");
@@ -391,7 +401,7 @@ class Penjualan extends CI_Controller {
 		$printer->text("No. Nota : 13-10-2019 19:23:22\n");
 
         // Membuat tabel
-        $printer->initialize(); // Reset bentuk/jenis teks
+        $printer->initialize(); 
         $printer->text("----------------------------------------\n");
         $printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
         $printer->text("----------------------------------------\n");
@@ -400,12 +410,11 @@ class Penjualan extends CI_Controller {
         $printer->text(buatBaris4Kolom('', '', "Total", "56.400"));
         $printer->text("\n");
 
-         // Pesan penutup
         $printer->initialize();
         $printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
         $printer->text("-- Terima Kasih --\n");
 
-        $printer->feed(3); // mencetak 2 baris kosong, agar kertas terangkat ke atas
+        $printer->feed(3);
 		$printer->cut();
         $printer->close();
     }

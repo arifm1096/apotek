@@ -155,8 +155,9 @@ function load_kasir() {
 				});
 			}
 			$("#sub_tot").val(formatRupiah(sub_tot, "Rp. "));
+			$("#str_sub_tot").val(sub_tot);
 			$("#list_kasir").html(html);
-			total();
+			total_harga();
 		},
 	});
 }
@@ -196,11 +197,12 @@ function get_nom(id, el, val) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
 				$("#sub_tot").val(formatRupiah(res.sub_tot, "Rp. "));
+				$("#str_sub_tot").val(res.sub_tot);
 				$("#total_" + id).val(formatRupiah(res.result.total_harga, "Rp. "));
 				$("#harga_" + id).val(formatRupiah(res.result.harga_jual, "Rp. "));
+				total_harga();
 			} else {
 				load_kasir();
-				total();
 				Swal.fire({
 					icon: "error",
 					title: "Perhatian !!!",
@@ -218,7 +220,6 @@ function formatRupiah(angka, prefix) {
 		rupiah = split[0].substr(0, sisa),
 		ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-	// tambahkan titik jika yang di input sudah menjadi angka ribuan
 	if (ribuan) {
 		separator = sisa ? "." : "";
 		rupiah += separator + ribuan.join(".");
@@ -228,31 +229,32 @@ function formatRupiah(angka, prefix) {
 	return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
 }
 
-function total() {
-	var sub = $("#sub_tot").val();
+const rupiah = (number) => {
+	return new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+	}).format(number);
+};
+
+function total_harga() {
+	var sub = $("#str_sub_tot").val();
 	var ser = $("#service").val();
 	var emb = $("#embalase").val();
 	var lai = $("#lain").val();
+	var id = $("#id_kasir").val();
 
-	$.ajax({
-		url: URL + "penjualan/get_add_kasir",
-		type: "POST",
-		data: { sub: sub, ser: ser, emb: emb, lai: lai },
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-				$("#str_tot").html(formatRupiah(tot, "Rp. "));
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Perhatian !!",
-					text: res.msg,
-				});
-			}
-		},
-	});
+	var sub1 = parseInt(sub.replaceAll(".", ""));
+	var ser1 = parseInt(ser.replaceAll(".", ""));
+	var emb1 = parseInt(emb.replaceAll(".", ""));
+	var lai1 = parseInt(lai.replaceAll(".", ""));
+
+	let tot = sub1 + ser1 + emb1 + lai1;
+	let for_tot = rupiah(tot);
+	$("#str_tot").html(for_tot);
+	$("#total").val(tot);
+	$("#total_pem").html(for_tot);
 }
 
-$(".uang").on("input", function () {
-	total();
-});
+// $(".uang").on("input", function () {
+// 	total();
+// });
