@@ -112,6 +112,7 @@ class Penjualan extends CI_Controller {
 
 	public function get_add_produk(){
 		$produk = $_POST['produk_barcode'];
+		$datetime = $this->db->select('now() as time')->get()->row();
 
 		if(!empty($produk)){
 			$sql_get_data = "SELECT p.id_produk,p.satuan_utama,p.nama_produk,p.harga_beli,ph.harga_jual,ph.id_jenis_harga
@@ -133,7 +134,7 @@ class Penjualan extends CI_Controller {
 						'jumlah_produk' => 1,
 						'total_harga' => $prod_data->harga_jual,
 						'insert_by' => $this->session->userdata('id_user'),
-						'insert_date' => date('Y-m-d H:i:s')
+						'insert_date' => $datetime->time
 				);
 			$id_user = $this->session->userdata('id_user');
 			$sql_jul ="SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
@@ -289,13 +290,14 @@ class Penjualan extends CI_Controller {
 
 	public function hapus_produk_kasir(){
 		$id = $this->input->post('id');
+		$datetime = $this->db->select('now() as time')->get()->row();
 		$user = $this->session->userdata('id_user');
 		if(!empty($id)){
 			$del = $this->db->where('id_jual',$id)
 							->update('tx_jual',array(
 								'is_delete'=>1,
 								'delete_by' => $user,
-								'delete_date' => date('Y-m-d H:i:s')
+								'delete_date' => $datetime->time
 							));
 			if($del){
 				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
@@ -319,20 +321,58 @@ class Penjualan extends CI_Controller {
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');
 		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
 		$data = array(
-						'no_nota' => $noTa
+						'no_nota' => $noTa,
+						'tgl_transaksi' => $datetime->time,
+						'sub_tot' => str_replace("Rp ","",str_replace(".","",$_POST['sub'])),
+						'service' => str_replace(".","",$_POST['ser']),
+						'embalase' => str_replace(".","",$_POST['emb']),
+						'lain'	=> str_replace(".","",$_POST['lai']),
+						'total' => str_replace(".","",$_POST['tot']),
+						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
+						'kembalian' => $_POST['kembalian'],
+						'insert_by' => $id_user,
+						'insert_date' => $datetime->time
+
 					);
+					
+		
+		$this->db->insert('tx_kasir', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+						'id_kasir'=>$insert_id,
+						'no_nota'=>$noTa,
+						'is_selesai'=>1
+		);
+
+		if(!empty($insert_id)){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',0)
+						   ->where('is_delete',0)
+						   ->update('tx_jual',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
 	}
 
 	public function get_selesai(){
-		$id_user = $this->session->userdata('id_user');
-		$noTa = $this->Model_penjualan->get_no_nota($id_user);
-		$data = array(
-						'no_nota' => $noTa,
-						'tgl_transaksi' => date('Y-m-d H:i:s'),
+		// $id_user = $this->session->userdata('id_user');
+		// $noTa = $this->Model_penjualan->get_no_nota($id_user);
+		// $data = array(
+		// 				'no_nota' => $noTa,
+		// 				'tgl_transaksi' => date('Y-m-d H:i:s'),
 						
 
-					);
+		// 			);
+
+		var_dump(date('Y-m-d H:i:s'));
 
 	}
 	
@@ -340,7 +380,11 @@ class Penjualan extends CI_Controller {
         // me-load library escpos
         $this->load->library('escpos');
 		$id_user = $this->session->userdata('id_user');
+		// $id_kasir = $this->input->post('id_kasir');
+		$id_kasir = 8;
 		$data = $this->Model_penjualan->get_user($id_user);
+		$kasir = $this->Model_penjualan->get_kasir_detail($id_kasir);
+		$jual = $this->Model_penjualan->get_produk_jual($id_kasir);
         $connector = new Escpos\PrintConnectors\WindowsPrintConnector($data->nama_print);
         $printer = new Escpos\Printer($connector);
 
@@ -397,17 +441,26 @@ class Penjualan extends CI_Controller {
         // Data transaksi
         $printer->initialize();
         $printer->text("Kasir : $data->nama_user\n");
-        $printer->text("Waktu : 13-10-2019 19:23:22\n");
-		$printer->text("No. Nota : 13-10-2019 19:23:22\n");
+        $printer->text("Waktu : $kasir->tgl_tran\n");
+		$printer->text("No. Nota : $kasir->no_nota\n");
 
         // Membuat tabel
         $printer->initialize(); 
         $printer->text("----------------------------------------\n");
         $printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
         $printer->text("----------------------------------------\n");
-        $printer->text(buatBaris4Kolom("Makaroni 250gr", "2pcs", "15.000", "30.000"));
+		foreach ($jual as $key => $val) {
+			$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
+		}
+        
         $printer->text("----------------------------------------\n");
-        $printer->text(buatBaris4Kolom('', '', "Total", "56.400"));
+        
+		$printer->text(buatBaris4Kolom('', '', "Service", number_format($kasir->service,0,',','.')));
+		$printer->text(buatBaris4Kolom('', '', "Embalase", number_format($kasir->embalase,0,',','.')));
+		$printer->text(buatBaris4Kolom('', '', "Lain", number_format($kasir->lain,0,',','.')));
+		$printer->text(buatBaris4Kolom('', '', "Total", number_format($kasir->total,0,',','.')));
+		$printer->text(buatBaris4Kolom('', '', "Bayar", number_format($kasir->jumlah_uang,0,',','.')));
+		$printer->text(buatBaris4Kolom('', '', "Kembali", number_format($kasir->kembalian,0,',','.')));
         $printer->text("\n");
 
         $printer->initialize();

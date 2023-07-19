@@ -36,6 +36,7 @@ $("#add_produk").submit(function (e) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
 				load_kasir();
+				$("#produk_barcode").val("");
 			}
 		},
 	});
@@ -249,12 +250,73 @@ function total_harga() {
 	var lai1 = parseInt(lai.replaceAll(".", ""));
 
 	let tot = sub1 + ser1 + emb1 + lai1;
+	// if (tot !== "") {
 	let for_tot = rupiah(tot);
+	// }
+
 	$("#str_tot").html(for_tot);
 	$("#total").val(tot);
 	$("#total_pem").html(for_tot);
 }
 
-// $(".uang").on("input", function () {
-// 	total();
-// });
+function bayar() {
+	$("#jumlah_uang").focus();
+	$("#modal_bayar_kasir").modal({ backdrop: "static", keyboard: false });
+}
+
+function selisih() {
+	var tot = $("#total").val();
+	var jumlah_uang = $("#jumlah_uang").val();
+	var tot1 = parseInt(tot.replaceAll(".", ""));
+	var jum1 = parseInt(jumlah_uang.replaceAll(".", ""));
+	kem = jum1 - tot1;
+	$("#kembalian").val(kem);
+	$("#str_kembalian").val(rupiah(kem));
+}
+
+function add_kasir() {
+	var sub = $("#str_sub_tot").val();
+	var ser = $("#service").val();
+	var emb = $("#embalase").val();
+	var lai = $("#lain").val();
+	var kembalian = $("#kembalian").val();
+	var tot = $("#total").val();
+	var jumlah_uang = $("#jumlah_uang").val();
+	$("#save-button").hide();
+	$("#send-button").show();
+	$.ajax({
+		url: URL + "penjualan/get_add_kasir",
+		type: "POST",
+		data: {
+			sub: sub,
+			ser: ser,
+			emb: emb,
+			lai: lai,
+			tot: tot,
+			kembalian: kembalian,
+			jumlah_uang: jumlah_uang,
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				$("#id_kasir").val(res.id);
+				$("#save-button").show();
+				$("#send-button").hide();
+				Swal.fire({
+					title: "<strong><u>Data Tersimpan</u></strong>",
+					icon: "success",
+					html: res.msg,
+				});
+			} else {
+				$("#save-button").show();
+				$("#send-button").hide();
+				Swal.fire({
+					title: "<strong><u>Perhatian !!/u></strong>",
+					icon: "error",
+					html: res.msg,
+				});
+			}
+		},
+	});
+}

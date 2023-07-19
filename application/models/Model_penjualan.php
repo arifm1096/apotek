@@ -18,7 +18,7 @@
 		public function get_no_nota($id){
 			$sql_max = "SELECT k.no_nota,k.id_kasir,DATE_FORMAT(k.tgl_transaksi,'%Y-%m-%d') as tgl_tran
 					FROM `tx_kasir` as k
-					WHERE k.insert_by = $id
+					WHERE k.insert_by = $id and is_delete = 0
 					ORDER BY k.id_kasir DESC";
 			$data_max = $this->db->query($sql_max);
 			$r_max = $data_max->row();
@@ -50,29 +50,32 @@
 			return $no_ta;
 		}
 
-		public function get_produk_detail($id){
-			$sql = $this->db->select('*')
-							->from('tx_produk_detail')
-							->where('is_delete',0)
-							->where($id)
-							->get();
+		public function get_kasir_detail($id){
+			
+			$sql = "SELECT k.no_nota,k.id_kasir,
+					DATE_FORMAT(k.tgl_transaksi,'%d-%m-%Y %H:%i:%s') as tgl_tran,
+					u.nama,k.total,k.jumlah_uang,k.kembalian,k.kembalian,k.service,k.embalase,k.lain
+					FROM `tx_kasir` as k
+					LEFT JOIN tm_user as u on k.insert_by = u.id_user
+					WHERE k.is_delete = 0 AND k.id_kasir = $id";
+			$data = $this->db->query($sql);
 
-			if($sql->num_rows()>0){
-				return $sql->result();
+			if($data->num_rows()>0){
+				return $data->row();
 			}else{
 				return null;
 			}
 		}
 
-		public function get_produk_harga($id){
-			$sql = $this->db->select('*')
-							->from('tx_produk_harga')
-							->where('is_delete',0)
-							->where($id)
-							->get();
+		public function get_produk_jual($id){
+			$sql = "SELECT j.nama_produk,s.nama_satuan,j.jumlah_produk,j.harga_jual,j.total_harga
+					FROM `tx_jual` as j
+					LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+					WHERE j.is_delete = 0 AND j.id_kasir = $id";
+			$data = $this->db->query($sql);
 
-			if($sql->num_rows()>0){
-				return $sql->result();
+			if($data->num_rows()>0){
+				return $data->result();
 			}else{
 				return null;
 			}

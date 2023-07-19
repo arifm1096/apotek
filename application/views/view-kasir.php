@@ -85,8 +85,7 @@
                             <h1 id="str_tot"></h1>
                         </div>
                         <div class="form-group row">
-                            <button class="btn btn-block btn-success" data-target="#modal_bayar_kasir"
-                                data-toggle="modal" data-backdrop="static" data-keyboard="false">
+                            <button class="btn btn-block btn-success" type="button" onclick="bayar();">
                                 <i class="fas fa-shopping-bag"></i> Bayar Pembelian (B)
                             </button>
                             <!-- <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
@@ -138,13 +137,14 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Bayar (Rp.)</label>
-                                        <input type="text" id="jumlah_stok" name="jumlah_stok"
+                                        <input type="text" id="jumlah_uang" name="jumlah_uang"
                                             class="form-control form-control-lg uang" placeholder="Inputkan Pembayaran"
-                                            oninput="total_harga();" required>
+                                            oninput="selisih();" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Kembalian</label>
-                                        <input type="text" id="exp_date" name="exp_date"
+                                        <input type="hidden" id="kembalian" name="kembalian">
+                                        <input type="text" id="str_kembalian" name="str_kembalian"
                                             class="form-control form-control-lg" value="0" placeholder="Kembalian"
                                             readonly>
                                     </div>
@@ -155,24 +155,23 @@
                             <p>*Klik <b>Simpan</b>, Setelah Menyelesaikan Pembayaran</p>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <button class="btn btn-block btn-success" type="button"
-                                        onclick="save_stok_produk()">
+                                    <button class="btn btn-block btn-success" type="button" onclick="add_kasir()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
-                                        <span id="save-button-produk">Simpan</span>
-                                        <span id="send-button-produk" style="display:none;">Sending…</span>
+                                        <span id="save-button">Simpan (S)</span>
+                                        <span id="send-button" style="display:none;">Sending…</span>
                                     </button>
                                 </div>
                                 <div class="col-md-4">
                                     <button class="btn btn-block btn-info" type="button" onclick="save_stok_produk()">
                                         <i class="fa fa-print"></i> &nbsp;
-                                        <span id="save-button-produk">Cetak (p)</span>
+                                        <span id="save-button-produk">Cetak (P)</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>
                                     </button>
                                 </div>
                                 <div class="col-md-4">
                                     <button class="btn btn-block btn-danger" type="button" onclick="close()">
                                         <i class="fa fa-save fa-window-close"></i> &nbsp;
-                                        <span id="save-button-produk">Close</span>
+                                        <span id="save-button-produk">Close (C)</span>
                                     </button>
                                 </div>
                             </div>
