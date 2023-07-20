@@ -17,9 +17,10 @@
                 <img src="<?php echo base_url();?>assets/dist/img/user.jpg" class="img-circle elevation-2"
                     alt="User Image">
             </div>
+
             <div class="info">
                 <a href="<?php echo base_url(); ?>" class="d-block"><b style="text-transform: uppercase;">
-                        <?php echo $this->session->username." || ". $this->session->hak_akses;?> </b></a> <br>
+                        <?php echo $this->session->nama_user." || ". $this->session->hak_akses;?> </b></a> <br>
             </div>
         </div>
 
@@ -33,7 +34,32 @@
                     <a href="<?php echo base_url(); ?>" class="nav-link active">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
-                            Dashboard
+                            Dashboard Umum
+                        </p>
+                    </a>
+                </li>
+                <?php if ($this->session->userdata('hak_akses')=="ADMIN"){ ?>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-toolbox"></i></i>
+                        <p>
+                            Dashboard Pembelian
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-toolbox"></i></i>
+                        <p>
+                            Dashboard Penjualan
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-toolbox"></i></i>
+                        <p>
+                            Dashboard Stok
                         </p>
                     </a>
                 </li>
@@ -125,7 +151,8 @@
                         </li>
                     </ul>
                 </li>
-
+                <?php } ?>
+                <?php if($this->session->userdata('hak_akses') == "KASIR" ){?>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-shopping-cart"></i></i>
@@ -133,6 +160,28 @@
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('penjualan/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Kasir</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <?php } ?>
+                <?php  if($this->session->userdata('hak_akses') == "ADMIN" ){ ?>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i></i>
+                        <p>Penjualan
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url('penjualan/'); ?>" class="nav-link">
@@ -270,6 +319,7 @@
                         </li>
                     </ul>
                 </li>
+                <?php } ?>
                 <!-- End -->
             </ul>
         </nav>

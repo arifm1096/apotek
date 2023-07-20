@@ -91,8 +91,8 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Wilayah</label>
-                                        <select class="form-control" id="select_wilayah" name="wilayah"
+                                        <label>Gudang</label>
+                                        <select class="form-control" id="select_gudang" name="gudang"
                                             style="width: 100%;">
                                         </select>
                                     </div>

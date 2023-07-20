@@ -211,20 +211,23 @@ class Produk extends CI_Controller {
 	}
 
 	function get_kode_ksu(){
-		$str_name = $_POST['jenis_produk']." ".$_POST['nama_produk']  ;
+		$str_name = $_POST['nama_produk'];
+		$jen_pro = strtoupper(substr($_POST['jenis_produk'],0,2)); 
 		$arr = (explode(" ",$str_name));
 		$str_ksu ="";
 		$arrlength = count($arr);
 	
 		for($x = 0; $x < $arrlength; $x++) {
 			$str_lop = strtoupper($arr[$x]);
-			$str_ksu .=substr($str_lop,0,2);
+			$str_ksu .=substr($str_lop,0,3);
 		}
-		$cek = $this->db->get_where('tx_produk',array('sku_kode_produk',$str_ksu));
+
+		$str_ksu_fix = $jen_pro." - ".$str_ksu;
+		$cek = $this->db->get_where('tx_produk',array('sku_kode_produk',$str_ksu_fix));
 		if($cek->num_rows()>0){
-			echo json_encode(array('status'=>0,'msg'=>'Tambahakan Karater Dibelakang Untuk Pembeda','result' => $str_ksu));
+			echo json_encode(array('status'=>0,'msg'=>'Tambahakan Karater Dibelakang Untuk Pembeda','result' => $str_ksu_fix));
 		}else{
-			echo json_encode(array('status'=>1,'msg'=>'Data find','result'=>$str_ksu));
+			echo json_encode(array('status'=>1,'msg'=>'Data find','result'=>$str_ksu_fix));
 		}
 	}
 

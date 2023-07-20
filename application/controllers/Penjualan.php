@@ -197,20 +197,22 @@ class Penjualan extends CI_Controller {
 
 
 		// satuan
-		if($_POST['el']== 2){
-			$sql_cek = "SELECT * FROM `tx_jual` WHERE id_satuan_utama =$val and id_jual =$id_jual";
+		// if($_POST['el']== 2){
+			$sat = $_POST['sat'];
+			$sql_cek = "SELECT * FROM `tx_jual` WHERE id_satuan_utama =$sat and id_jual =$id_jual";
 			$cek = $this->db->query($sql_cek);
 			if($cek->num_rows()==0){
-				$where .=" AND d.id_satuan = $val ";
+				$where .=" AND d.id_satuan = $sat ";
 			}else{
-				$where .=" AND j.id_satuan_utama = $val ";
+				$where .=" AND j.id_satuan_utama = $sat ";
 				$nom +=1;
 			}
-		}
+		// }
 		// Jenis Harga
-		if($_POST['el']== 3){
-			$where .=" AND h.id_jenis_harga = $val";
-		}
+		// if($_POST['el']== 3){
+			$ejn_har = $_POST['jen_har'];
+			$where .=" AND h.id_jenis_harga = $ejn_har";
+		// }
 		
 		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
 				j.harga_jual,h.harga_jual as jual_ex,d.jumlah_produk_p,d.jumlah_produk as jum_p,j.id_satuan_utama
@@ -218,7 +220,7 @@ class Penjualan extends CI_Controller {
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
 				LEFT JOIN tx_produk_detail as d ON p.id_produk = d.id_produk
-				WHERE j.insert_by = 2 and j.id_jual = $id_jual $where
+				WHERE j.id_jual = $id_jual $where
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
 				GROUP BY j.id_jual";
 		$get_data = $this->db->query($sql);
@@ -244,7 +246,8 @@ class Penjualan extends CI_Controller {
 				
 				$tot_qty = (int) $val;
 					$res_up['jumlah_produk'] = $val;
-					$res_up['total_harga'] = (int)$data->harga_jual * (int)$tot_qty * (int)$p_kali;
+					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$p_kali;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
 			}
 
 			if($_POST['el']== 2){
@@ -263,14 +266,15 @@ class Penjualan extends CI_Controller {
 
 					$tot_qty = (int)$sum * (int)$data->qty;
 					$res_up['id_satuan'] = $val;
-					$res_up['total_harga'] = (int)$data->harga_jual * (int)$tot_qty;
+					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$sum;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty;
 			}
 
 			if($_POST['el']== 3){
 				
 				$tot_qty = (int)$data->qty;
 					$res_up['id_jenis_harga'] = $val;
-					$res_up['harga_jual'] = $data->jual_ex;
+					$res_up['harga_jual'] = $data->jual_ex * (int)$p_kali;
 					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
 			}
 
@@ -385,91 +389,95 @@ class Penjualan extends CI_Controller {
 		$data = $this->Model_penjualan->get_user($id_user);
 		$kasir = $this->Model_penjualan->get_kasir_detail($id_kasir);
 		$jual = $this->Model_penjualan->get_produk_jual($id_kasir);
+		
         $connector = new Escpos\PrintConnectors\WindowsPrintConnector($data->nama_print);
         $printer = new Escpos\Printer($connector);
-
-        function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
+		
+			  function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 15;
-            $lebar_kolom_2 = 5;
-            $lebar_kolom_3 = 8;
-            $lebar_kolom_4 = 9;
+				$lebar_kolom_1 = 15;
+				$lebar_kolom_2 = 5;
+				$lebar_kolom_3 = 8;
+				$lebar_kolom_4 = 9;
 
-            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
-            $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
-            $kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
+				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+				$kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+				$kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
 
-            $kolom1Array = explode("\n", $kolom1);
-            $kolom2Array = explode("\n", $kolom2);
-            $kolom3Array = explode("\n", $kolom3);
-            $kolom4Array = explode("\n", $kolom4);
+				$kolom1Array = explode("\n", $kolom1);
+				$kolom2Array = explode("\n", $kolom2);
+				$kolom3Array = explode("\n", $kolom3);
+				$kolom4Array = explode("\n", $kolom4);
 
-            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
+				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
 
-            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-            $hasilBaris = array();
+				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+				$hasilBaris = array();
 
-            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
-            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
 
-                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
-                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ");
+					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ");
 
-                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
-                $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
-                $hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
+					// memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+					$hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+					$hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
 
-                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
-            }
+					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
+				}
 
-            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode($hasilBaris, "\n") . "\n";
-        }   
+				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+				return implode($hasilBaris, "\n") . "\n";
+			}   
 
-        // Membuat judul
-        $printer->initialize();
-        $printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
-        $printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
-        $printer->text("$data->nama_wilayah\n");
-		$printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
-        $printer->text("\n");
+			// Membuat judul
+			$printer->initialize();
+			$printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
+			$printer->text("$data->nama_wilayah\n");
+			$printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
+			$printer->text("\n");
 
-        // Data transaksi
-        $printer->initialize();
-        $printer->text("Kasir : $data->nama_user\n");
-        $printer->text("Waktu : $kasir->tgl_tran\n");
-		$printer->text("No. Nota : $kasir->no_nota\n");
+			// Data transaksi
+			$printer->initialize();
+			$printer->text("Kasir : $data->nama_user\n");
+			$printer->text("Waktu : $kasir->tgl_tran\n");
+			$printer->text("No. Nota : $kasir->no_nota\n");
 
-        // Membuat tabel
-        $printer->initialize(); 
-        $printer->text("----------------------------------------\n");
-        $printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
-        $printer->text("----------------------------------------\n");
-		foreach ($jual as $key => $val) {
-			$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
-		}
-        
-        $printer->text("----------------------------------------\n");
-        
-		$printer->text(buatBaris4Kolom('', '', "Service", number_format($kasir->service,0,',','.')));
-		$printer->text(buatBaris4Kolom('', '', "Embalase", number_format($kasir->embalase,0,',','.')));
-		$printer->text(buatBaris4Kolom('', '', "Lain", number_format($kasir->lain,0,',','.')));
-		$printer->text(buatBaris4Kolom('', '', "Total", number_format($kasir->total,0,',','.')));
-		$printer->text(buatBaris4Kolom('', '', "Bayar", number_format($kasir->jumlah_uang,0,',','.')));
-		$printer->text(buatBaris4Kolom('', '', "Kembali", number_format($kasir->kembalian,0,',','.')));
-        $printer->text("\n");
+			// Membuat tabel
+			$printer->initialize(); 
+			$printer->text("----------------------------------------\n");
+			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
+			$printer->text("----------------------------------------\n");
+			foreach ($jual as $key => $val) {
+				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
+			}
+			
+			$printer->text("----------------------------------------\n");
+			
+			$printer->text(buatBaris4Kolom('', '', "Service", number_format($kasir->service,0,',','.')));
+			$printer->text(buatBaris4Kolom('', '', "Embalase", number_format($kasir->embalase,0,',','.')));
+			$printer->text(buatBaris4Kolom('', '', "Lain", number_format($kasir->lain,0,',','.')));
+			$printer->text(buatBaris4Kolom('', '', "Total", number_format($kasir->total,0,',','.')));
+			$printer->text(buatBaris4Kolom('', '', "Bayar", number_format($kasir->jumlah_uang,0,',','.')));
+			$printer->text(buatBaris4Kolom('', '', "Kembali", number_format($kasir->kembalian,0,',','.')));
+			$printer->text("\n");
 
-        $printer->initialize();
-        $printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
-        $printer->text("-- Terima Kasih --\n");
+			$printer->initialize();
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer->text("-- Terima Kasih --\n");
 
-        $printer->feed(3);
-		$printer->cut();
-        $printer->close();
+			$printer->feed(3);
+			$printer->cut();
+			$printer->close();
+		
+
+      
     }
 
 	

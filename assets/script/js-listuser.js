@@ -104,7 +104,7 @@ function wilayah(p_wilayah) {
 					e.nama_wilayah +
 					"</option>";
 			});
-			$("#select_wilayah").html(html);
+			$("#select_gudang").html(html);
 		},
 	});
 }
@@ -141,7 +141,7 @@ function save() {
 	var password = $("#password").val();
 	var aktif = $("#select_aktif").val();
 	var hak_akses = $("#select_level").val();
-	var wilayah = $("#select_wilayah").val();
+	var gudang = $("#select_gudang").val();
 	$("#save-button").hide();
 	$("#send-button").show();
 
@@ -156,7 +156,7 @@ function save() {
 				aktif: aktif,
 				hak_akses: hak_akses,
 				nama: nama,
-				wilayah: wilayah,
+				gudang: gudang,
 			},
 			success: function (res) {
 				var res = JSON.parse(res);

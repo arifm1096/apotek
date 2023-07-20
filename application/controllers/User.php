@@ -49,19 +49,19 @@ class User extends CI_Controller{
 		$sql_filter = "SELECT count(*) as allcount
 		FROM `tm_user` as u
 		LEFT JOIN tm_hak_akses as h ON u.hak_akses = h.id_hak_akses
-		LEFT JOIN tm_wilayah as w ON u.wilayah = w.id_wilayah
+		LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT u.id_user,u.nama as nama_akun,u.username,h.nama,u.hak_akses,u.aktif as id_aktif,u.wilayah,w.nama_wilayah,
+		$sql = "SELECT u.id_user,u.nama as nama_akun,u.username,h.nama,u.hak_akses,u.aktif as id_aktif,u.gudang,w.nama_wilayah,
 		(CASE WHEN (u.aktif ='y') THEN 'Aktif' 
 		WHEN	(u.aktif = 'n') THEN 'Tidak Aktif'
 		END) as is_aktif
 		FROM `tm_user` as u
 		LEFT JOIN tm_hak_akses as h ON u.hak_akses = h.id_hak_akses
-		LEFT JOIN tm_wilayah as w ON u.wilayah = w.id_wilayah
+		LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
 		WHERE $where
 		order by u.id_user " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
@@ -109,7 +109,7 @@ class User extends CI_Controller{
 		$password = $_POST['password'];
 		$hak_akses = $_POST['hak_akses'];
 		$aktif = $_POST['aktif'];
-		$wilayah = $_POST['wilayah'];
+		$wilayah = $_POST['gudang'];
 
 		if ($password !=="") {
 			$encrypt_password = md5(sha1($password));
@@ -122,7 +122,7 @@ class User extends CI_Controller{
 		$data = array(
 						'username'=> $username,
 						'nama' => $nama,
-						'wilayah'=>$wilayah,
+						'gudang'=>$wilayah,
 						'password'=> $password_fix,
 						'hak_akses'=> $hak_akses,
 						'aktif' => $aktif

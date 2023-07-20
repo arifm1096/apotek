@@ -190,10 +190,12 @@ function hapus_list(id) {
 }
 
 function get_nom(id, el, val) {
+	var jen_har = $("#jenis_harga_" + id).val();
+	var sat = $("#satuan_" + id).val();
 	$.ajax({
 		url: URL + "penjualan/get_nom_change",
 		type: "POST",
-		data: { id: id, el: el, val: val },
+		data: { id: id, el: el, val: val, jen_har: jen_har, sat: sat },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {

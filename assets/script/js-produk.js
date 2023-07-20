@@ -217,6 +217,7 @@ function load_produk(text, jual, rak) {
 			type: "POST",
 			data: { text: text, status_jual: jual, id_rak: rak },
 		},
+		order: [[0, "desc"]],
 		processing: true,
 		serverSide: true,
 		searching: false,

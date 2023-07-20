@@ -162,7 +162,8 @@
                                     </button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_stok_produk()">
+                                    <input type="hidden" name="p_print" id="p_print">
+                                    <button class="btn btn-block btn-info" type="button" onclick="cetak_nota()">
                                         <i class="fa fa-print"></i> &nbsp;
                                         <span id="save-button-produk">Cetak (P)</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>
