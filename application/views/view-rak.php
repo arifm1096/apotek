@@ -4,12 +4,12 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data Satuan</h4>
+                <h4>Data Rak</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Master</a></li>
-                    <li class="breadcrumb-item active">Data Satuan</li>
+                    <li class="breadcrumb-item active">Data Rak</li>
                 </ol>
             </div>
         </div>
@@ -17,19 +17,17 @@
         <div class="card">
             <div class="card-header">
                 <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
-                    data-target="#modal_input_satuan" data-backdrop="static" data-keyboard="false">
+                    data-target="#modal_input_rak" data-backdrop="static" data-keyboard="false">
                     <i class="fa fa-plus"></i> Add Data
                 </button>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="tbl_satuan" class="table table-bordered table-striped">
+                <table id="tbl_rak" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Kode</th>
-                            <th>Nama Satuan</th>
-                            <th>Keterangan</th>
+                            <th>Nama Rak</th>
                             <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
@@ -45,7 +43,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_input_satuan">
+<div class="modal fade" id="modal_input_rak">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-info">
@@ -60,23 +58,15 @@
                         <h5>Data Hak Akses</h5>
                         <hr>
 
-                        <form id="add_satuan">
+                        <form id="add_rak">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_satuan" id="id_satuan">
+                            <input type="hidden" name="id_rak" id="id_rak">
+
                             <div class="form-group">
-                                <label>Kode Satuan</label>
-                                <input type="text" id="kd_satuan" name="kd_satuan" class="form-control"
+                                <label>Nama Rak</label>
+                                <input type="text" id="nama_rak" name="nama_rak" class="form-control"
                                     placeholder="Inputkan Hak Akses">
-                            </div>
-                            <div class="form-group">
-                                <label>Nama Satuan</label>
-                                <input type="text" id="nama_satuan" name="nama_satuan" class="form-control"
-                                    placeholder="Inputkan Hak Akses">
-                            </div>
-                            <div class="form-group">
-                                <label>Keterangan</label>
-                                <textarea class="form-control" name="ket" id="ket" cols="30" rows="3"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Status Aktif</label>

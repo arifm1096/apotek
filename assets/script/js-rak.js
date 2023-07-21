@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	status_aktif();
-	load_satuan();
+	load_rak();
 	$("#loading").hide();
 });
 
@@ -32,10 +32,10 @@ function status_aktif(p_status) {
 	$("#select_aktif").html(html);
 }
 
-function load_satuan() {
-	$("#tbl_satuan").DataTable({
+function load_rak() {
+	$("#tbl_rak").DataTable({
 		ajax: {
-			url: URL + "master/load_satuan",
+			url: URL + "master/load_rak",
 			type: "POST",
 			data: {},
 		},
@@ -44,15 +44,13 @@ function load_satuan() {
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_satuan",
+				data: "id_rak",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
 
-			{ data: "kd_satuan" },
-			{ data: "nama_satuan" },
-			{ data: "ket" },
+			{ data: "nama_rak" },
 			{ data: "is_aktif" },
 			{
 				data: null,
@@ -60,22 +58,16 @@ function load_satuan() {
 				render: function (data, type, row) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
-						row.id_satuan +
+						row.id_rak +
 						"','" +
-						row.kd_satuan +
-						"','" +
-						row.nama_satuan +
-						"','" +
-						row.ket +
+						row.nama_rak +
 						"','" +
 						row.aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_satuan +
+						row.id_rak +
 						"','" +
-						row.nama_satuan +
-						"','" +
-						row.ket +
+						row.nama_rak +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -84,11 +76,11 @@ function load_satuan() {
 	});
 }
 
-$("#add_satuan").submit(function (e) {
+$("#add_rak").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "master/save_satuan",
+		url: URL + "master/save_rak",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -96,7 +88,7 @@ $("#add_satuan").submit(function (e) {
 		cache: false,
 		async: false,
 		beforeSend: function () {
-			$("#add_satuan").find("span.error-text").text();
+			$("#add_rak").find("span.error-text").text();
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
@@ -107,9 +99,9 @@ $("#add_satuan").submit(function (e) {
 					text: res.message,
 				});
 
-				$("#tbl_satuan").DataTable().clear().destroy();
-				load_satuan();
-				$("#modal_input_satuan").modal("hide");
+				$("#tbl_rak").DataTable().clear().destroy();
+				load_rak();
+				$("#modal_input_rak").modal("hide");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -121,25 +113,19 @@ $("#add_satuan").submit(function (e) {
 	});
 });
 
-function edit(p_id_satuan, p_kode, p_nama, p_ket, p_aktif) {
+function edit(p_id_rak, p_nama, p_aktif) {
 	status_aktif(p_aktif);
-	$("#mediumModalLabel").html("Edit Hak Akses");
-	$("#id_satuan").val(p_id_satuan);
-	$("#ket").val(p_ket);
-	$("#nama_satuan").val(p_nama);
-	$("#kd_satuan").val(p_kode);
+	$("#mediumModalLabel").html("Edit Rak");
+	$("#id_rak").val(p_id_rak);
+	$("#nama_rak").val(p_nama);
 	status_aktif(p_aktif);
-	$("#modal_input_satuan").modal("show");
+	$("#modal_input_rak").modal("show");
 }
 
-function hapus(id, satuan, ket) {
+function hapus(id, rak) {
 	Swal.fire({
-		html:
-			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Hak Akses  : " +
-			satuan +
-			"<br> " +
-			"Keterangan: " +
-			ket,
+		html: "<b>Apakah Anda yakin Menghapus Data ?</b> <br> Nama Rak : " + rak,
+
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
@@ -148,7 +134,7 @@ function hapus(id, satuan, ket) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "master/hapus_satuan",
+				url: URL + "master/hapus_rak",
 				type: "POST",
 				data: {
 					id: id,
@@ -159,8 +145,8 @@ function hapus(id, satuan, ket) {
 						//success show success modal
 
 						Swal.fire("Terhapus!", "Data Telah Dihapus", "success");
-						$("#tbl_satuan").DataTable().clear().destroy();
-						load_satuan();
+						$("#tbl_rak").DataTable().clear().destroy();
+						load_rak();
 					} else {
 						Swal.fire({
 							icon: "error",
@@ -174,11 +160,9 @@ function hapus(id, satuan, ket) {
 	});
 }
 
-$("#modal_input_satuan").on("hide.bs.modal", function () {
+$("#modal_input_rak").on("hide.bs.modal", function () {
 	$("#mediumModalLabel").html("Add New Data");
-	$("#id_satuan").val("");
-	$("#ket").val("");
-	$("#nama_satuan").val("");
-	$("#kd_satuan").val("");
+	$("#id_rak").val("");
+	$("#nama_rak").val("");
 	status_aktif((id_status = "pil"));
 });

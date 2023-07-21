@@ -97,13 +97,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('user/data_wilayah'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Gudang</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_rak'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Rak / Penyimpanan</p>
                             </a>

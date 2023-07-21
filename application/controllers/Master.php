@@ -292,7 +292,7 @@ class Master extends CI_Controller{
 // end pelanggan
 
 // start Satuan
-public function data_satuan(){
+	public function data_satuan(){
 		$var['content'] = 'view-satuan';
 		$var['js'] = 'js-satuan';
 		$this->load->view('view-index',$var);
@@ -311,9 +311,8 @@ public function data_satuan(){
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (nama_satuan like '%" . $searchValue . "%'
-								 OR kode_satuan like '%" . $searchValue . "%'
-								 OR no_hp like '%" . $searchValue . "%'
-								 OR alamat like '%" . $searchValue . "%'					
+								 OR kd_satuan like '%" . $searchValue . "%'
+								 OR ket like '%" . $searchValue . "%'					
 			) ";
 		}
 	
@@ -333,7 +332,7 @@ public function data_satuan(){
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT id_satuan,kode_satuan,nama_satuan,alamat,no_hp,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		$sql = "SELECT id_satuan,kd_satuan,nama_satuan,ket,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
 		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
 		END) as is_aktif 
 		FROM `tm_satuan`
@@ -394,6 +393,107 @@ public function data_satuan(){
 		}
 	}
 // End Satuan
+
+// start Satuan
+	public function data_rak(){
+		$var['content'] = 'view-rak';
+		$var['js'] = 'js-rak';
+		$this->load->view('view-index',$var);
+	}
+	public function load_rak(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (nama_rak like '%" . $searchValue . "%'					
+			) ";
+		}
+	
+		$where = " is_delete = 0 " . $searchQuery . "";
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tm_rak` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tm_rak`
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT id_rak,nama_rak,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
+		END) as is_aktif 
+		FROM `tm_rak`
+		WHERE $where
+		order by id_rak " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+	public function save_rak(){
+		$data = $this->input->post();
+		$cek = $this->db->get_where('tm_rak',array('nama_rak'=>$_POST['nama_rak'],'is_delete'=>0));
+
+		if(empty($data['id_rak'])){
+			if($cek->num_rows() == 0){
+				$sql = $this->db->insert('tm_rak',$data);
+					if($sql){
+						echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
+					}else{
+						echo json_encode(array('status'=>0,'msg'=>'Error 3423 || Gagal Menyimpan'));
+					}
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Sudah Ada'));
+			}
+		}else{
+			$sql = $this->db->where('id_rak',$data['id_rak'])->update('tm_rak',$data);
+				if($sql){
+					echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Error 3422 || Gagal Menyimpan'));
+				}
+		}
+		
+	}
+	public function hapus_rak(){
+		$id = $_POST['id'];
+		$delete_by = $this->session->userdata('id_user');
+		$time = date('Y-m-d H:i:s');
+		$update = $this->db->where('id_rak',$id)
+						   ->update('tm_rak',array(
+													'is_delete' => 1,
+													'delete_by' => $delete_by,
+													'delete_date' => $time
+						   						   )
+									);
+									// echo $this->db->last_query();
+		if($update){
+			echo json_encode(array('status'=>1,'msg'=>'Hapus Data Success'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Hapus Data Falied'));
+		}
+	}
+// End rak
 
 }
 
