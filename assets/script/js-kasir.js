@@ -252,9 +252,13 @@ function total_harga() {
 	var lai1 = parseInt(lai.replaceAll(".", ""));
 
 	let tot = sub1 + ser1 + emb1 + lai1;
-	// if (tot !== "") {
-	let for_tot = rupiah(tot);
-	// }
+	if (isNaN(tot)) {
+		var for_tot = "Rp. 0";
+	} else {
+		var for_tot = rupiah(tot);
+	}
+
+	console.log(tot);
 
 	$("#str_tot").html(for_tot);
 	$("#total").val(tot);
@@ -313,6 +317,48 @@ function add_kasir() {
 			} else {
 				$("#save-button").show();
 				$("#send-button").hide();
+				Swal.fire({
+					title: "<strong><u>Perhatian !!/u></strong>",
+					icon: "error",
+					html: res.msg,
+				});
+			}
+		},
+	});
+}
+
+function cetak_nota() {
+	var id_kasir = $("#id_kasir").val();
+	$.ajax({
+		url: URL + "penjualan/cetak_struk",
+		type: "POST",
+		data: { id_kasir: id_kasir },
+		success: function (data) {
+			console.log(data);
+		},
+	});
+}
+
+function close_kasir() {
+	$.ajax({
+		url: URL + "penjualan/get_selesai",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status) {
+				$("#id_kasir").val("");
+				$("#str_sub_tot").val("");
+				$("#kembalian").val("");
+				$("#total").val("");
+				$("#modal_bayar_kasir").modal("hide");
+				load_kasir();
+				Swal.fire({
+					title: "<strong><u>Data Tersimpan</u></strong>",
+					icon: "success",
+					html: res.msg,
+				});
+			} else {
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
 					icon: "error",

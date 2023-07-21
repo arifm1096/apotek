@@ -170,7 +170,7 @@
                                     </button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-block btn-danger" type="button" onclick="close()">
+                                    <button class="btn btn-block btn-danger" type="button" onclick="close_kasir()">
                                         <i class="fa fa-save fa-window-close"></i> &nbsp;
                                         <span id="save-button-produk">Close (C)</span>
                                     </button>

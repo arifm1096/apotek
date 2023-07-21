@@ -4,12 +4,12 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data wilayah</h4>
+                <h4>Data Gudang</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Data wilayah</a></li>
-                    <li class="breadcrumb-item active">Wilayah</li>
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active">Data Gudang</li>
                 </ol>
             </div>
         </div>
@@ -27,8 +27,10 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Nama Wilayah</th>
+                            <th>Nama Gudang</th>
+                            <th>No Hp</th>
                             <th>Alamat</th>
+                            <th>Nama Printer</th>
                             <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
@@ -69,11 +71,21 @@
                                 <input type="text" id="nama_wilayah" name="nama_wilayah" class="form-control"
                                     placeholder="Inputkan Nama Wilayah">
                             </div>
-
+                            <div class="form-group">
+                                <label>No Telp</label>
+                                <input type="text" id="no_hp" name="no_hp" class="form-control"
+                                    placeholder="Inputkan No Telp">
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Printer</label>
+                                <input type="text" id="nama_print" name="nama_print" class="form-control"
+                                    placeholder="Inputkan Nama Printer">
+                            </div>
                             <div class="form-group">
                                 <label>Alamat</label>
-                                <input type="text" id="alamat" name="alamat" class="form-control"
-                                    placeholder="Inputkan Alamat">
+                                <textarea class="form-control" name="alamat" id="alamat" cols="30"
+                                    rows="3">Inputkan Alamat</textarea>
+
                             </div>
                             <div class="form-group">
                                 <label>Status Aktif</label>

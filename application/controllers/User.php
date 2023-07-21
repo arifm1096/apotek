@@ -216,7 +216,7 @@ class User extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT id_wilayah,nama_wilayah,alamat,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		$sql = "SELECT id_wilayah,nama_wilayah,alamat,aktif,no_hp,nama_print,(CASE WHEN (aktif ='y') THEN 'Aktif' 
 		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
 		END) as is_aktif
 		FROM `tm_wilayah`

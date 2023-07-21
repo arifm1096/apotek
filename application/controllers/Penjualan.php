@@ -347,8 +347,7 @@ class Penjualan extends CI_Controller {
 
 		$data_up = array(
 						'id_kasir'=>$insert_id,
-						'no_nota'=>$noTa,
-						'is_selesai'=>1
+						'no_nota'=>$noTa
 		);
 
 		if(!empty($insert_id)){
@@ -366,37 +365,26 @@ class Penjualan extends CI_Controller {
 		}
 	}
 
-	public function get_selesai(){
-		// $id_user = $this->session->userdata('id_user');
-		// $noTa = $this->Model_penjualan->get_no_nota($id_user);
-		// $data = array(
-		// 				'no_nota' => $noTa,
-		// 				'tgl_transaksi' => date('Y-m-d H:i:s'),
-						
-
-		// 			);
-
-		var_dump(date('Y-m-d H:i:s'));
-
-	}
-	
 	public function cetak_struk() {
         // me-load library escpos
         $this->load->library('escpos');
 		$id_user = $this->session->userdata('id_user');
 		// $id_kasir = $this->input->post('id_kasir');
-		$id_kasir = 8;
+		$id_kasir = $_POST['id_kasir'];
 		$data = $this->Model_penjualan->get_user($id_user);
 		$kasir = $this->Model_penjualan->get_kasir_detail($id_kasir);
 		$jual = $this->Model_penjualan->get_produk_jual($id_kasir);
+		$nama_print = $data->nama_print;
 		
-        $connector = new Escpos\PrintConnectors\WindowsPrintConnector($data->nama_print);
-        $printer = new Escpos\Printer($connector);
-		
-			  function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
+     
+		try {
+			$connector = new Escpos\PrintConnectors\WindowsPrintConnector($nama_print);
+			$printer = new Escpos\Printer($connector);
+
+			function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
 				$lebar_kolom_1 = 15;
-				$lebar_kolom_2 = 5;
+				$lebar_kolom_2 = 8;
 				$lebar_kolom_3 = 8;
 				$lebar_kolom_4 = 9;
 
@@ -451,14 +439,14 @@ class Penjualan extends CI_Controller {
 
 			// Membuat tabel
 			$printer->initialize(); 
-			$printer->text("----------------------------------------\n");
+			$printer->text("---------------------------------------------\n");
 			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
-			$printer->text("----------------------------------------\n");
+			$printer->text("---------------------------------------------\n");
 			foreach ($jual as $key => $val) {
 				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
 			}
 			
-			$printer->text("----------------------------------------\n");
+			$printer->text("---------------------------------------------\n");
 			
 			$printer->text(buatBaris4Kolom('', '', "Service", number_format($kasir->service,0,',','.')));
 			$printer->text(buatBaris4Kolom('', '', "Embalase", number_format($kasir->embalase,0,',','.')));
@@ -472,13 +460,30 @@ class Penjualan extends CI_Controller {
 			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
 			$printer->text("-- Terima Kasih --\n");
 
-			$printer->feed(3);
+			$printer->feed(1);
 			$printer->cut();
 			$printer->close();
+		} catch (Exception $e) {
+			echo json_encode(array("status"=>"0","msg"=>"Printer Belum TerKoneksi"));
+		}
 		
-
-      
+		
     }
+
+	public function get_selesai(){
+		$id_user = $this->session->userdata('id_user');
+		$sql = "UPDATE tx_jual as j
+				SET is_selesai = 1
+				WHERE j.insert_by = $id_user
+				AND j.is_delete = 0 AND j.is_selesai = 0";
+		$data = $this->db->query($sql);
+
+		if($data){
+			echo json_encode(array('status'=> 1,'msg'=>'Data Sudah <b>Kosong</b> & Terimpan'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Di kosongkan'));
+		}
+	}
 
 	
 

@@ -50,7 +50,9 @@ function load_wilayah() {
 				},
 			},
 			{ data: "nama_wilayah" },
+			{ data: "no_hp" },
 			{ data: "alamat" },
+			{ data: "nama_print" },
 			{ data: "is_aktif" },
 			{
 				data: null,
@@ -62,7 +64,11 @@ function load_wilayah() {
 						"','" +
 						row.nama_wilayah +
 						"','" +
+						row.no_hp +
+						"','" +
 						row.alamat +
+						"','" +
+						row.nama_print +
 						"','" +
 						row.aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
@@ -117,12 +123,14 @@ $("#add_wilayah").submit(function (e) {
 	});
 });
 
-function edit(p_id_wilayah, p_nama_wilayah, p_alamat, p_aktif) {
+function edit(p_id_wilayah, p_nama_wilayah, p_hp, p_alamat, p_print, p_aktif) {
 	status_aktif(p_aktif);
 	$("#mediumModalLabel").html("Edit User");
 	$("#id_wilayah").val(p_id_wilayah);
 	$("#nama_wilayah").val(p_nama_wilayah);
 	$("#alamat").val(p_alamat);
+	$("#no_hp").val(p_hp);
+	$("#nama_print").val(p_print);
 	$("#modal_input_wilayah").modal("show");
 }
 
