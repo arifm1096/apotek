@@ -83,8 +83,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Alamat</label>
-                                <textarea class="form-control" name="alamat" id="alamat" cols="30"
-                                    rows="3">Inputkan Alamat</textarea>
+                                <textarea class="form-control" name="alamat" id="alamat"
+                                    cols="3                                    rows=" 3">Inputkan Alamat</textarea>
 
                             </div>
                             <div class="form-group">
