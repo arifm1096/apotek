@@ -407,7 +407,15 @@ class Produk extends CI_Controller {
 	}
 
 	public function get_id_produk(){
-		// $id_produk
+		
+	}
+
+	public function hapus_satuan (){
+
+	}
+
+	public function hapus_harga_jenis(){
+
 	}
 
 	public function hapus_produk(){

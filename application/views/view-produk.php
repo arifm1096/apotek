@@ -335,7 +335,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Add Data</h4>
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Edit Data</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -350,18 +350,15 @@
                                 <div class="col-md-12">
                                     <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                         <label class="btn btn-danger active">
-                                            <input type="radio" name="jnp_options" id="obat" value="obat"
-                                                autocomplete="off" checked>
+                                            <input type="radio" name="jnp_options" id="edit_obat" value="2">
                                             Obat
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="jnp_options" id="alkes" value="alkes"
-                                                autocomplete="off"> Alat
+                                            <input type="radio" name="jnp_options" id="edit_alkes" value="1"> Alat
                                             Kesehatan
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="jnp_options" id="umum" value="umum"
-                                                autocomplete="off"> Umum
+                                            <input type="radio" name="jnp_options" id="edit_umum" value="3"> Umum
                                         </label>
                                     </div>
                                 </div>
@@ -372,13 +369,13 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Nama Produk</label>
-                                        <input type="hidden" id="jenis_produk">
-                                        <input type="text" id="nama_produk" name="nama_produk" class="form-control"
+                                        <input type="hidden" id="edit_jenis_produk">
+                                        <input type="text" id="edit_nama_produk" name="nama_produk" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Nama Pabrik</label>
-                                        <input type="text" id="produk_by" name="produk_by" class="form-control"
+                                        <input type="text" id="edit_produk_by" name="produk_by" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>
                                     <div class="form-group row">
@@ -387,7 +384,7 @@
                                             value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                         <input type="hidden" name="id_produk">
                                         <div class="col-md-11">
-                                            <input type="text" id="sku_kode_produk" name="sku_kode_produk"
+                                            <input type="text" id="edit_sku_kode_produk" name="sku_kode_produk"
                                                 class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
                                         </div>
                                         <div class="col-md-1">
@@ -397,7 +394,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Barcode</label>
-                                        <input type="text" id="barcode" name="barcode" class="form-control"
+                                        <input type="text" id="edit_barcode" name="barcode" class="form-control"
                                             placeholder="Inputkan Barcode">
                                     </div>
 
@@ -406,15 +403,15 @@
 
                                         <label>Satuan Utama :</label>
                                         <div class="col-md-11">
-                                            <select name="satuan_utama" id="satuan_utama" class="form-control select2"
-                                                onchange="get_satuan_utama()" required>
+                                            <select name="satuan_utama" id="edit_satuan_utama"
+                                                class="form-control select2" onchange="get_satuan_utama()" required>
                                             </select>
                                             <h6>Pilih <b>Satuan Utama</b> terlebih dahulu sebelum menambahkan satuan
                                                 lainnya.</h6>
-                                            <input type="hidden" id="p_satuan_utama">
-                                            <input type="hidden" id="p_sat_row">
-                                            <input type="hidden" id="sat_param_row">
-                                            <input type="hidden" id="param_row">
+                                            <input type="hidden" id="edit_p_satuan_utama">
+                                            <input type="hidden" id="edit_p_sat_row">
+                                            <input type="hidden" id="edit_sat_param_row">
+                                            <input type="hidden" id="edit_param_row">
                                         </div>
                                         <div class="col-md-1">
                                             <button type="button" class="btn btn-sm btn-danger"
@@ -422,7 +419,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <div id="satuan-html"></div>
+                                        <div id="edit_satuan-html"></div>
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <button class="btn btn-block btn-danger" type="button"
@@ -439,9 +436,11 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <input type="text" name="harga_beli" id="edit_harga_beli"
+                                                class="form-control">
                                             <div class="input-group-append">
-                                                <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                                <span class="input-group-text"
+                                                    id="edit_satuan_harga_beli">/Satuan</span>
                                             </div>
                                         </div>
                                     </div>
@@ -451,9 +450,11 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control">
+                                            <input type="text" name="harga_jual" id="edit_harga_jual"
+                                                class="form-control">
                                             <div class="input-group-append">
-                                                <span class="input-group-text" id="satuan_harga_jual">/Satuan</span>
+                                                <span class="input-group-text"
+                                                    id="edit_satuan_harga_jual">/Satuan</span>
                                             </div>
                                         </div>
                                     </div>
@@ -463,35 +464,35 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="fleksibel" value="1"
-                                                            autocomplete="off" checked>
+                                                        <input type="radio" name="harga_option" id="edit_fleksibel"
+                                                            value="1" autocomplete="off" checked>
                                                         Fleksibel
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
                                                             aria-controls="custom-tabs-one-home"
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="grosir" value="2"
-                                                            autocomplete="off"> Grosir
+                                                        <input type="radio" name="harga_option" id="edit_grosir"
+                                                            value="2" autocomplete="off"> Grosir
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="member" value="3"
-                                                            autocomplete="off"> Membership
+                                                        <input type="radio" name="harga_option" id="edit_member"
+                                                            value="3" autocomplete="off"> Membership
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="from-group">
-                                        <input type="hidden" id="harga_option_param">
-                                        <input type="hidden" id="p_fleksibel">
-                                        <input type="hidden" id="p_grosir">
-                                        <input type="hidden" id="p_member">
+                                        <input type="hidden" id="edit_harga_option_param">
+                                        <input type="hidden" id="edit_p_fleksibel">
+                                        <input type="hidden" id="edit_p_grosir">
+                                        <input type="hidden" id="edit_p_member">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <div id="fleksibel_list"></div>
-                                                <div id="grosir_list"></div>
-                                                <div id="member_list"></div>
+                                                <div id="edit_fleksibel_list"></div>
+                                                <div id="edit_grosir_list"></div>
+                                                <div id="edit_member_list"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -505,12 +506,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Rak :</label>
-                                        <select name="id_rak" id="id_rak" class="form-control select2" required>
+                                        <select name="id_rak" id="edit_id_rak" class="form-control select2" required>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Jumlah Minimal</label>
-                                        <input type="number" id="jumlah_minimal" name="jumlah_minimal"
+                                        <input type="number" id="edit_jumlah_minimal" name="jumlah_minimal"
                                             class="form-control" placeholder="Inputkan Jumlah Utama" required>
                                     </div>
                                     <div class="form-group">
@@ -518,16 +519,16 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="fleksibel" value="y"
-                                                            autocomplete="off" checked>
+                                                        <input type="radio" name="harga_option" id="edit_fleksibel"
+                                                            value="y" autocomplete="off" checked>
                                                         Dijual
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
                                                             aria-controls="custom-tabs-one-home"
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="grosir" value="n"
-                                                            autocomplete="off"> Tidak Dijual
+                                                        <input type="radio" name="harga_option" id="edit_grosir"
+                                                            value="n" autocomplete="off"> Tidak Dijual
                                                     </label>
                                                 </div>
                                             </div>

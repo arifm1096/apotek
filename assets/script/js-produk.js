@@ -253,16 +253,6 @@ function load_produk(text, jual, rak) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
 						row.id_produk +
-						"','" +
-						row.kode_produk +
-						"','" +
-						row.nama_produk +
-						"','" +
-						row.alamat +
-						"','" +
-						row.no_hp +
-						"','" +
-						row.aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
 						row.id_produk +
@@ -651,6 +641,10 @@ function loop_member_edit(param) {
 	});
 
 	$("#member_list").html(html);
+}
+
+function edit() {
+	$("#modal_edit_produk").modal("show");
 }
 
 function save_data_produk() {
