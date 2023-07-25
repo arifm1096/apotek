@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Produk extends CI_Controller {
 
@@ -32,6 +35,45 @@ class Produk extends CI_Controller {
 		$var['content'] = 'view-produk';
 		$var['js'] = 'js-produk';
 		$this->load->view('view-index',$var);
+	}
+
+	public function excel(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+     
+        $sheet->setCellValue('A1', "No");
+        $sheet->setCellValue('B1', "Rute");
+        $sheet->setCellValue('C1', "Jabatan");
+        $sheet->setCellValue('D1', "Golongan");
+        $sheet->setCellValue('E1', "Status Penumpang");
+        $sheet->setCellValue('F1', "Gaji Jalan");
+        $sheet->setCellValue('G1', "Bonus Tabung");
+        $sheet->setCellValue('H1', "Jumlah Point(Desimal)");
+        
+        // $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        // $numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
+        // foreach($data_laporan as $data){ // Lakukan looping pada variabel siswa
+        //   $sheet->setCellValue('A'.$numrow, $no);
+        //   $sheet->setCellValue('B'.$numrow, $data['nama_rute']);
+        //   $sheet->setCellValue('C'.$numrow, $data['nama_jabatan']);
+        //   $sheet->setCellValue('D'.$numrow, $data['nama_golongan']);
+        //   $sheet->setCellValue('E'.$numrow, $data['nama_status']);
+        //   $sheet->setCellValue('F'.$numrow, $data['gaji']);
+        //   $sheet->setCellValue('G'.$numrow, $data['tabung']);
+        //   $sheet->setCellValue('H'.$numrow, $data['total_point']);
+        //   $no++; // Tambah 1 setiap kali looping
+        //   $numrow++; // Tambah 1 setiap kali looping
+        // }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=master_produk.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+
+    
 	}
 
 	public function load_produk(){
