@@ -799,4 +799,5 @@ function add_data() {
 
 function edit() {
 	$("#alkes").closest(".btn").button("toggle");
+	$("#modal_input_produk").modal("show");
 }

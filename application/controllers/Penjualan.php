@@ -322,6 +322,13 @@ class Penjualan extends CI_Controller {
 		$data_cek = $this->db->query($sql_cek_kasir);
 	}
 
+	public function get_update_stok(){
+		$sql = "SELECT j.id_produk,j.nama_produk,pd.jumlah_stok,j.jumlah_produk,(pd.jumlah_stok-j.jumlah_produk) as sisa
+				FROM  tx_jual as j
+				LEFT JOIN `tx_produk_stok` as pd on pd.id_produk = j.id_produk
+				WHERE j.is_selesai = 0 ";
+	}
+
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');
 		$noTa = $this->Model_penjualan->get_no_nota($id_user);
