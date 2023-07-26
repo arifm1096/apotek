@@ -25,7 +25,7 @@ class Produk extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-
+		$this->load->model('model_produk');
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
 		}
@@ -449,7 +449,21 @@ class Produk extends CI_Controller {
 	}
 
 	public function get_id_produk(){
-		
+		$id =$_POST['id'];
+		if(!empty($id)){
+			$where ="id_produk = $id";
+			$produk = $this->model_produk->get_produk($where);
+			$satuan = $this->model_produk->get_produk_detail($where);
+			$harga = $this->model_produk->get_produk_harga($where);
+
+			if(!empty($produk) || !empty($satuan) || !empty($harga)){
+				echo json_encode(array('status'=>1,'produk'=>$produk,'satuan'=>$satuan,'harga'=>$harga));
+			}else{
+				echo json_encode(array('status'=>0,'produk'=>null,'satuan'=>null,'harga'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'error Param Null','produk'=>null,'satuan'=>null,'harga'=>null));
+		}
 	}
 
 	public function hapus_satuan (){

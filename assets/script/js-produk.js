@@ -643,7 +643,19 @@ function loop_member_edit(param) {
 	$("#member_list").html(html);
 }
 
-function edit() {
+function edit(id) {
+	$.ajax({
+		url: URL + "produk/get_id_produk",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse();
+			if (res.status == 1) {
+			} else {
+			}
+		},
+	});
+
 	$("#modal_edit_produk").modal("show");
 }
 
