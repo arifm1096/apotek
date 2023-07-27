@@ -328,8 +328,19 @@ function hapus(id, supplier, ket) {
 }
 
 function get_ksu() {
-	var jenis_produk = $("#jenis_produk").val();
-	var nama_produk = $("#nama_produk").val();
+	var p_jenis_produk = $("#jenis_produk").val();
+	var P_nama_produk = $("#nama_produk").val();
+
+	var e_jenis_produk = $("#edit_jenis_produk").val();
+	var e_nama_produk = $("#edit_nama_produk").val();
+
+	if (p_jenis_produk == "" && p_nama_produk == "") {
+		var jenis_produk = p_jenis_produk;
+		var nama_produk = p_nama_produk;
+	} else {
+		var jenis_produk = e_jenis_produk;
+		var nama_produk = e_nama_produk;
+	}
 	$.ajax({
 		type: "POST",
 		url: URL + "produk/get_kode_ksu",
@@ -338,8 +349,10 @@ function get_ksu() {
 			var res = JSON.parse(data);
 			if (res.status == "1") {
 				$("#sku_kode_produk").val(res.result);
+				$("#edit_sku_kode_produk").val(res.result);
 			} else {
 				$("#sku_kode_produk").val(res.result);
+				$("#edit_sku_kode_produk").val(res.result);
 				Swal.fire({
 					icon: "error",
 					title: "Warning",
@@ -367,6 +380,7 @@ function get_satuan_utama() {
 $("input[type=radio][name=jnp_options]").change(function () {
 	var val = this.value;
 	$("#jenis_produk").val(val);
+	$("#edit_jenis_produk").val(val);
 });
 
 $("input[type=radio][name=harga_option]").change(function () {
@@ -645,17 +659,74 @@ function loop_member_edit(param) {
 	$("#member_list").html(html);
 }
 
+function loop_satuan_edit(param) {
+	var el_satuan = "";
+	param.forEach((e) => {
+		load_satuan(e.id_satuan);
+		el_satuan =
+			` <div class="row" id="row_` +
+			e.id_produk_detail +
+			`">
+									
+									<div class="col-md-3"><input type="number" name="jumlah_produk1" value="` +
+			e.jumlah_produk +
+			`" class="form-control"
+											placeholder="Inputkan Jumlah Produk">
+									</div>
+									<div class="col-md-3">
+										<select name="id_satuan" class="form-control select2 p_satuan">
+											<option value=""> Pilih Satuan</option>
+										</select>
+									</div>
+									<div class="col-md-4">
+										<div class="input-group mb-3">
+											<input type="number" name="jumlah_produk2" value="` +
+			e.jumlah_produk_p +
+			`" class="form-control"
+												placeholder="Inputkan Produk Persatuan">
+											<div class="input-group-append">
+												<span class="input-group-text" id="sat_param">` +
+			e.nama_satuan +
+			`
+			</span>
+												<button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
+			e.id_produk_detail +
+			`);"><i
+														class="fa fa-trash"></i></button>
+											</div>
+										</div>
+
+									</div>
+								</div>`;
+	});
+
+	$("#edit_loop_satuan-html").html(el_satuan);
+}
+
 function load_jenis_produk(id) {
-	if (id == 1) {
+	if (id == 2) {
 		$("#edit_obat").closest(".btn").button("toggle");
+		$("#edit_jenis_produk").val("obat");
 	}
 
-	if (id == 2) {
+	if (id == 1) {
 		$("#edit_alkes").closest(".btn").button("toggle");
+		$("#edit_jenis_produk").val("alat kesehatan");
 	}
 
 	if (id == 3) {
 		$("#edit_umum").closest(".btn").button("toggle");
+		$("#edit_jenis_produk").val("umum");
+	}
+}
+
+function load_status_jual(id) {
+	if (id == 1) {
+		$("#edit_jual").closest(".btn").button("toggle");
+	}
+
+	if (id == 2) {
+		$("#edit_tidak_dijual").closest(".btn").button("toggle");
 	}
 }
 
@@ -667,19 +738,21 @@ function edit(id) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				$("#edit_jenis_produk").val(res.produk.id_jenis_produk);
 				load_jenis_produk(res.produk.id_jenis_produk);
 				load_select("pil", res.produk.id_rak, res.produk.satuan_utama);
+				load_status_jual(res.produk.status_jual);
+				loop_satuan_edit(res.satuan);
 				$("#edit_nama_produk").val(res.produk.nama_produk);
 				$("#edit_produk_by").val(res.produk.produk_by);
 				$("#edit_sku_kode_produk").val(res.produk.sku_kode_produk);
 				$("#edit_barcode").val(res.produk.barcode);
-				$("#edit_nama_produk").val(res.produk.nama_produk);
-				$("#edit_nama_produk").val(res.produk.nama_produk);
+				$("#edit_harga_beli").val(res.produk.harga_beli);
+				$("#edit_harga_jual").val(res.produk.harga_jual);
+				$("#edit_jumlah_minimal").val(res.produk.jumlah_minimal);
 				$("#modal_edit_produk").modal("show");
 			} else {
 				Swal.fire({
-					icon: error,
+					icon: "error",
 					title: "Perhatian",
 					text: res.msg,
 				});
@@ -823,10 +896,5 @@ $("#modal_input_produk").on("hide.bs.modal", function () {
 });
 
 function add_data() {
-	$("#modal_input_produk").modal("show");
-}
-
-function edit() {
-	$("#alkes").closest(".btn").button("toggle");
 	$("#modal_input_produk").modal("show");
 }

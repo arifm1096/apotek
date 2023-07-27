@@ -287,7 +287,7 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="fleksibel" value="y"
+                                                        <input type="radio" name="harga_option" id="fleksibel" value="1"
                                                             autocomplete="off" checked>
                                                         Dijual
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
@@ -295,7 +295,7 @@
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="grosir" value="n"
+                                                        <input type="radio" name="harga_option" id="grosir" value="2"
                                                             autocomplete="off"> Tidak Dijual
                                                     </label>
                                                 </div>
@@ -350,15 +350,15 @@
                                 <div class="col-md-12">
                                     <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                         <label class="btn btn-danger active">
-                                            <input type="radio" name="jnp_options" id="edit_obat" value="2">
+                                            <input type="radio" name="jnp_options" id="edit_obat" value="obat">
                                             Obat
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="jnp_options" id="edit_alkes" value="1"> Alat
+                                            <input type="radio" name="jnp_options" id="edit_alkes" value="alkes"> Alat
                                             Kesehatan
                                         </label>
                                         <label class="btn btn-danger">
-                                            <input type="radio" name="jnp_options" id="edit_umum" value="3"> Umum
+                                            <input type="radio" name="jnp_options" id="edit_umum" value="umum"> Umum
                                         </label>
                                     </div>
                                 </div>
@@ -419,6 +419,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <div id="edit_loop_satuan-html"></div>
                                         <div id="edit_satuan-html"></div>
                                         <div class="row">
                                             <div class="col-md-12">
@@ -519,16 +520,17 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="edit_fleksibel"
-                                                            value="y" autocomplete="off" checked>
+                                                        <input type="radio" name="harga_option" id="edit_jual" value="1"
+                                                            autocomplete="off" checked>
                                                         Dijual
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
                                                             aria-controls="custom-tabs-one-home"
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="edit_grosir"
-                                                            value="n" autocomplete="off"> Tidak Dijual
+                                                        <input type="radio" name="harga_option" id="edit_tidak_dijual"
+                                                            value="2" autocomplete="off"> Tidak Dijual
+                                                        <input type="hidden" name="edit_status_jual">
                                                     </label>
                                                 </div>
                                             </div>

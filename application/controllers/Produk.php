@@ -452,8 +452,11 @@ class Produk extends CI_Controller {
 		$id =$_POST['id'];
 		if(!empty($id)){
 			$where ="id_produk = $id";
-			$produk = $this->model_produk->get_produk($where);
-			$satuan = $this->model_produk->get_produk_detail($where);
+			$where_p ="p.id_produk = $id";
+			$produk = $this->model_produk->get_produk($where_p);
+			
+			$satuan = $this->model_produk->get_produk_detail($where_p);
+			// echo $this->db->last_query();
 			$harga = $this->model_produk->get_produk_harga($where);
 
 			if(!empty($produk) || !empty($satuan) || !empty($harga)){
