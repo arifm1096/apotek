@@ -825,3 +825,8 @@ $("#modal_input_produk").on("hide.bs.modal", function () {
 function add_data() {
 	$("#modal_input_produk").modal("show");
 }
+
+function edit() {
+	$("#alkes").closest(".btn").button("toggle");
+	$("#modal_input_produk").modal("show");
+}
