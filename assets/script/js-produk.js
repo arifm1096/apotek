@@ -127,6 +127,8 @@ function load_select(p_jenis_produk, p_rak, p_satuan) {
 			$("#id_jenis_produk").html(html_jn_pro);
 			$("#satuan_utama").html(html_satuan);
 			$("#id_rak").html(html_rak);
+			$("#edit_satuan_utama").html(html_satuan);
+			$("#edit_id_rak").html(html_rak);
 		},
 	});
 }
@@ -643,20 +645,47 @@ function loop_member_edit(param) {
 	$("#member_list").html(html);
 }
 
+function load_jenis_produk(id) {
+	if (id == 1) {
+		$("#edit_obat").closest(".btn").button("toggle");
+	}
+
+	if (id == 2) {
+		$("#edit_alkes").closest(".btn").button("toggle");
+	}
+
+	if (id == 3) {
+		$("#edit_umum").closest(".btn").button("toggle");
+	}
+}
+
 function edit(id) {
 	$.ajax({
 		url: URL + "produk/get_id_produk",
 		type: "POST",
 		data: { id: id },
 		success: function (data) {
-			var res = JSON.parse();
+			var res = JSON.parse(data);
 			if (res.status == 1) {
+				$("#edit_jenis_produk").val(res.produk.id_jenis_produk);
+				load_jenis_produk(res.produk.id_jenis_produk);
+				load_select("pil", res.produk.id_rak, res.produk.satuan_utama);
+				$("#edit_nama_produk").val(res.produk.nama_produk);
+				$("#edit_produk_by").val(res.produk.produk_by);
+				$("#edit_sku_kode_produk").val(res.produk.sku_kode_produk);
+				$("#edit_barcode").val(res.produk.barcode);
+				$("#edit_nama_produk").val(res.produk.nama_produk);
+				$("#edit_nama_produk").val(res.produk.nama_produk);
+				$("#modal_edit_produk").modal("show");
 			} else {
+				Swal.fire({
+					icon: error,
+					title: "Perhatian",
+					text: res.msg,
+				});
 			}
 		},
 	});
-
-	$("#modal_edit_produk").modal("show");
 }
 
 function save_data_produk() {
