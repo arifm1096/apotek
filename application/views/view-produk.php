@@ -154,7 +154,7 @@
                                         <label>Kode Produk / SKU</label>
                                         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                             value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                                        <input type="hidden" name="id_produk">
+
                                         <div class="col-md-11">
                                             <input type="text" id="sku_kode_produk" name="sku_kode_produk"
                                                 class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
@@ -498,7 +498,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <button class="btn btn-block btn-danger" type="button"
-                                                onclick="loop_harga_al();">
+                                                onclick="loop_harga_al_edit();">
                                                 Tambah Harga Alternatif
                                             </button>
                                         </div>
@@ -542,7 +542,8 @@
                             <div class="row">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
+                                    <button class="btn btn-block btn-info" type="button"
+                                        onclick="save_edit_data_produk()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
                                         <span id="save-button-produk">Simpan Produk</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>

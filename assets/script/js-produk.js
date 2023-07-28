@@ -384,7 +384,7 @@ $("input[type=radio][name=jnp_options]").change(function () {
 	$("#edit_jenis_produk").val(val);
 });
 
-$("input[type=radio][name=harga_option_edit]").change(function () {
+$("input[type=radio][name=harga_option]").change(function () {
 	var val = this.value;
 	$("#harga_option_param").val(val);
 
@@ -695,31 +695,48 @@ $("#modal_input_produk").on("hide.bs.modal", function () {
 	load_select("pil", "pil", "pil");
 });
 
+$("#modal_edit_produk").on("hide.bs.modal", function () {
+	$("#mediumModalLabel").html("Add New Data");
+	$("#id_produk").val("");
+	$("#nama_produk").val("");
+	$("#produk_by").val("");
+	$("#sku_kode_produk").val("");
+	$("#barcode").val("");
+	$("#satuan_utama").val("");
+	$("#id_rak").val("");
+	$("#jumlah_minimal").val("");
+	$("input[type=radio][name=harga_option]").val("");
+	$("#harga_beli").val("");
+	$("#jenis_produk").val("");
+	load_select("pil", "pil", "pil");
+	$("#edit_loop_satuan-html").find(".row").remove();
+});
+
 function add_data() {
 	$("#modal_input_produk").modal("show");
 }
 
 // edit Produk
 
-$("input[type=radio][name=harga_option]").change(function () {
+$("input[type=radio][name=harga_option_edit]").change(function () {
 	var val = this.value;
-	$("#harga_option_param").val(val);
+	$("#edit_harga_option_param").val(val);
 
 	if (val == 1) {
-		$("#fleksibel_list_edit").show();
-		$("#grosir_list_edit").hide();
-		$("#member_list_edit").hide();
+		$("#edit_fleksibel_list").show();
+		$("#edit_grosir_list").hide();
+		$("#edit_member_list").hide();
 	}
 
 	if (val == 2) {
-		$("#fleksibel_list_edit").hide();
-		$("#grosir_list_edit").show();
-		$("#member_list_edit").hide();
+		$("#edit_fleksibel_list").hide();
+		$("#edit_grosir_list").show();
+		$("#edit_member_list").hide();
 	}
 	if (val == 3) {
-		$("#fleksibel_list_edit").hide();
-		$("#grosir_list_edit").hide();
-		$("#member_list_edit").show();
+		$("#edit_fleksibel_list").hide();
+		$("#edit_grosir_list").hide();
+		$("#edit_member_list").show();
 	}
 });
 
@@ -766,104 +783,124 @@ function get_satuan_utama_edit() {
 function loop_fleksibel_edit(param) {
 	var html = "";
 	param.forEach((e) => {
-		html +=
-			`<div class="row` +
-			e.id_detail_produk +
-			`">
-					<div class="col-md-4">
+		if (e.id_jenis_harga == "1") {
+			html +=
+				`<div class = "row" id="row_flek_ed_` +
+				e.id_harga +
+				`">
+					<div class="col-md-6">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text" name="id_detail_produk" id="id_detail_produk_fleksibel"
-									class="form-control">
-								<input type="text" name="harga_jual" id="harga_jual_fleksibel"
-									class="form-control">
+								<input type="text" name="id_detail_produk" id="edit_id_detail_produk_fleksibel"
+									class="form-control" value="` +
+				e.harga_jual +
+				`">
+								
 								<div class="input-group-append">
 									<span class="input-group-text">.00</span>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-5">
 						<div class="form-group">
-							<input type="text" id="ket" name="ket" class="form-control"
-								placeholder="Inputkan Keterangan">
+							<input type="text" id="edit_ket" name="ket" class="form-control"
+								placeholder="Inputkan Keterangan" value="` +
+				e.ket +
+				`">
 						</div>
 					</div>
-					<div class="col-md-2">
-						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_flek(` +
-			e.id_detail_produk +
-			`);"><i
+					<div class="col-md-1">
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_flek_ed(` +
+				e.id_harga +
+				`,` +
+				e.id_harga +
+				`);"><i
 								class="fa fa-trash"></i></button>
 					</div>
 				</div>`;
+		}
 	});
 
-	$("#flaksibel_list").html(html);
+	$("#edit_fleksibel_list").html(html);
 }
 
 function loop_grosir_edit(param) {
 	var html = "";
 	param.forEach((e) => {
-		html += `<div class="row">
-					<div class="col-md-4">
+		if (e.id_jenis_harga == "2") {
+			html +=
+				`<div class = "row" id="row_gro_ed_` +
+				e.id_harga +
+				`">
+					<div class="col-md-5">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text" id="harga_jual_grosir" class="form-control">
+								<input type="text" id="edit_harga_jual_grosir" class="form-control" value="` +
+				e.harga_jual +
+				`">
 								<div class="input-group-append">
 									<span class="input-group-text">.00</span>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-6">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text">>=</span>
 								</div>
-								<input type="text" name = "harga_jual_grosir" id="harga_jual_grosir" class="form-control">
+								<input type="text" name = "harga_jual_grosir" id="edit_harga_jual_grosir" class="form-control" value="` +
+				e.jumlah_per_satuan +
+				`">
 								<div class="input-group-append">
 									<span class="input-group-text">Satuan</span>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="col-md-2">
-						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+					<div class="col-md-1">
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_gro_ed(` +
+				e.id_harga +
+				`,` +
+				e.id_harga +
+				`)"><i
 								class="fa fa-trash"></i></button>
 					</div>
 				</div>`;
+		}
 	});
 
-	$("#grosir_list").html(html);
+	$("#edit_grosir_list").html(html);
 }
 
 function loop_member_edit(param) {
 	var html = "";
 	param.forEach((e) => {
-		if (e.id_jenis_harga == 4) {
-			if (e.aktif == 1) {
-				$("#aktif").prop("checked", true);
-			} else {
-				$("#aktif").prop("checked", false);
+		if (e.id_jenis_harga == "3") {
+			if (e.aktif == "y") {
+				$("#edit_member_aktif").prop("checked", true);
 			}
 
 			html +=
-				` <div class="row">
-					<div class="col-md-4">
+				` <div class = "row" id="row_mem_ed_` +
+				e.id_harga +
+				`">
+					<div class="col-md-6">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text" id="harga_jual_memeber" class="form-control" value="` +
-				e.harga_Jual +
+								<input type="text" id="edit_harga_jual_memeber" class="form-control" value="` +
+				e.harga_jual +
 				`">
 								<div class="input-group-append">
 									<span class="input-group-text">.00</span>
@@ -877,15 +914,19 @@ function loop_member_edit(param) {
 							<div class="col-md-6">
 								<div class="custom-control custom-checkbox">
 									<input class="custom-control-input" type="checkbox"
-										id="aktif" value="1">
-									<label for="customCheckbox1"
+										id="edit_member_aktif" name="edit_member_aktif" value="y">
+									<label for="edit_member_aktif"
 										class="custom-control-label">Aktifkan</label>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-2">
-						<button type="button" class="btn btn-sm bg-gradient-danger"><i
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_mem_ed(` +
+				e.id_harga +
+				`,` +
+				e.id_harga +
+				`)"><i
 								class="fa fa-trash"></i></button>
 					</div>
 				</div>`;
@@ -896,11 +937,15 @@ function loop_member_edit(param) {
 }
 
 function jenis_harga(param) {
-	loop_fleksibel_edit(param);
-	loop_grosir_edit(param);
-	loop_member_edit(param);
+	if (param !== null) {
+		loop_fleksibel_edit(param);
+		loop_grosir_edit(param);
+		loop_member_edit(param);
+	}
+
 	$("#edit_fleksibel").closest(".btn").button("toggle");
-	$("#harga_option_edit").val(1);
+	$("#edit_grosir_list").hide();
+	$("#edit_member_list").hide();
 }
 
 function loop_satuan_edit(param) {
@@ -1031,6 +1076,165 @@ function load_status_jual(id) {
 	}
 }
 
+function loop_harga_al_edit() {
+	var param = $("#edit_harga_option_param").val();
+	console.log(param);
+	$("#edit_p_fleksibel").val(1);
+	$("#edit_p_grosir").val(1);
+	$("#edit_p_member").val(1);
+	if (param == 1) {
+		loop_fleksibel_ed();
+	}
+	if (param == 2) {
+		loop_grosir_ed();
+	}
+	if (param == 3) {
+		loop_member_ed();
+	}
+}
+
+function loop_fleksibel_ed() {
+	var html = "";
+	var row = $("#edit_p_fleksibel").val();
+	html +=
+		`<div class="row" id="row_flek_ed_` +
+		row +
+		`">
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" name="edit_harga_jual_fleksibel" id="edit_harga_jual_fleksibel"
+									class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group">
+							<input type="text" id="edit_ket" name="edit_ket" class="form-control"
+								placeholder="Inputkan Keterangan">
+						</div>
+					</div>
+					<div class="col-md-1">
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_flek_ed(` +
+		row +
+		`,null);"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+
+	$("#edit_fleksibel_list").append(html);
+	row++;
+	$("#edit_p_fleksibel").val(row);
+}
+
+function rm_flek_ed(row) {
+	$("#row_flek_ed_" + row + "").remove();
+}
+
+function loop_grosir_ed() {
+	var html = "";
+	var row = $("#p_grosir").val();
+	html +=
+		`<div class="row" id="row_gro_ed_` +
+		row +
+		`">
+					<div class="col-md-5">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" name ="edit_harga_jual_grosir" id="edit_harga_jual_grosir" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">>=</span>
+								</div>
+								<input type="text" id="edit_satuan_jumlah" name="edit_satuan_jumlah" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">Satuan</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-1">
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_gro_ed(` +
+		row +
+		`,null)"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+	$("#edit_grosir_list").append(html);
+	row++;
+	$("#edit_p_grosir").val(row);
+}
+
+function rm_gro_ed(row) {
+	$("#row_gro_ed_" + row + "").remove();
+}
+
+function loop_member_ed() {
+	var html = "";
+	var row = $("#edit_p_member").val();
+	html +=
+		` <div class="row" id="row_mem_ed_` +
+		row +
+		`">
+					<div class="col-md-5">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text">Rp.</span>
+								</div>
+								<input type="text" name ="edit_harga_jual_memeber" id="edit_harga_jual_memeber" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">.00</span>
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="custom-control custom-checkbox">
+									<input class="custom-control-input" type="checkbox"
+										id="edit_member_aktif" name="edit_member_aktif" value="y">
+									<label for="edit_member_aktif"
+										class="custom-control-label">Aktifkan</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-1">
+						<button type="button" class="btn btn-sm bg-gradient-danger" onclick="rm_mem_ed(` +
+		row +
+		`,null)"><i
+								class="fa fa-trash"></i></button>
+					</div>
+				</div>`;
+	$("#edit_member_list").append(html);
+	row++;
+	$("#edit_p_member").val(row);
+}
+
+function rm_mem_ed(row) {
+	$("#row_mem_ed_" + row + "").remove();
+}
+
 function edit(id) {
 	$.ajax({
 		url: URL + "produk/get_id_produk",
@@ -1039,11 +1243,13 @@ function edit(id) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
+				$("#edit_harga_option_param").val(1);
 				load_jenis_produk(res.produk.id_jenis_produk);
 				load_select("pil", res.produk.id_rak, res.produk.satuan_utama);
 				load_status_jual(res.produk.status_jual);
 				loop_satuan_edit(res.satuan);
 				jenis_harga(res.harga);
+				$("#id_produk").val(res.produk.id_produk);
 				$("#edit_nama_produk").val(res.produk.nama_produk);
 				$("#edit_produk_by").val(res.produk.produk_by);
 				$("#edit_sku_kode_produk").val(res.produk.sku_kode_produk);
@@ -1056,6 +1262,124 @@ function edit(id) {
 				Swal.fire({
 					icon: "error",
 					title: "Perhatian",
+					text: res.msg,
+				});
+			}
+		},
+	});
+}
+
+function save_edit_data_produk() {
+	var id_produk = $("#id_produk").val();
+	var nama_produk = $("#edit_nama_produk").val();
+	var produk_by = $("#edit_produk_by").val();
+	var sku_kode_produk = $("#edit_sku_kode_produk").val();
+	var barcode = $("#edit_barcode").val();
+	var satuan_utama = $("#edit_satuan_utama").val();
+	var id_rak = $("#edit_id_rak").val();
+	var jumlah_minimal = $("#edit_jumlah_minimal").val();
+	var status_jual = $("input[type=radio][name=harga_option]").val();
+	var harga_beli = $("#edit_harga_beli").val();
+	var jenis_produk = $("#edit_jenis_produk").val();
+
+	// obejct satuan
+	var jumlah_produk = [];
+	var satuan = [];
+	var jumlah_produk_p = [];
+
+	$("input[name=jumlah_produk1]").each(function () {
+		jumlah_produk.push($(this).val());
+	});
+
+	$(".p_satuan").each(function () {
+		satuan.push($(this).val());
+	});
+
+	$("input[name=jumlah_produk2]").each(function () {
+		jumlah_produk_p.push($(this).val());
+	});
+
+	// objeck harga
+	var harga_jual = $("#edit_harga_jual").val();
+
+	// object fleksibel
+	var harga_fleksibel = [];
+	var ket = [];
+
+	$("input[name=harga_jual_fleksibel]").each(function () {
+		harga_fleksibel.push($(this).val());
+	});
+
+	$("input[name=ket]").each(function () {
+		ket.push($(this).val());
+	});
+
+	// object grosir
+	var harga_grosir = [];
+	var jumlah_satuan = [];
+
+	$("input[name=harga_jual_grosir]").each(function () {
+		harga_grosir.push($(this).val());
+	});
+
+	$("input[name=satuan_jumlah]").each(function () {
+		jumlah_satuan.push($(this).val());
+	});
+
+	// obecjt member
+	var harga_member = [];
+	var status_aktif = [];
+
+	$("input[name=harga_jual_memeber]").each(function () {
+		harga_member.push($(this).val());
+	});
+
+	$("input[name=member_aktif]").each(function () {
+		status_aktif.push($(this).val());
+	});
+
+	$.ajax({
+		type: "POST",
+		url: URL + "produk/save_produk",
+		data: {
+			id_produk: id_produk,
+			nama_produk: nama_produk,
+			produk_by: produk_by,
+			sku_kode_produk: sku_kode_produk,
+			barcode: barcode,
+			satuan_utama: satuan_utama,
+			id_rak: id_rak,
+			jumlah_minimal: jumlah_minimal,
+			status_jual: status_jual,
+			harga_beli: harga_beli,
+			jumlah_produk: jumlah_produk,
+			satuan: satuan,
+			jumlah_produk_p: jumlah_produk_p,
+			harga_jual: harga_jual,
+			harga_fleksibel: harga_fleksibel,
+			ket: ket,
+			harga_grosir: harga_grosir,
+			jumlah_satuan: jumlah_satuan,
+			harga_member: harga_member,
+			id_jenis_produk: jenis_produk,
+			status_aktif: status_aktif,
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Berhasil !",
+					text: res.msg,
+				});
+				$("#tbl_produk").DataTable().destroy();
+				load_produk(text, jual, rak);
+				$("#modal_input_produk").modal("hide");
+			} else {
+				Swal.fire({
+					icon: "warning",
+					title: "Pehatian !",
 					text: res.msg,
 				});
 			}
