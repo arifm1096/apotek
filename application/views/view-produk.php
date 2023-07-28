@@ -345,7 +345,7 @@
                     <div class="card-body">
                         <h5>Data Produk</h5>
                         <hr>
-                        <form id="add_produk">
+                        <form id="edit_produk">
                             <div class="row p-2">
                                 <div class="col-md-12">
                                     <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
@@ -397,25 +397,23 @@
                                         <input type="text" id="edit_barcode" name="barcode" class="form-control"
                                             placeholder="Inputkan Barcode">
                                     </div>
-
-
                                     <div class="form-group row">
-
                                         <label>Satuan Utama :</label>
                                         <div class="col-md-11">
                                             <select name="satuan_utama" id="edit_satuan_utama"
-                                                class="form-control select2" onchange="get_satuan_utama()" required>
+                                                class="form-control select2" onchange="get_satuan_utama_edit()"
+                                                required>
                                             </select>
                                             <h6>Pilih <b>Satuan Utama</b> terlebih dahulu sebelum menambahkan satuan
                                                 lainnya.</h6>
                                             <input type="hidden" id="edit_p_satuan_utama">
                                             <input type="hidden" id="edit_p_sat_row">
                                             <input type="hidden" id="edit_sat_param_row">
-                                            <input type="hidden" id="edit_param_row">
+                                            <input type="hidden" id="edit_param_row" value="0">
                                         </div>
                                         <div class="col-md-1">
                                             <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="loop_satuan();"> <i class="fa fa-plus"></i></button>
+                                                onclick="loop_satuan_el_edit();"> <i class="fa fa-plus"></i></button>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -424,7 +422,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <button class="btn btn-block btn-danger" type="button"
-                                                    onclick="loop_satuan();">
+                                                    onclick="loop_satuan_el_edit();">
                                                     Tambah Satuan Lain
                                                 </button>
                                             </div>
@@ -465,7 +463,7 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="edit_fleksibel"
+                                                        <input type="radio" name="harga_option_edit" id="edit_fleksibel"
                                                             value="1" autocomplete="off" checked>
                                                         Fleksibel
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
@@ -473,11 +471,11 @@
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="edit_grosir"
+                                                        <input type="radio" name="harga_option_edit" id="edit_grosir"
                                                             value="2" autocomplete="off"> Grosir
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="edit_member"
+                                                        <input type="radio" name="harga_option_edit" id="edit_member"
                                                             value="3" autocomplete="off"> Membership
                                                     </label>
                                                 </div>

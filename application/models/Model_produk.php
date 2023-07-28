@@ -34,7 +34,7 @@
 		}
 
 		public function get_produk_detail($id){
-			$sql = $this->db->select('d.jumlah_produk,d.id_satuan,s.nama_satuan,d.jumlah_produk_p')
+			$sql = $this->db->select('d.id_produk_detail,d.jumlah_produk,d.id_satuan,s.nama_satuan,d.jumlah_produk_p')
 							->from('tx_produk_detail as d')
 							->join('tx_produk as p','d.id_produk = p.id_produk','left')
 							->join('tm_satuan as s','p.satuan_utama = s.id_satuan')
