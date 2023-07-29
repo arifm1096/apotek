@@ -495,4 +495,158 @@ class Produk extends CI_Controller {
 		}
 	}
 
+	
+	public function save_edit_produk(){
+		$data = $this->input->post();
+		var_dump($data);
+		// $id_produk ="";
+		// $no = 0;
+		// $user = $this->session->userdata('id_user');
+		// $sql = "SELECT NOW() as jam";
+		// $time = $this->db->query($sql)->row();
+		// $data_produk = array(
+		// 	'nama_produk' => $_POST['nama_produk'],
+		// 	'sku_kode_produk' => $_POST['sku_kode_produk'],
+		// 	'barcode'=> $_POST['barcode'],
+		// 	'satuan_utama' => $_POST['satuan_utama'],
+		// 	'jumlah_minimal'=> $_POST['jumlah_minimal'],
+		// 	'produk_by' =>$_POST['produk_by'],
+		// 	'harga_beli'=>$_POST['harga_beli'],
+		// 	'status_jual'=>$_POST['status_jual'],
+		// 	'id_rak'=>$_POST['id_rak'],
+		// 	'id_jenis_produk'=>$_POST['id_jenis_produk'],
+		// );
+
+		// $produk = $this->insert_produk($data_produk);
+		// if(!empty($produk)){
+			
+		// 	$id_satuan = $_POST['satuan'];
+		// 	$jumlah_produk = $_POST['jumlah_produk'];
+		// 	$jumlah_produk_p = $_POST['jumlah_produk_p'];
+		// 	$arr_fix =[];
+		// 	$count = 0;
+		// 	foreach ($jumlah_produk as $key => $value) {
+		// 		'"'.array_push($arr_fix, '("'.$produk.'"',
+		// 			'"'.$id_satuan[$count].'"',
+		// 			'"'.$jumlah_produk[$count].'"',
+		// 			'"'.$jumlah_produk_p[$count].'"',
+		// 			'"'.$user.'"',
+		// 			'"'.$time->jam.'")',
+		// 		);
+		// 		$count++;
+		// 	}
+		// 	$data_fix = implode(",",$arr_fix);
+		// 	$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
+		// 				$data_fix";
+						
+		// 	$sql = $this->db->query($str_sql);
+		// 	if ($sql) {
+		// 		$no += 1;
+		// 	}
+
+		// // harga Produk
+		// 	// harga Utama
+		// 		$sql = $this->db->insert('tx_produk_harga',
+		// 									array(
+		// 										'id_produk' => $produk,
+		// 										'harga_jual' => $_POST['harga_jual'],
+		// 										'id_jenis_harga' => '4',
+		// 										'insert_by'=>$user,
+		// 										'insert_date'=>$time->jam
+		// 									));
+		// 		if($sql){
+		// 			$no += 1;
+		// 		}
+		// 	// fleksibel
+		// 		$harga_fleksibel = $_POST['harga_fleksibel'];
+		// 		$ket = $_POST['ket'];
+		// 		$jenis_harga = 1;
+		// 		$arr_fix_flek =[];
+		// 		$count_flek = 0;
+		// 		foreach ($harga_fleksibel as $key => $value) {
+		// 			'"'.array_push($arr_fix_flek, '("'.$produk.'"',
+		// 				'"'.$harga_fleksibel[$count_flek].'"',
+		// 				'"'.$ket[$count_flek].'"',
+		// 				'"'.$jenis_harga.'"',
+		// 				'"'.$user.'"',
+		// 				'"'.$time->jam.'")',
+		// 			);
+		// 			$count_flek++;
+		// 		}
+		// 		$data_fix_flek = implode(",",$arr_fix_flek);
+		// 		$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+		// 					$data_fix_flek";
+							
+		// 		$sql_flek = $this->db->query($str_sql_flek);
+		// 		if ($sql_flek) {
+		// 			$no += 1;
+		// 		}
+
+		// 	// grosir
+		// 		$harga_grosir = $_POST['harga_grosir'];
+		// 		$jumlah_satuan = $_POST['jumlah_satuan'];
+		// 		$jenis_harga1 = 2;
+		// 		$arr_fix_gros =[];
+		// 		$count_gros = 0;
+		// 		foreach ($harga_grosir as $key => $value) {
+		// 			'"'.array_push($arr_fix_gros, '("'.$produk.'"',
+		// 				'"'.$harga_grosir[$count_gros].'"',
+		// 				'"'.$jumlah_satuan[$count_gros].'"',
+		// 				'"'.$jenis_harga1.'"',
+		// 				'"'.$user.'"',
+		// 				'"'.$time->jam.'")',
+		// 			);
+		// 			$count_gros++;
+		// 		}
+		// 		$data_fix_gros = implode(",",$arr_fix_gros);
+		// 		$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_per_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+		// 					$data_fix_gros";
+							
+		// 		$sql_gros = $this->db->query($str_sql_gros);
+		// 		if ($sql_gros) {
+		// 			$no += 1;
+		// 		}
+
+		// 	// Member
+		// 		$harga_member = $_POST['harga_member'];
+		// 		// if($_POST['status_aktif']!=="y"){
+		// 		// 	$status_ak = "n";
+		// 		// }else{
+		// 		// 	$status_ak = $_POST['status_aktif'];
+		// 		// }
+		// 		$status_aktif = $_POST['status_aktif'];
+		// 		$jenis_harga2 = 3;
+		// 		$arr_fix_mem =[];
+		// 		$count_mem = 0;
+		// 		foreach ($harga_member as $key => $value) {
+					
+		// 			'"'.array_push($arr_fix_mem, '("'.$produk.'"',
+		// 				'"'.$harga_member[$count_mem].'"',
+		// 				'"'.$status_aktif[$count_mem].'"',
+		// 				'"'.$jenis_harga2.'"',
+		// 				'"'.$user.'"',
+		// 				'"'.$time->jam.'")',
+		// 			);
+		// 			$count_mem++;
+		// 		}
+		// 		$data_fix_mem = implode(",",$arr_fix_mem);
+		// 		$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `aktif`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+		// 					$data_fix_mem";
+							
+		// 		$sql_mem = $this->db->query($str_sql_mem);
+		// 		if ($sql_mem) {
+		// 			$no += 1;
+		// 		}
+
+		// }else{
+		// 	echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));
+		// }
+		
+		// if($no > 1){
+		// 	echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
+		// }else{
+		// 	echo json_encode(array('status'=>0,'msg'=>'Error Insert Data'));
+		// }
+	}
+
 }

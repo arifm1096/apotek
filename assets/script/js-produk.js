@@ -794,7 +794,7 @@ function loop_fleksibel_edit(param) {
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text" name="id_detail_produk" id="edit_id_detail_produk_fleksibel"
+								<input type="text" name="edit_id_detail_produk" id="edit_id_detail_produk_fleksibel"
 									class="form-control" value="` +
 				e.harga_jual +
 				`">
@@ -807,7 +807,7 @@ function loop_fleksibel_edit(param) {
 					</div>
 					<div class="col-md-5">
 						<div class="form-group">
-							<input type="text" id="edit_ket" name="ket" class="form-control"
+							<input type="text" id="edit_ket" name="edit_ket" class="form-control"
 								placeholder="Inputkan Keterangan" value="` +
 				e.ket +
 				`">
@@ -842,7 +842,7 @@ function loop_grosir_edit(param) {
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text" id="edit_harga_jual_grosir" class="form-control" value="` +
+								<input type="text"  name = "edit_harga_jual_grosir" id="edit_harga_jual_grosir" class="form-control" value="` +
 				e.harga_jual +
 				`">
 								<div class="input-group-append">
@@ -857,7 +857,7 @@ function loop_grosir_edit(param) {
 								<div class="input-group-prepend">
 									<span class="input-group-text">>=</span>
 								</div>
-								<input type="text" name = "harga_jual_grosir" id="edit_harga_jual_grosir" class="form-control" value="` +
+								<input type="text" name = "edit_satuan_jumlah" id="edit_satuan_jumlah" class="form-control" value="` +
 				e.jumlah_per_satuan +
 				`">
 								<div class="input-group-append">
@@ -885,9 +885,9 @@ function loop_member_edit(param) {
 	var html = "";
 	param.forEach((e) => {
 		if (e.id_jenis_harga == "3") {
-			if (e.aktif == "y") {
-				$("#edit_member_aktif").prop("checked", true);
-			}
+			// if (e.aktif == "y") {
+			$("#edit_member_aktif").prop("checked", true);
+			// }
 
 			html +=
 				` <div class = "row" id="row_mem_ed_` +
@@ -914,7 +914,7 @@ function loop_member_edit(param) {
 							<div class="col-md-6">
 								<div class="custom-control custom-checkbox">
 									<input class="custom-control-input" type="checkbox"
-										id="edit_member_aktif" name="edit_member_aktif" value="y">
+										id="edit_member_aktif" name="edit_edit_member_aktif" value="y">
 									<label for="edit_member_aktif"
 										class="custom-control-label">Aktifkan</label>
 								</div>
@@ -958,7 +958,7 @@ function loop_satuan_edit(param) {
 				e.id_produk_detail +
 				`">
 									
-									<div class="col-md-3"><input type="number" name="jumlah_produk1" value="` +
+									<div class="col-md-3"><input type="number" name="edit_jumlah_produk1" value="` +
 				e.jumlah_produk +
 				`" class="form-control"
 											placeholder="Inputkan Jumlah Produk">
@@ -973,7 +973,7 @@ function loop_satuan_edit(param) {
 									</div>
 									<div class="col-md-6">
 										<div class="input-group mb-3">
-											<input type="number" name="jumlah_produk2" value="` +
+											<input type="number" name="edit_jumlah_produk2" value="` +
 				e.jumlah_produk_p +
 				`" class="form-control"
 												placeholder="Inputkan Produk Persatuan">
@@ -1025,7 +1025,7 @@ function loop_satuan_el_edit(
 									</div>
 									<div class="col-md-6">
 										<div class="input-group mb-3">
-											<input type="number" name="jumlah_produk2" value="` +
+											<input type="number" name="jumlah_produk2_edit" value="` +
 		p_jumlah_produk2 +
 		`" class="form-control"
 												placeholder="Inputkan Produk Persatuan">
@@ -1340,7 +1340,7 @@ function save_edit_data_produk() {
 
 	$.ajax({
 		type: "POST",
-		url: URL + "produk/save_produk",
+		url: URL + "produk/save_edit_produk",
 		data: {
 			id_produk: id_produk,
 			nama_produk: nama_produk,
