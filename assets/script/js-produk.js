@@ -710,6 +710,7 @@ $("#modal_edit_produk").on("hide.bs.modal", function () {
 	$("#jenis_produk").val("");
 	load_select("pil", "pil", "pil");
 	$("#edit_loop_satuan-html").find(".row").remove();
+	$("#edit_satuan-html").find(".row").remove();
 });
 
 function add_data() {
@@ -968,7 +969,7 @@ function loop_satuan_edit(param) {
 				e.id_produk_detail +
 				`"
 				name="id_satuan_edit_view" class="form-control select2 p_satuan">
-											<option value=""> Pilih Satuan</option>
+											<option value=""> Pilih Satuan </option>
 										</select>
 									</div>
 									<div class="col-md-6">
@@ -1011,7 +1012,7 @@ function loop_satuan_el_edit(
 		row +
 		`">
 									
-									<div class="col-md-3"><input type="number" name="jumlah_produk1" value="` +
+									<div class="col-md-3"><input type="number" name="edit_jumlah_produk1" value="` +
 		p_jumlah_produk1 +
 		`" class="form-control"
 											placeholder="Inputkan Jumlah Produk">
@@ -1025,7 +1026,7 @@ function loop_satuan_el_edit(
 									</div>
 									<div class="col-md-6">
 										<div class="input-group mb-3">
-											<input type="number" name="jumlah_produk2_edit" value="` +
+											<input type="number" name="edit_jumlah_produk2" value="` +
 		p_jumlah_produk2 +
 		`" class="form-control"
 												placeholder="Inputkan Produk Persatuan">
@@ -1047,6 +1048,34 @@ function loop_satuan_el_edit(
 	$("#edit_satuan-html").append(el_satuan);
 	row++;
 	$("#edit_param_row").val(row);
+}
+
+function remove_satuan_ed(row, id) {
+	$("#row_" + row + "").remove();
+	if (id !== null) {
+		$.ajax({
+			url: URL + "produk/hapus_satuan",
+			type: "POST",
+			data: { id_produk_detail: id },
+			success: function (data) {
+				var res = JSON.parse(data);
+
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Suceess",
+						text: res.msg,
+					});
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Perhatian !!!",
+						text: res.msg,
+					});
+				}
+			},
+		});
+	}
 }
 
 function load_jenis_produk(id) {
@@ -1133,8 +1162,33 @@ function loop_fleksibel_ed() {
 	$("#edit_p_fleksibel").val(row);
 }
 
-function rm_flek_ed(row) {
+function rm_flek_ed(row, id) {
 	$("#row_flek_ed_" + row + "").remove();
+
+	if (id !== null) {
+		$.ajax({
+			url: URL + "produk/hapus_satuan",
+			type: "POST",
+			data: { id_produk_detail: id },
+			success: function (data) {
+				var res = JSON.parse(data);
+
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Suceess",
+						text: res.msg,
+					});
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Perhatian !!!",
+						text: res.msg,
+					});
+				}
+			},
+		});
+	}
 }
 
 function loop_grosir_ed() {
@@ -1182,8 +1236,32 @@ function loop_grosir_ed() {
 	$("#edit_p_grosir").val(row);
 }
 
-function rm_gro_ed(row) {
+function rm_gro_ed(row, id) {
 	$("#row_gro_ed_" + row + "").remove();
+	if (id !== null) {
+		$.ajax({
+			url: URL + "produk/hapus_satuan",
+			type: "POST",
+			data: { id_produk_detail: id },
+			success: function (data) {
+				var res = JSON.parse(data);
+
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Suceess",
+						text: res.msg,
+					});
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Perhatian !!!",
+						text: res.msg,
+					});
+				}
+			},
+		});
+	}
 }
 
 function loop_member_ed() {
@@ -1231,8 +1309,32 @@ function loop_member_ed() {
 	$("#edit_p_member").val(row);
 }
 
-function rm_mem_ed(row) {
+function rm_mem_ed(row, id) {
 	$("#row_mem_ed_" + row + "").remove();
+	if (id !== null) {
+		$.ajax({
+			url: URL + "produk/hapus_satuan",
+			type: "POST",
+			data: { id_produk_detail: id },
+			success: function (data) {
+				var res = JSON.parse(data);
+
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Suceess",
+						text: res.msg,
+					});
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Perhatian !!!",
+						text: res.msg,
+					});
+				}
+			},
+		});
+	}
 }
 
 function edit(id) {
@@ -1287,7 +1389,7 @@ function save_edit_data_produk() {
 	var satuan = [];
 	var jumlah_produk_p = [];
 
-	$("input[name=jumlah_produk1]").each(function () {
+	$("input[name=edit_jumlah_produk1]").each(function () {
 		jumlah_produk.push($(this).val());
 	});
 
@@ -1295,7 +1397,7 @@ function save_edit_data_produk() {
 		satuan.push($(this).val());
 	});
 
-	$("input[name=jumlah_produk2]").each(function () {
+	$("input[name=edit_jumlah_produk2]").each(function () {
 		jumlah_produk_p.push($(this).val());
 	});
 
@@ -1306,11 +1408,11 @@ function save_edit_data_produk() {
 	var harga_fleksibel = [];
 	var ket = [];
 
-	$("input[name=harga_jual_fleksibel]").each(function () {
+	$("input[name=edit_harga_jual_fleksibel]").each(function () {
 		harga_fleksibel.push($(this).val());
 	});
 
-	$("input[name=ket]").each(function () {
+	$("input[name=edit_ket]").each(function () {
 		ket.push($(this).val());
 	});
 
@@ -1318,11 +1420,11 @@ function save_edit_data_produk() {
 	var harga_grosir = [];
 	var jumlah_satuan = [];
 
-	$("input[name=harga_jual_grosir]").each(function () {
+	$("input[name=edit_harga_jual_grosir]").each(function () {
 		harga_grosir.push($(this).val());
 	});
 
-	$("input[name=satuan_jumlah]").each(function () {
+	$("input[name=edit_satuan_jumlah]").each(function () {
 		jumlah_satuan.push($(this).val());
 	});
 
@@ -1330,11 +1432,11 @@ function save_edit_data_produk() {
 	var harga_member = [];
 	var status_aktif = [];
 
-	$("input[name=harga_jual_memeber]").each(function () {
+	$("input[name=edit_harga_jual_memeber]").each(function () {
 		harga_member.push($(this).val());
 	});
 
-	$("input[name=member_aktif]").each(function () {
+	$("input[name=edit_member_aktif]").each(function () {
 		status_aktif.push($(this).val());
 	});
 
