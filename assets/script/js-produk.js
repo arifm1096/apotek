@@ -261,7 +261,7 @@ function load_produk(text, jual, rak) {
 						"','" +
 						row.nama_produk +
 						"','" +
-						row.kode_produk +
+						row.sku_kode_produk +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -301,10 +301,10 @@ function hapus(id, supplier, ket) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "master/hapus_pelanggan",
+				url: URL + "produk/hapus_produk",
 				type: "POST",
 				data: {
-					id: id,
+					id_produk: id,
 				},
 				success: function (res) {
 					var r = JSON.parse(res);
@@ -955,11 +955,11 @@ function loop_satuan_edit(param) {
 		param.forEach((e) => {
 			load_satuan_edit_sat(e.id_satuan, e.id_produk_detail);
 			el_satuan +=
-				` <div class="row" id="row_` +
+				` <div class="row" id="row_ed_` +
 				e.id_produk_detail +
 				`">
 									
-									<div class="col-md-3"><input type="number" name="edit_jumlah_produk1" value="` +
+									<div class="col-md-3"><input type="number" name="ed_jumlah_produk1" value="` +
 				e.jumlah_produk +
 				`" class="form-control"
 											placeholder="Inputkan Jumlah Produk">
@@ -968,13 +968,13 @@ function loop_satuan_edit(param) {
 										<select id="id_satuan_edit_` +
 				e.id_produk_detail +
 				`"
-				name="id_satuan_edit_view" class="form-control select2 p_satuan">
+				name="id_satuan_ed_view" class="form-control select2 p_satuan">
 											<option value=""> Pilih Satuan </option>
 										</select>
 									</div>
 									<div class="col-md-6">
 										<div class="input-group mb-3">
-											<input type="number" name="edit_jumlah_produk2" value="` +
+											<input type="number" name="ed_jumlah_produk2" value="` +
 				e.jumlah_produk_p +
 				`" class="form-control"
 												placeholder="Inputkan Produk Persatuan">
@@ -983,7 +983,9 @@ function loop_satuan_edit(param) {
 				e.nama_satuan +
 				`
 			</span>
-												<button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
+												<button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan_ed(` +
+				e.id_produk_detail +
+				`,` +
 				e.id_produk_detail +
 				`);"><i
 														class="fa fa-trash"></i></button>
@@ -1008,7 +1010,7 @@ function loop_satuan_el_edit(
 	// $("#sat_param").html(sat);
 	load_satuan_edit_sat(p_satuan, row);
 	var el_satuan =
-		` <div class="row" id="row_` +
+		` <div class="row" id="row_ed_` +
 		row +
 		`">
 									
@@ -1020,7 +1022,7 @@ function loop_satuan_el_edit(
 									<div class="col-md-3">
 										<select id="id_satuan_edit_` +
 		row +
-		`" name="id_satuan_edit" class="form-control select2 p_satuan">
+		`" name="id_satuan_edit" class="form-control select2 p_satuan_view">
 											<option value=""> Pilih Satuan</option>
 										</select>
 									</div>
@@ -1035,9 +1037,9 @@ function loop_satuan_el_edit(
 		sat +
 		`
 			</span>
-												<button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan(` +
+												<button type="button" class="btn btn-sm bg-gradient-danger" onclick="remove_satuan_ed(` +
 		row +
-		`);"><i
+		`,null);"><i
 														class="fa fa-trash"></i></button>
 											</div>
 										</div>
@@ -1051,7 +1053,7 @@ function loop_satuan_el_edit(
 }
 
 function remove_satuan_ed(row, id) {
-	$("#row_" + row + "").remove();
+	$("#row_ed_" + row + "").remove();
 	if (id !== null) {
 		$.ajax({
 			url: URL + "produk/hapus_satuan",
@@ -1167,9 +1169,9 @@ function rm_flek_ed(row, id) {
 
 	if (id !== null) {
 		$.ajax({
-			url: URL + "produk/hapus_satuan",
+			url: URL + "produk/hapus_harga_jenis",
 			type: "POST",
-			data: { id_produk_detail: id },
+			data: { id_harga: id },
 			success: function (data) {
 				var res = JSON.parse(data);
 
@@ -1240,9 +1242,9 @@ function rm_gro_ed(row, id) {
 	$("#row_gro_ed_" + row + "").remove();
 	if (id !== null) {
 		$.ajax({
-			url: URL + "produk/hapus_satuan",
+			url: URL + "produk/hapus_harga_jenis",
 			type: "POST",
-			data: { id_produk_detail: id },
+			data: { id_harga: id },
 			success: function (data) {
 				var res = JSON.parse(data);
 
@@ -1313,9 +1315,9 @@ function rm_mem_ed(row, id) {
 	$("#row_mem_ed_" + row + "").remove();
 	if (id !== null) {
 		$.ajax({
-			url: URL + "produk/hapus_satuan",
+			url: URL + "produk/hapus_harga_jenis",
 			type: "POST",
-			data: { id_produk_detail: id },
+			data: { id_harga: id },
 			success: function (data) {
 				var res = JSON.parse(data);
 
@@ -1352,6 +1354,7 @@ function edit(id) {
 				loop_satuan_edit(res.satuan);
 				jenis_harga(res.harga);
 				$("#id_produk").val(res.produk.id_produk);
+				$("#id_harga").val(res.produk.id_harga);
 				$("#edit_nama_produk").val(res.produk.nama_produk);
 				$("#edit_produk_by").val(res.produk.produk_by);
 				$("#edit_sku_kode_produk").val(res.produk.sku_kode_produk);
@@ -1380,7 +1383,7 @@ function save_edit_data_produk() {
 	var satuan_utama = $("#edit_satuan_utama").val();
 	var id_rak = $("#edit_id_rak").val();
 	var jumlah_minimal = $("#edit_jumlah_minimal").val();
-	var status_jual = $("input[type=radio][name=harga_option]").val();
+	var status_jual = $("input[type=radio][name=edit_status_jual]").val();
 	var harga_beli = $("#edit_harga_beli").val();
 	var jenis_produk = $("#edit_jenis_produk").val();
 
@@ -1402,6 +1405,7 @@ function save_edit_data_produk() {
 	});
 
 	// objeck harga
+	var id_harga = $("#id_harga").val();
 	var harga_jual = $("#edit_harga_jual").val();
 
 	// object fleksibel

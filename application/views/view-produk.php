@@ -375,14 +375,14 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Nama Pabrik</label>
-                                        <input type="text" id="edit_produk_by" name="produk_by" class="form-control"
-                                            placeholder="Inputkan Nama Produk" required>
+                                        <input type="text" id="edit_produk_by" name="edit_produk_by"
+                                            class="form-control" placeholder="Inputkan Nama Produk" required>
                                     </div>
                                     <div class="form-group row">
                                         <label>Kode Produk / SKU</label>
                                         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                             value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                                        <input type="hidden" name="id_produk">
+                                        <input type="hidden" name="id_produk" id="id_produk">
                                         <div class="col-md-11">
                                             <input type="text" id="edit_sku_kode_produk" name="sku_kode_produk"
                                                 class="form-control" placeholder="Inputkan Kode Produk / SKU" required>
@@ -435,7 +435,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_beli" id="edit_harga_beli"
+                                            <input type="text" name="edit_harga_beli" id="edit_harga_beli"
                                                 class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text"
@@ -449,7 +449,8 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_jual" id="edit_harga_jual"
+                                            <input type="hidden" id="id_harga">
+                                            <input type="text" name="edit_harga_jual" id="edit_harga_jual"
                                                 class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text"
@@ -518,16 +519,17 @@
                                             <div class="col-md-12">
                                                 <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
                                                     <label class="btn btn-danger active">
-                                                        <input type="radio" name="harga_option" id="edit_jual" value="1"
-                                                            autocomplete="off" checked>
+                                                        <input type="radio" name="edit_status_jual" id="edit_jual"
+                                                            value="1" autocomplete="off" checked>
                                                         Dijual
                                                         <a data-toggle="pill" href="#custom-tabs-one-home" role="tab"
                                                             aria-controls="custom-tabs-one-home"
                                                             aria-selected="true"></a>
                                                     </label>
                                                     <label class="btn btn-danger">
-                                                        <input type="radio" name="harga_option" id="edit_tidak_dijual"
-                                                            value="2" autocomplete="off"> Tidak Dijual
+                                                        <input type="radio" name="edit_status_jual"
+                                                            id="edit_tidak_dijual" value="2" autocomplete="off"> Tidak
+                                                        Dijual
                                                         <input type="hidden" name="edit_status_jual">
                                                     </label>
                                                 </div>

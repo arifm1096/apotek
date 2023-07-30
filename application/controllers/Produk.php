@@ -454,9 +454,9 @@ class Produk extends CI_Controller {
 			$where ="id_produk = $id";
 			$where_p ="p.id_produk = $id";
 			$produk = $this->model_produk->get_produk($where_p);
-			
-			$satuan = $this->model_produk->get_produk_detail($where_p);
 			// echo $this->db->last_query();
+			$satuan = $this->model_produk->get_produk_detail($where_p);
+			
 			$harga = $this->model_produk->get_produk_harga($where);
 
 			if(!empty($produk) || !empty($satuan) || !empty($harga)){
@@ -526,7 +526,6 @@ class Produk extends CI_Controller {
 	
 	public function save_edit_produk(){
 		$data = $this->input->post();
-		var_dump($data);
 		$id_produk =$_POST['id_produk'];
 		$no = 0;
 		$user = $this->session->userdata('id_user');
@@ -546,125 +545,147 @@ class Produk extends CI_Controller {
 		);
 
 		$produk = $this->db->where('id_produk',$id_produk)->update('tx_produk',$data_produk);
+		
 		if(!empty($produk)){
+
+			if(!empty($_POST['satuan']) && !empty($_POST['jumlah_produk']) && !empty($_POST['jumlah_produk_p'])){
+				$id_satuan = $_POST['satuan'];
+				$jumlah_produk = $_POST['jumlah_produk'];
+				$jumlah_produk_p = $_POST['jumlah_produk_p'];
+				$arr_fix =[];
+				$count = 0;
+				foreach ($jumlah_produk as $key => $value) {
+					'"'.array_push($arr_fix, '("'.$id_produk.'"',
+						'"'.$id_satuan[$count].'"',
+						'"'.$jumlah_produk[$count].'"',
+						'"'.$jumlah_produk_p[$count].'"',
+						'"'.$user.'"',
+						'"'.$time->jam.'")',
+					);
+					$count++;
+				}
+				$data_fix = implode(",",$arr_fix);
+				$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
+							$data_fix";
+							
+				$sql = $this->db->query($str_sql);
+				if ($sql) {
+					$no += 1;
+				}
+			}
 			
-			$id_satuan = $_POST['satuan'];
-			$jumlah_produk = $_POST['jumlah_produk'];
-			$jumlah_produk_p = $_POST['jumlah_produk_p'];
-			$arr_fix =[];
-			$count = 0;
-			foreach ($jumlah_produk as $key => $value) {
-				'"'.array_push($arr_fix, '("'.$produk.'"',
-					'"'.$id_satuan[$count].'"',
-					'"'.$jumlah_produk[$count].'"',
-					'"'.$jumlah_produk_p[$count].'"',
-					'"'.$user.'"',
-					'"'.$time->jam.'")',
-				);
-				$count++;
-			}
-			$data_fix = implode(",",$arr_fix);
-			$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
-						$data_fix";
-						
-			$sql = $this->db->query($str_sql);
-			if ($sql) {
-				$no += 1;
-			}
+			
 
 		// harga Produk
 			// harga Utama
-				$sql = $this->db->insert('tx_produk_harga',
-											array(
-												'id_produk' => $produk,
+				$data_harga_utama = array(
+												'id_produk' => $id_produk,
 												'harga_jual' => $_POST['harga_jual'],
 												'id_jenis_harga' => '4',
 												'insert_by'=>$user,
 												'insert_date'=>$time->jam
-											));
-				if($sql){
-					$no += 1;
+				);
+				if(!empty($_POST['id_harga'])){
+					$sql = $this->db->where('id_harga',$_POST['id_harga'])->update('tx_produk_harga',$data_harga_utama);
+					if($sql){
+						$no += 1;
+					}
+				}else{
+					$sql = $this->db->insert('tx_produk_harga',$data_harga_utama);
+					if($sql){
+						$no += 1;
+					}
 				}
+				
 			// fleksibel
-				$harga_fleksibel = $_POST['harga_fleksibel'];
-				$ket = $_POST['ket'];
-				$jenis_harga = 1;
-				$arr_fix_flek =[];
-				$count_flek = 0;
-				foreach ($harga_fleksibel as $key => $value) {
-					'"'.array_push($arr_fix_flek, '("'.$produk.'"',
-						'"'.$harga_fleksibel[$count_flek].'"',
-						'"'.$ket[$count_flek].'"',
-						'"'.$jenis_harga.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_flek++;
+				if(!empty($_POST['harga_fleksibel']) && !empty($_POST['ket']) ){
+					$harga_fleksibel = $_POST['harga_fleksibel'];
+					$ket = $_POST['ket'];
+					$jenis_harga = 1;
+					$arr_fix_flek =[];
+					$count_flek = 0;
+					foreach ($harga_fleksibel as $key => $value) {
+						'"'.array_push($arr_fix_flek, '("'.$id_produk.'"',
+							'"'.$harga_fleksibel[$count_flek].'"',
+							'"'.$ket[$count_flek].'"',
+							'"'.$jenis_harga.'"',
+							'"'.$user.'"',
+							'"'.$time->jam.'")',
+						);
+						$count_flek++;
+					}
+					$data_fix_flek = implode(",",$arr_fix_flek);
+					$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+								$data_fix_flek";
+								
+					$sql_flek = $this->db->query($str_sql_flek);
+					if ($sql_flek) {
+						$no += 1;
+					}
 				}
-				$data_fix_flek = implode(",",$arr_fix_flek);
-				$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_flek";
-							
-				$sql_flek = $this->db->query($str_sql_flek);
-				if ($sql_flek) {
-					$no += 1;
-				}
+				
 
 			// grosir
-				$harga_grosir = $_POST['harga_grosir'];
-				$jumlah_satuan = $_POST['jumlah_satuan'];
-				$jenis_harga1 = 2;
-				$arr_fix_gros =[];
-				$count_gros = 0;
-				foreach ($harga_grosir as $key => $value) {
-					'"'.array_push($arr_fix_gros, '("'.$produk.'"',
-						'"'.$harga_grosir[$count_gros].'"',
-						'"'.$jumlah_satuan[$count_gros].'"',
-						'"'.$jenis_harga1.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_gros++;
+				if(!empty($_POST['harga_grosir']) && !empty($_POST['jumlah_satuan'])){
+					$harga_grosir = $_POST['harga_grosir'];
+					$jumlah_satuan = $_POST['jumlah_satuan'];
+					$jenis_harga1 = 2;
+					$arr_fix_gros =[];
+					$count_gros = 0;
+					foreach ($harga_grosir as $key => $value) {
+						'"'.array_push($arr_fix_gros, '("'.$id_produk.'"',
+							'"'.$harga_grosir[$count_gros].'"',
+							'"'.$jumlah_satuan[$count_gros].'"',
+							'"'.$jenis_harga1.'"',
+							'"'.$user.'"',
+							'"'.$time->jam.'")',
+						);
+						$count_gros++;
+					}
+					$data_fix_gros = implode(",",$arr_fix_gros);
+					$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_per_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+								$data_fix_gros";
+								
+					$sql_gros = $this->db->query($str_sql_gros);
+					if ($sql_gros) {
+						$no += 1;
+					}
 				}
-				$data_fix_gros = implode(",",$arr_fix_gros);
-				$str_sql_gros = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `jumlah_per_satuan`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_gros";
-							
-				$sql_gros = $this->db->query($str_sql_gros);
-				if ($sql_gros) {
-					$no += 1;
-				}
+				
 
 			// Member
-				$harga_member = $_POST['harga_member'];
-				// if($_POST['status_aktif']!=="y"){
-				// 	$status_ak = "n";
-				// }else{
-				// 	$status_ak = $_POST['status_aktif'];
-				// }
-				$status_aktif = $_POST['status_aktif'];
-				$jenis_harga2 = 3;
-				$arr_fix_mem =[];
-				$count_mem = 0;
-				foreach ($harga_member as $key => $value) {
-					
-					'"'.array_push($arr_fix_mem, '("'.$produk.'"',
-						'"'.$harga_member[$count_mem].'"',
-						'"'.$status_aktif[$count_mem].'"',
-						'"'.$jenis_harga2.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_mem++;
+				if(!empty($_POST['harga_member']) && !empty($_POST['status_aktif'])){
+					$harga_member = $_POST['harga_member'];
+					// if($_POST['status_aktif']!=="y"){
+					// 	$status_ak = "n";
+					// }else{
+					// 	$status_ak = $_POST['status_aktif'];
+					// }
+					$status_aktif = $_POST['status_aktif'];
+					$jenis_harga2 = 3;
+					$arr_fix_mem =[];
+					$count_mem = 0;
+					foreach ($harga_member as $key => $value) {
+						
+						'"'.array_push($arr_fix_mem, '("'.$id_produk.'"',
+							'"'.$harga_member[$count_mem].'"',
+							'"'.$status_aktif[$count_mem].'"',
+							'"'.$jenis_harga2.'"',
+							'"'.$user.'"',
+							'"'.$time->jam.'")',
+						);
+						$count_mem++;
+					}
+					$data_fix_mem = implode(",",$arr_fix_mem);
+					$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `aktif`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+								$data_fix_mem";
+								
+					$sql_mem = $this->db->query($str_sql_mem);
+					if ($sql_mem) {
+						$no += 1;
+					}
 				}
-				$data_fix_mem = implode(",",$arr_fix_mem);
-				$str_sql_mem = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `aktif`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_mem";
-							
-				$sql_mem = $this->db->query($str_sql_mem);
-				if ($sql_mem) {
-					$no += 1;
-				}
+				
 
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));

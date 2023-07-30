@@ -17,7 +17,9 @@
 		}
 	
 		public function get_produk($id){
-			$sql = $this->db->select('*')
+			$filed ="p.id_produk,p.sku_kode_produk,p.nama_produk,p.barcode,p.satuan_utama,p.jumlah_minimal,
+			p.id_rak,p.id_jenis_produk,p.harga_beli,p.produk_by,h.harga_jual";
+			$sql = $this->db->select($filed)
 							->from('tx_produk as p')
 							->join('tx_produk_harga as h','p.id_produk = h.id_produk','left')
 							->where('p.is_delete',0)
