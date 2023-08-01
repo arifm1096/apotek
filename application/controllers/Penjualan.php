@@ -109,6 +109,28 @@ class Penjualan extends CI_Controller {
 		}
 	}
 
+	public function cek_produk($param){
+		$sql_cek_satuan = "SELECT satuan_utama,nama_produk FROM `tx_produk` WHERE is_delete = 0 AND nama_produk ='$param' OR barcode ='$param'";
+		$data_satuan = $this->db->query($sql_cek_satuan)->row();
+		if($data_satuan->satuan_utama !== null){
+			$sql_cek_stok = "SELECT p.satuan_utama,s.jumlah_stok,p.nama_produk
+								FROM `tx_produk` as p
+								LEFT JOIN tx_produk_stok as s ON p.id_produk = s.id_produk
+								WHERE  p.is_delete = 0 AND nama_produk ='$param' OR barcode ='$param'";
+			$data_stok = $this->db->query($sql_cek_stok);
+			$stok = $data_stok ->row();
+			if($stok->jumlah_stok > 0){
+				return 1;
+			}else{
+				return "Stok Produk <b>".$stok->nama_produk."</b> Habis";
+			}
+			
+		}else{
+			return "Data Satuan Belum Di Inputkan";
+		}
+
+
+	}
 
 	public function get_add_produk(){
 		$produk = $_POST['produk_barcode'];
@@ -159,30 +181,36 @@ class Penjualan extends CI_Controller {
 					'total_harga' => $up_total
 				);
 
-				$ex = 0;
-			if(!empty($data)){
-				if($res_jual->num_rows()>0){
-					$update = $this->db->where('id_jual',$data_jual->id_jual)->update('tx_jual',$r_up);
-					if($update){
-						$ex +=1;
+			$ex = 0;
+			$cek = $this->cek_produk($produk);
+			if($cek == 1){
+				if(!empty($data)){
+						if($res_jual->num_rows()>0){
+							$update = $this->db->where('id_jual',$data_jual->id_jual)->update('tx_jual',$r_up);
+							if($update){
+								$ex +=1;
+							}
+						}else{
+							$insert = $this->db->insert('tx_jual',$r_in);
+							if($insert){
+								$ex +=1;
+							}
+						}
+					
+					if($ex > 0){
+						echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
+					}else{
+						echo json_encode(array('status'=>0,'msg'=>'Error Tambah Data.'));
 					}
 				}else{
-					$insert = $this->db->insert('tx_jual',$r_in);
-					if($insert){
-						$ex +=1;
-					}
-				}
-				
-				if($ex > 0){
-					echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
-				}else{
-					echo json_encode(array('status'=>0,'msg'=>'Error Tambah Data.'));
+					echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Tidak Ada DI Master !!'));
 				}
 			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Tidak Ada DI Master !!'));
+				echo json_encode( array('status'=>0 , 'msg'=>$cek));
 			}
+			
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Kosong !!'));
+			echo json_encode(array('status'=>0,'msg'=>'Masuk Data !!'));
 		}
 	}
 
@@ -193,8 +221,6 @@ class Penjualan extends CI_Controller {
 		$where = "";
 		$val = $_POST['val'];
 		$nom = 0;
-		
-
 
 		// satuan
 		// if($_POST['el']== 2){
@@ -326,8 +352,10 @@ class Penjualan extends CI_Controller {
 		$sql = "SELECT j.id_produk,j.nama_produk,pd.jumlah_stok,j.jumlah_produk,(pd.jumlah_stok-j.jumlah_produk) as sisa
 				FROM  tx_jual as j
 				LEFT JOIN `tx_produk_stok` as pd on pd.id_produk = j.id_produk
-				WHERE j.is_selesai = 0 ";
+				WHERE j.is_selesai = 0  and j.insert_by = $user";
 	}
+
+	
 
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');

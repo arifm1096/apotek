@@ -113,15 +113,56 @@ function stok_opname(id_stok) {
 				$("#id_stok").html(res.result.id_stok);
 				$("#nama_gudang").val(res.result.nama_gudang);
 				$("#exp_date").val(res.result.exp_date);
+				$("#kode_ksu").val(res.result.sku_kode_produk);
 				$("#catatan").val(res.result.catatan);
 				$("#jumlah_stok").val(res.result.stok_sistem);
 				$("#stok_fisik").val(res.result.stok_fisik);
 				$("#penyesuaian").val(res.result.penyesuaian);
+				$("#id_stok_opname").val(res.result.id_stok_opname);
 				$("#modal_stok_opname").modal("show");
 			} else {
 				Swal.fire({
 					icon: "error",
 					title: "Perhatian !!",
+					text: res.msg,
+				});
+			}
+		},
+	});
+}
+
+function save_stok_opname() {
+	var id_stok = $("#id_stok").val();
+	var stok_fisik = $("#stok_fisik").val();
+	var penyesuaian = $("#penyesuaian").val();
+	var catatan = $("#catatan").val();
+	var verifikasi = $("#verifikasi").val();
+	var id_stok_opname = $("#id_stok_opname").val();
+
+	$.ajax({
+		url: URL + "persediaan/save_stok_opname",
+		type: "POST",
+		data: {
+			id_stok: id_stok,
+			stok_fisik: stok_fisik,
+			penyesuaian: penyesuaian,
+			catatan: catatan,
+			verifikasi: verifikasi,
+			id_stok_opname: id_stok_opname,
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.msg,
+				});
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian",
 					text: res.msg,
 				});
 			}

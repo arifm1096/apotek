@@ -65,7 +65,7 @@
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
                             <th>Nama Produk</th>
-                            <th>Stok TOtal </th>
+                            <th>Stok Total </th>
                             <th>Rak</th>
                             <th>Terakhir di-Opname</th>
                             <th style="width: 75px; ">Action</th>
@@ -106,12 +106,13 @@
                             </div>
                         </div>
                         <hr>
-                        <form id="stok_produk">
+                        <form id="stok_opname">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Gudang</label>
                                         <input type="hidden" id="id_stok">
+                                        <input type="hidden" id="id_produk">
                                         <input type="hidden" id="id_stok_opname">
                                         <input type="text" id="nama_gudang" name="nama_gudang" class="form-control"
                                             readonly>
@@ -121,9 +122,8 @@
                                         <input type="text" id="exp_date" name="exp_date" class="form-control" readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label>Kode Batch</label>
-                                        <input type="text" id="kode_bacth" name="kode_bacth" class="form-control"
-                                            readonly>
+                                        <label>Kode Produk - KSU</label>
+                                        <input type="text" id="kode_ksu" name="kode_ksu" class="form-control" readonly>
                                     </div>
                                     <div class="form-group">
                                         <label>Catatan</label>
@@ -148,8 +148,9 @@
                                     <div class="form-group">
                                         <label>Verifikasi</label>
                                         <select name="verifikasi" id="verifikasi" class="form-control">
+                                            <option value=""> -- Pilih Verifikasi -- </option>
                                             <option value="y"> Ya</option>
-                                            <option value="y"> Tidak</option>
+                                            <option value="n"> Tidak</option>
                                         </select>
                                     </div>
                                 </div>
@@ -158,7 +159,7 @@
                             <div class="row">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_stok_produk()">
+                                    <button class="btn btn-block btn-info" type="button" onclick="save_stok_opname()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
                                         <span id="save-button-produk">Simpan Data</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>

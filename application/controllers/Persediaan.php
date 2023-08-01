@@ -588,15 +588,15 @@ class Persediaan extends CI_Controller {
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
-		FROM `tx_produk_stok` 
+		FROM tx_produk
 		where is_delete = 0";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
 	
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_produk_stok` as pd
-		LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as pd on pd.id_produk = p.id_produk
 		LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
 		LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
 		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
@@ -607,16 +607,13 @@ class Persediaan extends CI_Controller {
 		// Fetch Records
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
 				pd.exp_date,pd.jumlah_stok,p.id_produk,pd.id_stok,r.nama_rak,
-				(CASE WHEN sp.tgl_so !=NULL THEN
-						sp.tgl_so
-					ELSE
-						'Belum Pernah'
-				END) as status_so
-				FROM `tx_produk_stok` as pd
-				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
-				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
-				LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
-				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+				IF (sp.tgl_so IS NULL ,'Belum Pernah',DATE_FORMAT(sp.tgl_so,'%d-%m-%Y')
+				) as status_so,sp.tgl_so
+				FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as pd on pd.id_produk = p.id_produk
+		LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -636,7 +633,7 @@ class Persediaan extends CI_Controller {
 		$id = $_POST['id_stok'];
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
 				pd.exp_date,p.id_produk,pd.id_stok,pd.jumlah_stok as stok_sistem,sp.stok_fisik,
-				sp.catatan,sp.penyesuaian,pd.kode_batch
+				sp.catatan,sp.penyesuaian,p.sku_kode_produk,sp.id_stok_opname
 				FROM `tx_produk_stok` as pd
 				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
 				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
@@ -644,25 +641,61 @@ class Persediaan extends CI_Controller {
 				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 				WHERE pd.id_stok = $id";
 		$data = $this->db->query($sql);
-
-		if(!empty($data)){
+		
+		if($data->num_rows()>0){
 			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
 		}else{
-			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>null));
+			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
 		}
 	}
 
-	public function save_stok_opname(){
-		$data = $this->input->post();
-		$id_so = $_POST['id_stok_opname'];
-		$data_his = $this->input->post();
+	public function save_stok_opname(){		
+		$user = $this->session->userdata('id_user');
+		$sql = "SELECT NOW() as jam";
+		$time = $this->db->query($sql)->row();
+		$ext = 0;
+		$data = array (
+					'tgl_so' => $time->jam,
+					'stok_fisik' => $_POST['stok_fisik'],
+					'penyesuaian' => $_POST['penyesuaian'],
+					'catatan' => $_POST['catatan'],
+					'verifikasi' => $_POST['verifikasi'],
+		);
 
-		if($_POST['id_stok_opname']){
-			$sql = $this->db->insert('tx_produk_stok_opname',$data);
-		}else{
-			unset($data['id_stok_opname']);
-			$sql = $this->db->where('id_produk_stok_opname',$id_so)->update('tx_produk_stok_opname',$data);
-		}
+			if($_POST['id_stok_opname'] !==""){
+				$data['insert_date']= $time->jam;
+				$data['insert_by'] = $user;
+				$data['id_stok'] = $_POST['id_stok'];
+				$sql = $this->db->insert('tx_produk_stok_opname',$data);
+				if($sql){
+					$ext += 1;
+				}
+			}else{
+				$data['update_date']= $time->jam;
+				$data['update_by'] = $user;
+				$id_stok = $_POST['id_stok'];
+				$sql = $this->db->where('id_stok',$id_stok)->update('tx_produk_stok_opname',$data);
+				if($sql){
+					$ext += 1;
+				}
+			}
+
+		
+			$data['insert_date']= $time->jam;
+			$data['insert_by'] = $user;
+			$data['id_stok'] = $_POST['id_stok'];
+			$sql_detail = $this->db->insert('tx_produk_stok_opname_detail',$data);
+
+			if($sql_detail){
+				$ext += 1;
+			}
+
+			if($ext > 0){
+				echo json_encode(array('status'=>1,'msg'=>'Data Berhasil Di Stok Opname'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Data Di Stok Opname'));
+			}
+
 	}
 
 	

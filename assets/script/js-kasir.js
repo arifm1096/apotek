@@ -37,6 +37,12 @@ $("#add_produk").submit(function (e) {
 			if (res.status == 1) {
 				load_kasir();
 				$("#produk_barcode").val("");
+			} else {
+				Swal.fire({
+					icon: "warning",
+					title: "Perhatian !!!",
+					html: res.msg,
+				});
 			}
 		},
 	});
@@ -139,14 +145,14 @@ function load_kasir() {
                                     </td>
                                     <td style="width: 100px; ">
                                         <input type="text" class="form-control" name="harga" value="` +
-						formatRupiah(e.harga_jual, "Rp. ") +
+						rupiah(e.harga_jual) +
 						`" id="harga_` +
 						e.id_jual +
 						`">
                                     </td>
                                     <td style="width: 130px; ">
                                         <input type="text" class="form-control" name="total" value="` +
-						formatRupiah(e.total_harga, "Rp. ") +
+						rupiah(e.total_harga) +
 						`" id="total_` +
 						e.id_jual +
 						`" readonly>
@@ -155,7 +161,7 @@ function load_kasir() {
 					no++;
 				});
 			}
-			$("#sub_tot").val(formatRupiah(sub_tot, "Rp. "));
+			$("#sub_tot").val(rupiah(sub_tot));
 			$("#str_sub_tot").val(sub_tot);
 			$("#list_kasir").html(html);
 			total_harga();
