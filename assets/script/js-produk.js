@@ -957,6 +957,13 @@ function jenis_harga(param) {
 		loop_member_edit(param);
 	}
 
+	// param.forEach((e) => {
+	// 	if (e.id_jenis_harga == "4") {
+	// 		$("#id_harga").val(e.id_harga);
+	// 		$("#harga_jual").val(e.harga_jual);
+	// 	}
+	// });
+
 	$("#edit_fleksibel").closest(".btn").button("toggle");
 	$("#edit_grosir_list").hide();
 	$("#edit_member_list").hide();
@@ -1474,6 +1481,7 @@ function save_edit_data_produk() {
 			jumlah_produk: jumlah_produk,
 			satuan: satuan,
 			jumlah_produk_p: jumlah_produk_p,
+			id_harga: id_harga,
 			harga_jual: harga_jual,
 			harga_fleksibel: harga_fleksibel,
 			ket: ket,
