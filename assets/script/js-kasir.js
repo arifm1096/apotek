@@ -91,7 +91,7 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 
 function load_kasir() {
 	var html = "";
-	var sub_tot = "";
+	var sub_tot = 0;
 	$.ajax({
 		url: URL + "penjualan/load_data_produk",
 		type: "POST",
@@ -195,6 +195,32 @@ function hapus_list(id) {
 	});
 }
 
+function clear_list(id) {
+	$.ajax({
+		url: URL + "penjualan/clear_produk_kasir",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Berhasil",
+					text: res.msg,
+				});
+				load_kasir();
+				total();
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !!",
+					text: res.msg,
+				});
+			}
+		},
+	});
+}
+
 function get_nom(id, el, val) {
 	var jen_har = $("#jenis_harga_" + id).val();
 	var sat = $("#satuan_" + id).val();
@@ -205,10 +231,10 @@ function get_nom(id, el, val) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				$("#sub_tot").val(formatRupiah(res.sub_tot, "Rp. "));
+				$("#sub_tot").val(rupiah(res.sub_tot, "Rp. "));
 				$("#str_sub_tot").val(res.sub_tot);
-				$("#total_" + id).val(formatRupiah(res.result.total_harga, "Rp. "));
-				$("#harga_" + id).val(formatRupiah(res.result.harga_jual, "Rp. "));
+				$("#total_" + id).val(rupiah(res.result.total_harga, "Rp. "));
+				$("#harga_" + id).val(rupiah(res.result.harga_jual, "Rp. "));
 				total_harga();
 			} else {
 				load_kasir();

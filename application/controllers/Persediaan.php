@@ -91,14 +91,16 @@ class Persediaan extends CI_Controller {
 		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
 		p.harga_beli,ps.id_stok,
 		REPLACE(GROUP_CONCAT(phg.harga_jual),',','<br>') as harga_jual,
-		REPLACE(GROUP_CONCAT(phg.marup),',','<br>') as marup
+		REPLACE(GROUP_CONCAT(phg.nama_jenis_harga),',','<br>') as nama_harga, phg.id_jenis_harga,
+		REPLACE(GROUP_CONCAT(phg.marup),',','<br>') as margin
 		FROM tx_produk as p
 		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
 		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
-		LEFT JOIN (SELECT p.id_produk,ph.id_harga,p.harga_beli,ph.harga_jual,(ph.harga_jual - p.harga_beli) as marup
+		LEFT JOIN (SELECT p.id_produk,ph.id_jenis_harga,ph.id_harga,p.harga_beli,ph.harga_jual,(ph.harga_jual - p.harga_beli) as marup, jg.nama_jenis_harga
 		FROM tx_produk as p
-		LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk) as phg ON p.id_produk = phg.id_produk
+		LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
+		LEFT JOIN tm_jenis_harga as jg ON ph.id_jenis_harga = jg.id_jenis_harga) as phg ON p.id_produk = phg.id_produk
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -218,7 +220,7 @@ class Persediaan extends CI_Controller {
 		$ext =0;
 		$msg ="";
 		$user = $this->session->userdata('id_user');
-		$time = date('Y-m-d H:i;s');
+		$datetime = $this->db->select('now() as time')->get()->row();
 		$jumlah_stok =0;
 		$id_produk =  $_POST['id_produk'];
 		$id_satuan =  $_POST['id_satuan'];
@@ -247,20 +249,20 @@ class Persediaan extends CI_Controller {
 			'jumlah_stok' => $jumlah_stok,
 			'exp_date' => $tgl_exp,
 			'id_supplier'=> $_POST['supplier'],
-			'insert_date' => $time
+			'insert_date' => $datetime->time
 		);
 
 		$data_his = array(
 			'id_produk' => $_POST['id_produk'],
 			'id_gudang' => $this->session->userdata('gudang'),
-			'jumlah_stok' => $jumlah_stok,
+			'jumlah_stok' => $_POST['jumlah'],
 			'exp_date' => $tgl_exp,
 			'id_supplier'=> $_POST['supplier'],
 			'id_satuan' => $_POST['id_satuan'],
 			'harga_beli' => $_POST['harga_beli'],
 			'id_status_stok' => "1",
 			'insert_by' => $user,
-			'insert_date' => $time
+			'insert_date' => $datetime->time
 		);
 
 		if($ext > 0){
@@ -337,7 +339,7 @@ class Persediaan extends CI_Controller {
 			$where .=" OR ps.kode_batch LIKE '%$kd%'";
 		}
 		
-		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, ps.exp_date,u.nama as petugas,
+		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, p.sku_kode_produk,ps.exp_date,u.nama as petugas,
 				sum(case when ps.id_status_stok = 1 then ps.jumlah_stok else 0 end) as masuk, 
 				sum(case when ps.id_status_stok = 2 then ps.jumlah_stok else 0 end) as keluar,
 				CONCAT(s.nama_status,' ','Stok',' ',p.nama_produk) as catat

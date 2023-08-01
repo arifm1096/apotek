@@ -22,13 +22,17 @@ class Home extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-
+		
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
 		}
 	}
 
 	public function index(){
+		$this->load->model('Model_home');
+		$var['penjualan'] = $this->Model_home->get_sum_penjualan();
+		$var['stok'] = $this->Model_home->get_sum_stok();
+		$var['pembelian'] = $this->Model_home->get_sum_pembelian();
 		$var['content'] = 'view-home';
 		$var['js'] = 'js-home';
 		$this->load->view('view-index',$var);

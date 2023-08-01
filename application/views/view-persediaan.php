@@ -86,7 +86,8 @@
                             <th>Stok</th>
                             <th>Harga Pokok (Rp.)</th>
                             <th>Harga Jual (Rp.)</th>
-                            <th>Markup (Rp.)</th>
+                            <th>Jenis Harga</th>
+                            <th>Margin (Rp.)</th>
                             <th>Status</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
@@ -368,8 +369,6 @@
 
                         <hr>
                         <form id="stok_produk">
-
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -377,12 +376,12 @@
                                         <input type="hidden" id="id_produk_stok">
                                         <input type="hidden" id="id_stok">
                                         <input type="text" id="jumlah_stok" name="jumlah_stok" class="form-control"
-                                            placeholder="Inputkan Nama Produk" required>
+                                            placeholder="Inputkan Jumlah Stok" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Tgl. Expired</label>
                                         <input type="text" id="exp_date" name="exp_date" class="form-control tgl_piker"
-                                            placeholder="Inputkan Nama Produk" required>
+                                            placeholder="Inputkan Tanggal Expire" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Satuan</label>

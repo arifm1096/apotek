@@ -74,7 +74,7 @@
                             <th style="width: 10px; text-align: right;">No.</th>
                             <th>Tanggal</th>
                             <th>Catatan Transaksi</th>
-                            <th>Kode Batch</th>
+                            <th>Kode SKU</th>
                             <th>Expired Date</th>
                             <th>Petugas</th>
                             <th>Masuk</th>

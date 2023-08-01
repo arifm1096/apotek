@@ -48,8 +48,8 @@
 
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>53<sup style="font-size: 20px">%</sup></h3>
-                        <p>Dasboard Pembalian</p>
+                        <h3><?php echo $pembelian->jumlah_pembelian;?></h3>
+                        <p>Dasboard Pembelian</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
@@ -62,7 +62,9 @@
 
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>44</h3>
+                        <h3>
+                            <?Php echo $penjualan->jumlah_penjualan;?>
+                        </h3>
                         <p>Dashboard Penjualan</p>
                     </div>
                     <div class="icon">
@@ -76,7 +78,9 @@
 
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>65</h3>
+                        <h3>
+                            <?Php echo $stok->jumlah_stok;?>
+                        </h3>
                         <p>Dasboard Persediaan / Stok</p>
                     </div>
                     <div class="icon">
@@ -132,7 +136,7 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header border-transparent bg-danger">
-                                <h3 class="card-title text-bold">Produk Akan Expired </h3>
+                                <h3 class="card-title text-bold">Produk Expired </h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                         <i class="fas fa-minus"></i>

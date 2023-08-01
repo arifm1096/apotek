@@ -50,7 +50,7 @@ function load_satuan() {
 				},
 			},
 
-			{ data: "kd_satuan" },
+			{ data: "kd_statuan" },
 			{ data: "nama_satuan" },
 			{ data: "ket" },
 			{ data: "is_aktif" },
@@ -62,7 +62,7 @@ function load_satuan() {
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
 						row.id_satuan +
 						"','" +
-						row.kd_satuan +
+						row.kd_statuan +
 						"','" +
 						row.nama_satuan +
 						"','" +
@@ -127,7 +127,7 @@ function edit(p_id_satuan, p_kode, p_nama, p_ket, p_aktif) {
 	$("#id_satuan").val(p_id_satuan);
 	$("#ket").val(p_ket);
 	$("#nama_satuan").val(p_nama);
-	$("#kd_satuan").val(p_kode);
+	$("#kd_statuan").val(p_kode);
 	status_aktif(p_aktif);
 	$("#modal_input_satuan").modal("show");
 }

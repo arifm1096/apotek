@@ -95,7 +95,7 @@ function load_stok(id_produk, bulan, tahun, id_gudang, kode_batch) {
 						e.catat +
 						"</td>" +
 						"<td>" +
-						e.kode_batch +
+						e.sku_kode_produk +
 						"</td>" +
 						"<td>" +
 						e.exp_date +

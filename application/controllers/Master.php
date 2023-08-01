@@ -311,7 +311,7 @@ class Master extends CI_Controller{
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (nama_satuan like '%" . $searchValue . "%'
-								 OR kd_satuan like '%" . $searchValue . "%'
+								 OR kd_statuan like '%" . $searchValue . "%'
 								 OR ket like '%" . $searchValue . "%'					
 			) ";
 		}
@@ -332,7 +332,7 @@ class Master extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT id_satuan,kd_satuan,nama_satuan,ket,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		$sql = "SELECT id_satuan,kd_statuan,nama_satuan,ket,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
 		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
 		END) as is_aktif 
 		FROM `tm_satuan`

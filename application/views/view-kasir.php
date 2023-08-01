@@ -19,7 +19,7 @@
                         </form>
                     </div>
                     <div class="col-md-6">
-                        <button type="button" class="btn btn-default btn-md float-right" onclick="hapus_list();"><i
+                        <button type="button" class="btn btn-default btn-md float-right" onclick="clear_list();"><i
                                 class="fa fa-trash" aria-hidden="true"></i></button>
                     </div>
                 </div>

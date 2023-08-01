@@ -57,7 +57,7 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Data Hak Akses</h5>
+                        <h5>Data Satuan</h5>
                         <hr>
 
                         <form id="add_satuan">
@@ -66,7 +66,7 @@
                             <input type="hidden" name="id_satuan" id="id_satuan">
                             <div class="form-group">
                                 <label>Kode Satuan</label>
-                                <input type="text" id="kd_satuan" name="kd_satuan" class="form-control"
+                                <input type="text" id="kd_statuan" name="kd_statuan" class="form-control"
                                     placeholder="Inputkan Hak Akses">
                             </div>
                             <div class="form-group">

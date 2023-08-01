@@ -38,7 +38,7 @@ class Penjualan extends CI_Controller {
 
 	public function get_produk_barcode(){
 		$param = $_POST['param'];
-		$sql = "SELECT nama_produk FROM `tx_produk` WHERE nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
+		$sql = "SELECT nama_produk FROM `tx_produk` WHERE is_delete = 0 and nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
 		$data = $this->db->query($sql)->result();
 		$str_produk = [];
 		foreach ($data as $key => $val) {
@@ -324,6 +324,27 @@ class Penjualan extends CI_Controller {
 		$user = $this->session->userdata('id_user');
 		if(!empty($id)){
 			$del = $this->db->where('id_jual',$id)
+							->update('tx_jual',array(
+								'is_delete'=>1,
+								'delete_by' => $user,
+								'delete_date' => $datetime->time
+							));
+			if($del){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Delete NUll || Error Code : 7232'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
+		}
+	}
+
+	public function clear_produk_kasir(){
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$user = $this->session->userdata('id_user');
+		if(!empty($user)){
+			$del = $this->db->where('insert_by',$user)
+							->where('is_selesai',0)
 							->update('tx_jual',array(
 								'is_delete'=>1,
 								'delete_by' => $user,

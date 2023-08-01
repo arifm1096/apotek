@@ -19,6 +19,20 @@ $(".tgl_piker").datepicker({
 	format: "dd-mm-yyyy",
 	showButtonPanel: true,
 });
+
+$("#exp_date").datepicker({
+	todayHighlight: "TRUE",
+	autoclose: true,
+	format: "dd-mm-yyyy",
+	showButtonPanel: true,
+});
+
+const rupiah = (number) => {
+	return new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+	}).format(number);
+};
 //Initialize Select2 Elements
 $(".select2").select2();
 
@@ -779,14 +793,15 @@ function load_persediaan(text, jual, rak) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return "<div>" + row.harga_jual + "</div>";
+					return row.harga_jual;
 				},
 			},
+			{ data: "nama_harga" },
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return "<div>" + row.marup + "</div>";
+					return row.margin;
 				},
 			},
 			{
@@ -826,13 +841,7 @@ function load_persediaan(text, jual, rak) {
 						`')">
 													<i class="fa fa-plus mr-2"></i> Tambah Stok
 												</button>
-												<div class="dropdown-divider"></div>
-													<button type="button" class="dropdown-item" onclick="edit_produk(` +
-						row.id_produk +
-						`)">
-														<i class="fa fa-edit mr-2"></i> Edit
-													</button>
-												<div class="dropdown-divider"></div>
+												
 											</div>
 										</li>
 									</ul>
@@ -863,6 +872,7 @@ function clear_filter() {
 }
 
 function stok_produk(id_produk, id_stok) {
+	clear_data();
 	$.ajax({
 		url: URL + "persediaan/get_produk",
 		type: "POST",
@@ -920,6 +930,7 @@ function save_stok_produk() {
 				$("#modal_stok_produk").modal("hide");
 				$("#tbl_presediaan").DataTable().destroy();
 				load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				clear_data();
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -928,6 +939,7 @@ function save_stok_produk() {
 				});
 				$("#tbl_presediaan").DataTable().destroy();
 				load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				clear_data();
 			}
 		},
 	});
@@ -935,4 +947,15 @@ function save_stok_produk() {
 
 function kartu_stok(id_produk) {
 	window.open(URL + "persediaan/kartu_stok/" + id_produk, "_blank");
+}
+
+function clear_data() {
+	$("#mediumModalLabel").html("Add New Data");
+	$("#id_produk_stok").val("");
+	$("#id_stok").val("");
+	$("#jumlah_stok").val("");
+	$("#exp_date").val("");
+	$("#id_satuan_stok").val("");
+	$("#id_supplier_stok").val("");
+	$("#harga_beli").val("");
 }
