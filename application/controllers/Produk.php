@@ -546,7 +546,9 @@ class Produk extends CI_Controller {
 
 		$produk = $this->db->where('id_produk',$id_produk)->update('tx_produk',$data_produk);
 		
-		if(!empty($produk)){
+		if($produk){
+			$no += 1;
+		}
 
 			if(!empty($_POST['satuan']) && !empty($_POST['jumlah_produk']) && !empty($_POST['jumlah_produk_p'])){
 				$id_satuan = $_POST['satuan'];
@@ -685,11 +687,6 @@ class Produk extends CI_Controller {
 						$no += 1;
 					}
 				}
-				
-
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));
-		}
 		
 		if($no > 1){
 			echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));

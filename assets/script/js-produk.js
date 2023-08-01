@@ -380,8 +380,21 @@ function get_satuan_utama() {
 
 $("input[type=radio][name=jnp_options]").change(function () {
 	var val = this.value;
-	$("#jenis_produk").val(val);
-	$("#edit_jenis_produk").val(val);
+	var value = "";
+	if (val == "obat") {
+		value += 2;
+	}
+
+	if (val == "alkes") {
+		value += 1;
+	}
+
+	if (val == "umum") {
+		value += 3;
+	}
+
+	$("#jenis_produk").val(value);
+	$("#edit_jenis_produk").val(value);
 });
 
 $("input[type=radio][name=harga_option]").change(function () {
@@ -843,7 +856,7 @@ function loop_grosir_edit(param) {
 								<div class="input-group-prepend">
 									<span class="input-group-text">Rp.</span>
 								</div>
-								<input type="text"  name = "edit_harga_jual_grosir" id="edit_harga_jual_grosir" class="form-control" value="` +
+								<input type="text" id="edit_harga_jual_grosir" class="form-control" value="` +
 				e.harga_jual +
 				`">
 								<div class="input-group-append">
@@ -858,7 +871,7 @@ function loop_grosir_edit(param) {
 								<div class="input-group-prepend">
 									<span class="input-group-text">>=</span>
 								</div>
-								<input type="text" name = "edit_satuan_jumlah" id="edit_satuan_jumlah" class="form-control" value="` +
+								<input type="text"  id="edit_satuan_jumlah" class="form-control" value="` +
 				e.jumlah_per_satuan +
 				`">
 								<div class="input-group-append">
@@ -1383,7 +1396,7 @@ function save_edit_data_produk() {
 	var satuan_utama = $("#edit_satuan_utama").val();
 	var id_rak = $("#edit_id_rak").val();
 	var jumlah_minimal = $("#edit_jumlah_minimal").val();
-	var status_jual = $("input[type=radio][name=edit_status_jual]").val();
+	var status_jual = $('input[name="edit_status_jual"]:checked').val();
 	var harga_beli = $("#edit_harga_beli").val();
 	var jenis_produk = $("#edit_jenis_produk").val();
 
@@ -1481,7 +1494,7 @@ function save_edit_data_produk() {
 				});
 				$("#tbl_produk").DataTable().destroy();
 				load_produk(text, jual, rak);
-				$("#modal_input_produk").modal("hide");
+				$("#modal_edit_produk").modal("hide");
 			} else {
 				Swal.fire({
 					icon: "warning",
