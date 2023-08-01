@@ -11,7 +11,7 @@
  Target Server Version : 100418
  File Encoding         : 65001
 
- Date: 02/08/2023 00:02:20
+ Date: 02/08/2023 00:28:59
 */
 
 SET NAMES utf8mb4;
@@ -426,7 +426,7 @@ CREATE TABLE `tx_produk_harga`  (
   `delete_date` datetime NULL DEFAULT NULL,
   `is_delete` int NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_harga`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 342 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 346 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for tx_produk_stok
