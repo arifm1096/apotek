@@ -376,8 +376,6 @@ class Penjualan extends CI_Controller {
 				WHERE j.is_selesai = 0  and j.insert_by = $user";
 	}
 
-	
-
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');
 		$noTa = $this->Model_penjualan->get_no_nota($id_user);
@@ -541,6 +539,8 @@ class Penjualan extends CI_Controller {
 		}
 	}
 
-	
+	public function data_penjualan(){
+		
+	}
 
 }
