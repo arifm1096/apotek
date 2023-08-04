@@ -1,0 +1,135 @@
+$(document).ready(function () {
+	// filter_data_penjualan();
+	load_penjualan((text = ""), (tgl = ""));
+	$("#loading").hide();
+});
+
+$(".tgl_piker").datepicker({
+	todayHighlight: "TRUE",
+	autoclose: true,
+	format: "dd-mm-yyyy",
+	showButtonPanel: true,
+});
+//Initialize Select2 Elements
+$(".select2").select2();
+
+function filter_data_penjualan(id) {
+	var html_kondisi = "<option value='pil'> Pilih Kondisi </option>";
+	var html_gudang = "<option value='pil'> Pilih Gudang </option>";
+	$.ajax({
+		url: URL + "master/get_filter_penjualan",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == "1") {
+				res.kondisi.forEach((e) => {
+					html_kondisi +=
+						'<option value="' +
+						e.id_kondisi +
+						'"' +
+						(e.id_kondisi === id ? 'selected="selected"' : "") +
+						">" +
+						e.nama_kondisi +
+						"</option>";
+				});
+
+				res.gudang.forEach((e) => {
+					html_gudang +=
+						'<option value="' +
+						e.id_gudang +
+						'"' +
+						(e.id_gudang === id ? 'selected="selected"' : "") +
+						">" +
+						e.nama_gudang +
+						"</option>";
+				});
+			}
+			$("#gudang_filter").html(html_gudang);
+			$("#kondisi_filter").html(html_kondisi);
+		},
+	});
+}
+
+function add_data() {
+	$("#modal_input_produk").modal("show");
+}
+
+const rupiah = (number) => {
+	return new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+	}).format(number);
+};
+
+function load_penjualan(text, tgl) {
+	$("#tbl_penjualan").DataTable({
+		ajax: {
+			url: URL + "penjualan/load_data_penjualan",
+			type: "POST",
+			data: { text: text, tgl: tgl },
+		},
+		processing: true,
+		serverSide: true,
+		searching: false,
+		serverMethod: "POST",
+		columns: [
+			{
+				data: "id_produk",
+				render: function (data, type, row, meta) {
+					return meta.row + meta.settings._iDisplayStart + 1;
+				},
+			},
+			{ data: "no_nota" },
+			{ data: "nama_produk" },
+			{ data: "jumlah_nama_satuan" },
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					return rupiah(row.total_harga);
+				},
+			},
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
+					return (
+						`<div class="row">
+								<div class="col-md-12">
+									<button type="button" class="btn btn-outline-success btn-sm" onclick="detail_pen('` +
+						row.id_jual +
+						`')"><i class="fa fa-search"></i> Detail</button>
+								</div>
+							</div>
+							
+							`
+					);
+				},
+			},
+		],
+	});
+}
+
+function filter_data() {
+	var text = $("#filter_text").val();
+	var tgl = $("#tanggal").val();
+	$("#tbl_penjualan").DataTable().destroy();
+	load_penjualan(text, tgl);
+}
+
+function clear_filter() {
+	$("#tbl_penjualan").DataTable().destroy();
+	load_penjualan((text = ""), (tgl = ""));
+	$("#filter_text").val("");
+	$("#tanggal").val("");
+}
+
+function export_excel() {
+	var text = $("#filter_text").val();
+	var tgl = $("#tanggal").val();
+	window.open(
+		URL + "penjualan/export_data_penjualan?tgl=" + tgl + "&text=" + text,
+		"_blank"
+	);
+}

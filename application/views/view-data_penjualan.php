@@ -3,12 +3,12 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Defecta</h4>
+                <h4>Daftar Penjualan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
-                        onclick="add_data();">
+                        onclick="export_excel();">
                         <i class="fa fa-file-excel"></i> Export
                     </button>
                 </ol>
@@ -19,16 +19,13 @@
         <div class="card">
             <div class="card-header bg-danger">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-8">
                         <label>Cari Produk:</label>
 
                     </div>
-                    <div class="col-md-3">
-                        <label>Filter Gudang:</label>
 
-                    </div>
                     <div class="col-md-3">
-                        <label>Filter Kondisi:</label>
+                        <label>Filter Tanggal:</label>
 
                     </div>
 
@@ -47,19 +44,10 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-
-                        <select name="filter_gudang" id="gudang_filter" class="form-control select2"
+                        <input type="text" class="form-control tgl_piker" name="tanggal" id="tanggal"
                             onchange="filter_data();">
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-
-                        <select name="filter_kondisi" id="kondisi_filter" class="form-control select2"
-                            onchange="filter_data();">
-                        </select>
                     </div>
                     <div class="col-md-1">
-
                         <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
@@ -70,13 +58,14 @@
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
-                <table id="tbl_defecta" class="table table-bordered table-striped">
+                <table id="tbl_penjualan" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
+                            <th>No Nota</th>
                             <th>Nama Produk</th>
-                            <th>Stok Minimal </th>
-                            <th>Stok Total</th>
+                            <th>Jumlah</th>
+                            <th>Total Penjualan</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>
@@ -92,7 +81,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_stok_produk">
+<div class="modal fade" id="modal_data_penjualan">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
@@ -124,7 +113,7 @@
 
 
                         <hr>
-                        <form id="stok_produk">
+                        <form id="data_penjualan">
 
 
                             <div class="row">
@@ -169,7 +158,8 @@
                             <div class="row">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_stok_produk()">
+                                    <button class="btn btn-block btn-info" type="button"
+                                        onclick="save_data_penjualan()">
                                         <i class="fa fa-save fa-lg"></i> &nbsp;
                                         <span id="save-button-produk">Simpan Data</span>
                                         <span id="send-button-produk" style="display:none;">Sending…</span>
