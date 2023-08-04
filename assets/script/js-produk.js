@@ -329,18 +329,19 @@ function hapus(id, supplier, ket) {
 
 function get_ksu() {
 	var p_jenis_produk = $("#jenis_produk").val();
-	var P_nama_produk = $("#nama_produk").val();
+	var p_nama_produk = $("#nama_produk").val();
 
 	var e_jenis_produk = $("#edit_jenis_produk").val();
 	var e_nama_produk = $("#edit_nama_produk").val();
 
-	if (p_jenis_produk == "" && p_nama_produk == "") {
+	if (p_jenis_produk !== "" && p_nama_produk !== "") {
 		var jenis_produk = p_jenis_produk;
 		var nama_produk = p_nama_produk;
 	} else {
 		var jenis_produk = e_jenis_produk;
 		var nama_produk = e_nama_produk;
 	}
+
 	$.ajax({
 		type: "POST",
 		url: URL + "produk/get_kode_ksu",

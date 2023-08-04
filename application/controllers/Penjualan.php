@@ -441,9 +441,9 @@ class Penjualan extends CI_Controller {
 
 			function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-				 $lebar_kolom_1 = 12;
-				 $lebar_kolom_2 = 8;
-				 $lebar_kolom_3 = 8;
+				 $lebar_kolom_1 = 8;
+				 $lebar_kolom_2 = 6;
+				 $lebar_kolom_3 = 6;
 				 $lebar_kolom_4 = 9;
 
 				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
@@ -479,14 +479,50 @@ class Penjualan extends CI_Controller {
 
 				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
 				return implode($hasilBaris, "\n") . "\n";
-			}   
+			}
+
+			function buatBaris2Kolom($kolom1, $kolom2) {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+				 $lebar_kolom_1 = 15;
+				 $lebar_kolom_2 = 15;
+
+				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+
+				$kolom1Array = explode("\n", $kolom1);
+				$kolom2Array = explode("\n", $kolom2);
+
+				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array));
+
+				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+				$hasilBaris = array();
+
+				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ",STR_PAD_LEFT);
+					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ",STR_PAD_LEFT);
+
+					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2;
+				}
+
+				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+				return implode($hasilBaris, "\n") . "\n";
+			} 
 
 			// Membuat judul
 			$printer->initialize();
 			$printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
 			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
 			$printer->text("$data->nama_wilayah\n");
-			$printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
+			// $printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
+			$printer->initialize();
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer->text("Alamat : $data->alamat\n");
+			$printer->text("Telp : $data->no_hp\n");
 			$printer->text("\n");
 
 			// Data transaksi
@@ -497,21 +533,21 @@ class Penjualan extends CI_Controller {
 
 			// Membuat tabel
 			$printer->initialize(); 
-			$printer->text("----------------------------------------\n");
+			$printer->text("--------------------------------\n");
 			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
-			$printer->text("----------------------------------------\n");
+			$printer->text("--------------------------------\n");
 			foreach ($jual as $key => $val) {
 				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
 			}
 			
-			$printer->text("----------------------------------------\n");
+			$printer->text("--------------------------------\n");
 			
-			$printer->text(buatBaris4Kolom('', '', "Service", number_format($kasir->service,0,',','.')));
-			$printer->text(buatBaris4Kolom('', '', "Embalase", number_format($kasir->embalase,0,',','.')));
-			$printer->text(buatBaris4Kolom('', '', "Lain", number_format($kasir->lain,0,',','.')));
-			$printer->text(buatBaris4Kolom('', '', "Total", number_format($kasir->total,0,',','.')));
-			$printer->text(buatBaris4Kolom('', '', "Bayar", number_format($kasir->jumlah_uang,0,',','.')));
-			$printer->text(buatBaris4Kolom('', '', "Kembali", number_format($kasir->kembalian,0,',','.')));
+			$printer->text(buatBaris2Kolom("Service", number_format($kasir->service,0,',','.')));
+			$printer->text(buatBaris2Kolom("Embalase", number_format($kasir->embalase,0,',','.')));
+			$printer->text(buatBaris2Kolom("Lain", number_format($kasir->lain,0,',','.')));
+			$printer->text(buatBaris2Kolom("Total", number_format($kasir->total,0,',','.')));
+			$printer->text(buatBaris2Kolom("Bayar", number_format($kasir->jumlah_uang,0,',','.')));
+			$printer->text(buatBaris2Kolom("Kembali", number_format($kasir->kembalian,0,',','.')));
 			$printer->text("\n");
 
 			$printer->initialize();
