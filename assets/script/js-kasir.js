@@ -22,6 +22,59 @@ $("#produk_barcode").on("input", function () {
 	});
 });
 
+$("#nama_produk_tolak").on("input", function () {
+	var param = $("#nama_produk_tolak").val();
+	$.ajax({
+		url: URL + "penjualan/get_produk_barcode",
+		type: "POST",
+		data: { param: param },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#nama_produk_tolak").autocomplete({
+					source: res.result,
+					autoFocus: true,
+				});
+			}
+		},
+	});
+});
+
+$("#produk_tolak").submit(function (e) {
+	e.preventDefault();
+	$("#save-button-tolak").html("Sending...");
+	$.ajax({
+		url: URL + "penjualan/save_penjulan_tolak",
+		type: "post",
+		data: new FormData(this),
+		processData: false,
+		contentType: false,
+		cache: false,
+		async: false,
+		beforeSend: function () {
+			$("#add_satuan").find("span.error-text").text();
+		},
+		success: function (data) {
+			$("#save-button-tolak").html("Simpan");
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.message,
+				});
+				$("#modal_penjual_tertolak").modal("hide");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: res.message,
+				});
+			}
+		},
+	});
+});
+
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
 	$.ajax({

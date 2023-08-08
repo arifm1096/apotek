@@ -731,4 +731,18 @@ class Penjualan extends CI_Controller {
         $writer->save('php://output');
 	}
 
+	public function save_penjulan_tolak(){
+		$data = $this->input->post();
+
+		if($data !==""){
+			$sql = $this->db->insert('tx_jual_tolak',$data);
+
+			if($sql){
+				echo json_encode(array('status'=>1,'msg'=>'Data Success Diinput'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Gagal Diinput'));
+			}
+		}
+	}
+
 }
