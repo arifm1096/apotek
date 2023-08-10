@@ -608,9 +608,12 @@ class Penjualan extends CI_Controller {
 			) ";
 		}
 
-		if($_POST['tgl'] !=''){
-			$tgl = $_POST['tgl'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = '$tgl'";
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 		// else{
@@ -682,7 +685,8 @@ class Penjualan extends CI_Controller {
         $sheet->setCellValue('B1', "No Nota");
         $sheet->setCellValue('C1', "Nama Produk");
         $sheet->setCellValue('D1', "Jumlah");
-        $sheet->setCellValue('E1', "Total Penjualan");
+        $sheet->setCellValue('E1', "Satuan");
+		$sheet->setCellValue('F1', "Total Penjualan");
 
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
@@ -694,14 +698,17 @@ class Penjualan extends CI_Controller {
 			) ";
 		}
 
-		if($_GET['tgl'] !=''){
-			$tgl = $_GET['tgl'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = '$tgl'";
+		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 
 		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.jumlah_produk,s.nama_satuan,
 		j.total_harga,ps.jumlah_stok,j.no_nota
 		FROM `tx_jual` as j
 		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
@@ -716,8 +723,9 @@ class Penjualan extends CI_Controller {
           $sheet->setCellValue('A'.$numrow, $no);
           $sheet->setCellValue('B'.$numrow, $data['no_nota']);
           $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['jumlah_nama_satuan']);
-          $sheet->setCellValue('E'.$numrow, $data['total_harga']);
+          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
+          $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('f'.$numrow, $data['total_harga']);
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
@@ -733,6 +741,7 @@ class Penjualan extends CI_Controller {
 
 	public function save_penjulan_tolak(){
 		$data = $this->input->post();
+		$data['insert_by'] = 'NOW()';
 
 		if($data !==""){
 			$sql = $this->db->insert('tx_jual_tolak',$data);

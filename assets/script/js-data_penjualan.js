@@ -62,12 +62,12 @@ const rupiah = (number) => {
 	}).format(number);
 };
 
-function load_penjualan(text, tgl) {
+function load_penjualan(text, tgl1, tgl2) {
 	$("#tbl_penjualan").DataTable({
 		ajax: {
 			url: URL + "penjualan/load_data_penjualan",
 			type: "POST",
-			data: { text: text, tgl: tgl },
+			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		},
 		processing: true,
 		serverSide: true,
@@ -90,32 +90,33 @@ function load_penjualan(text, tgl) {
 					return rupiah(row.total_harga);
 				},
 			},
-			{
-				data: null,
-				orderable: false,
-				render: function (data, type, row) {
-					return (
-						`<div class="row">
-								<div class="col-md-12">
-									<button type="button" class="btn btn-outline-success btn-sm" onclick="detail_pen('` +
-						row.id_jual +
-						`')"><i class="fa fa-search"></i> Detail</button>
-								</div>
-							</div>
-							
-							`
-					);
-				},
-			},
+			// {
+			// 	data: null,
+			// 	orderable: false,
+			// 	render: function (data, type, row) {
+			// 		return (
+			// 			`<div class="row">
+			// 					<div class="col-md-12">
+			// 						<button type="button" class="btn btn-outline-success btn-sm" onclick="detail_pen('` +
+			// 			row.id_jual +
+			// 			`')"><i class="fa fa-search"></i> Detail</button>
+			// 					</div>
+			// 				</div>
+
+			// 				`
+			// 		);
+			// 	},
+			// },
 		],
 	});
 }
 
 function filter_data() {
 	var text = $("#filter_text").val();
-	var tgl = $("#tanggal").val();
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
 	$("#tbl_penjualan").DataTable().destroy();
-	load_penjualan(text, tgl);
+	load_penjualan(text, tgl1, tgl2);
 }
 
 function clear_filter() {
@@ -127,9 +128,16 @@ function clear_filter() {
 
 function export_excel() {
 	var text = $("#filter_text").val();
-	var tgl = $("#tanggal").val();
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
 	window.open(
-		URL + "penjualan/export_data_penjualan?tgl=" + tgl + "&text=" + text,
+		URL +
+			"penjualan/export_data_penjualan?tgl1=" +
+			tgl1 +
+			"&tgl2=" +
+			tgl2 +
+			"&text=" +
+			text,
 		"_blank"
 	);
 }

@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require 'vendor/autoload.php';
+require_once 'application/third_party/fpdf/fpdf.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -147,6 +148,178 @@ class Produk extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function export_data_produk(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+     
+        $sheet->setCellValue('A1', "No");
+        $sheet->setCellValue('B1', "SKU KODE");
+        $sheet->setCellValue('C1', "Nama Produk");
+        $sheet->setCellValue('D1', "Produk By");
+        $sheet->setCellValue('E1', "Nama Rak");
+		$sheet->setCellValue('F1', "Jumlah Minimal");
+		$sheet->setCellValue('G1', "Nama Satuan");
+		$sheet->setCellValue('H1', "Status Jual");
+
+		$where = " p.is_delete = 0 ";
+
+		$searchQuery = "";
+		$searchValue = $_GET['text'];
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.barcode like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR p.produk_by like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR s.nama_satuan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		if($_GET['jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_GET['jual']."'";
+		}
+
+		if($_GET['rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['rak']."'";
+		}
+
+
+		$sql ="SELECT p.sku_kode_produk,p.nama_produk,p.produk_by,r.nama_rak,p.jumlah_minimal,s.nama_satuan,j.nama_jual
+				FROM tx_produk as p
+				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+				LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+				LEFT JOIN tm_jual as j on p.status_jual = j.id_jual 
+				WHERE $where";
+
+		$data_jual = $this->db->query($sql)->result_array();
+		echo $this->db->last_query();
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 2; // Set baris pertama untuk isi tabel adalah baris ke 4
+        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+          $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['produk_by']);
+          $sheet->setCellValue('E'.$numrow, $data['nama_rak']);
+		  $sheet->setCellValue('F'.$numrow, $data['jumlah_minimal']);
+		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('H'.$numrow, $data['nama_jual']);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Master Produk.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+	}
+
+	public function export_pdf_produk(){
+
+		$where = " p.is_delete = 0 ";
+
+		$searchQuery = "";
+		$searchValue = $_GET['text'];
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.barcode like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR p.produk_by like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR s.nama_satuan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		if($_GET['jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_GET['jual']."'";
+		}
+
+		if($_GET['rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['rak']."'";
+		}
+
+
+		$sql ="SELECT p.sku_kode_produk,p.nama_produk,p.produk_by,r.nama_rak,p.jumlah_minimal,s.nama_satuan,j.nama_jual
+				FROM tx_produk as p
+				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+				LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+				LEFT JOIN tm_jual as j on p.status_jual = j.id_jual 
+				WHERE $where";
+
+		$data_jual = $this->db->query($sql)->result_array();
+        
+		
+			
+
+		$pdf=new FPDF('p','cm','Letter');
+		// $pdf = new FPDF();
+            $pdf->AddPage();
+			$current_y = $pdf->GetY();
+			$current_x = $pdf->GetX();
+            $pdf->SetFont('Arial','B',12);
+           
+            $pdf->Image('assets/images/logo/logo.png',1,1,2,2);
+           
+            $pdf->SetX(3);
+            $pdf->MultiCell(19.5,0.5,'SMKN 1 Percobaan',0,'L');
+           
+            $pdf->SetX(3);
+            $pdf->MultiCell(19.5,0.5,'Pemerintah Kota Beta',0,'L');
+           
+            $pdf->SetFont('Arial','B',10);
+            $pdf->SetX(3);
+            $pdf->MultiCell(19.5,0.5,'JL. Mengkubumi No. 1, Telpon : 0411400000',0,'L');
+           
+            $pdf->SetX(3);
+            $pdf->MultiCell(19.5,0.5,'website : www.imuh46.blogspot.com email : imuh46@gmail.com',0,'L');
+           
+            $pdf->Line(1,3.1,20.5,3.1);
+            $pdf->SetLineWidth(0.1);
+            $pdf->Line(1,3.2,20.5,3.2);
+           
+            $pdf->SetLineWidth(0);
+            $pdf->Ln();
+
+			$pdf->SetFont('Arial','B',10);
+			// $pdf->SetWidths(Array(10,20,40,40,30,20,20,40));
+			$pdf->Cell(1,1,'No',1,0,'C');
+			$pdf->Cell(2,1,'SKU Kode',1,0,'C');
+			$pdf->Cell(4,1,'Nama Produk',1,0,'C');
+			$pdf->Cell(3,1,'Produk By',1,0,'C');
+			$pdf->Cell(3,1,'Nama Rak',1,0,'C');
+			$pdf->Cell(3,1,'Jumlah Minimal',1,0,'C');
+			$pdf->Cell(2,1,' Satuan',1,0,'C');
+			$pdf->Cell(2,1,'Status',1,0,'C');
+
+			$pdf->Ln();
+			$pdf->SetFont('Arial','',10);
+        
+		$no = 1; 
+        foreach($data_jual as $data){ 
+			 $pdf->Ln();
+			$pdf->Cell(1,1,$no,1,0,'C');
+			$pdf->Cell(2,1,$data['sku_kode_produk'],1,0,'C');
+			$pdf->MultiCell(4,1,$data['nama_produk'],1,0,'L');
+			// $current_x += 4;
+			// $pdf->SetXY(4,$current_y);
+			$pdf->Cell(3,1,$data['produk_by'],1,0,'C');
+			$pdf->Cell(3,1,$data['nama_rak'],1,0,'C');
+			$pdf->Cell(3,1,$data['jumlah_minimal'],1,0,'C');
+			$pdf->Cell(2,1,$data['nama_satuan'],1,0,'C');
+			$pdf->Cell(2,1,$data['nama_jual'],1,0,'C');
+			  $no++; 
+			 
+        }
+        $pdf->Output();
+
+       
 	}
 
 	public function tambah_data(){

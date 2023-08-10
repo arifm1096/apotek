@@ -19,14 +19,13 @@
         <div class="card">
             <div class="card-header bg-danger">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-5">
                         <label>Cari Produk:</label>
 
                     </div>
 
                     <div class="col-md-3">
                         <label>Filter Tanggal:</label>
-
                     </div>
 
                 </div>
@@ -43,8 +42,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <input type="text" class="form-control tgl_piker" name="tanggal" id="tanggal"
+                    <div class="col-md-2">
+                        <input type="text" class="form-control tgl_piker" name="tanggal1" id="tanggal1"
+                            onchange="filter_data();">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control tgl_piker" name="tanggal2" id="tanggal2"
                             onchange="filter_data();">
                     </div>
                     <div class="col-md-1">
@@ -66,7 +69,7 @@
                             <th>Nama Produk</th>
                             <th>Jumlah</th>
                             <th>Total Penjualan</th>
-                            <th style="width: 75px; ">Action</th>
+                            <!-- <th style="width: 75px; ">Action</th> -->
                         </tr>
                     </thead>
                     <tbody>

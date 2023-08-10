@@ -1514,3 +1514,35 @@ function save_edit_data_produk() {
 		},
 	});
 }
+
+function export_excel() {
+	var text = $("#filter_text").val();
+	var jual = $("#filter_status_jual").val();
+	var rak = $("#filter_rak").val();
+	window.open(
+		URL +
+			"produk/export_data_produk?jual=" +
+			jual +
+			"&rak=" +
+			rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var jual = $("#filter_status_jual").val();
+	var rak = $("#filter_rak").val();
+	window.open(
+		URL +
+			"produk/export_pdf_produk?jual=" +
+			jual +
+			"&rak=" +
+			rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}
