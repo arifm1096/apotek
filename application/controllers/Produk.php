@@ -253,71 +253,23 @@ class Produk extends CI_Controller {
 				LEFT JOIN tm_jual as j on p.status_jual = j.id_jual 
 				WHERE $where";
 
-		$data_jual = $this->db->query($sql)->result_array();
+		$var['data_produk'] = $this->db->query($sql)->result();
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
         
-		
-			
-
-		$pdf=new FPDF('p','cm','Letter');
-		// $pdf = new FPDF();
-            $pdf->AddPage();
-			$current_y = $pdf->GetY();
-			$current_x = $pdf->GetX();
-            $pdf->SetFont('Arial','B',12);
-           
-            $pdf->Image('assets/images/logo/logo.png',1,1,2,2);
-           
-            $pdf->SetX(3);
-            $pdf->MultiCell(19.5,0.5,'SMKN 1 Percobaan',0,'L');
-           
-            $pdf->SetX(3);
-            $pdf->MultiCell(19.5,0.5,'Pemerintah Kota Beta',0,'L');
-           
-            $pdf->SetFont('Arial','B',10);
-            $pdf->SetX(3);
-            $pdf->MultiCell(19.5,0.5,'JL. Mengkubumi No. 1, Telpon : 0411400000',0,'L');
-           
-            $pdf->SetX(3);
-            $pdf->MultiCell(19.5,0.5,'website : www.imuh46.blogspot.com email : imuh46@gmail.com',0,'L');
-           
-            $pdf->Line(1,3.1,20.5,3.1);
-            $pdf->SetLineWidth(0.1);
-            $pdf->Line(1,3.2,20.5,3.2);
-           
-            $pdf->SetLineWidth(0);
-            $pdf->Ln();
-
-			$pdf->SetFont('Arial','B',10);
-			// $pdf->SetWidths(Array(10,20,40,40,30,20,20,40));
-			$pdf->Cell(1,1,'No',1,0,'C');
-			$pdf->Cell(2,1,'SKU Kode',1,0,'C');
-			$pdf->Cell(4,1,'Nama Produk',1,0,'C');
-			$pdf->Cell(3,1,'Produk By',1,0,'C');
-			$pdf->Cell(3,1,'Nama Rak',1,0,'C');
-			$pdf->Cell(3,1,'Jumlah Minimal',1,0,'C');
-			$pdf->Cell(2,1,' Satuan',1,0,'C');
-			$pdf->Cell(2,1,'Status',1,0,'C');
-
-			$pdf->Ln();
-			$pdf->SetFont('Arial','',10);
-        
-		$no = 1; 
-        foreach($data_jual as $data){ 
-			 $pdf->Ln();
-			$pdf->Cell(1,1,$no,1,0,'C');
-			$pdf->Cell(2,1,$data['sku_kode_produk'],1,0,'C');
-			$pdf->MultiCell(4,1,$data['nama_produk'],1,0,'L');
-			// $current_x += 4;
-			// $pdf->SetXY(4,$current_y);
-			$pdf->Cell(3,1,$data['produk_by'],1,0,'C');
-			$pdf->Cell(3,1,$data['nama_rak'],1,0,'C');
-			$pdf->Cell(3,1,$data['jumlah_minimal'],1,0,'C');
-			$pdf->Cell(2,1,$data['nama_satuan'],1,0,'C');
-			$pdf->Cell(2,1,$data['nama_jual'],1,0,'C');
-			  $no++; 
-			 
-        }
-        $pdf->Output();
+		ob_start();
+		$this->load->view('print/print-produk-pdf',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('REKAP MASTER PRODUK.pdf', 'P');
 
        
 	}
