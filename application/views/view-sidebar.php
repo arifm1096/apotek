@@ -212,7 +212,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('pembelian/rencana_pembelian'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Rencana Pembelian</p>
                             </a>
