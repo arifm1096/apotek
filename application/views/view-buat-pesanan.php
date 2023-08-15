@@ -3,41 +3,54 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Rencana Pembelian</h4>
+                <h4>Master Produk</h4>
             </div>
         </div>
-        <div class="card">
+        <div class="card card-danger card-outline">
 
-            <div class="card-header bg-danger">
+            <div class="card-header">
                 <div class="row">
-                    <div class="col-md-6">
-
-                        <div class="input-group">
-                            <input type="search" class="form-control" id="filter_text" name="filter_text"
-                                oninput="filter_data()" placeholder="Masukan Pencarian Nama Produk Atau Barcode">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>No. Surat</label>
+                            <input type="text" id="no_sp" name="no_sp" class="form-control"
+                                placeholder="Kosongkan Untuk Otomatis" required>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
-                            data-toggle="tooltip" data-placement="top" title="Hapus Semua Data"><i class="fa fa-trash"
-                                aria-hidden="true"></i> Kosongkan</button>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Supplier</label>
+                            <select class="form-control select2" name="id_supplier" id="id_supplier">
+                                <option value="pil"> --Pilih Produk--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Tgl. Pesan</label>
+                            <input type="text" id="no_sp" name="no_sp" class="form-control" placeholder="Tanggal Pesan"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-app bg-info float-right ">
+                            <i class="fa fa-plus"></i> Simpan Pesanan
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
+                            data-target="#modal_add_produk">
+                            <i class="fa fa-plus"></i> Tambah Produk
+                        </button>
                     </div>
                 </div>
             </div>
 
 
             <!-- /.card-header -->
-            <div class="row p-1">
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-sm btn-danger float-right ml-1" onclick="get_pesanan();">
-                        <i class="fa fa-plus"></i> Buat Pesanan
-                    </button>
-                    <button type="button" class="btn btn-sm btn-success float-right " data-toggle="modal"
-                        data-target="#modal_add_produk">
-                        <i class="fa fa-plus"></i> Tambah Produk
-                    </button>
-                </div>
-            </div>
+
             <div class="card-body table-responsive">
                 <div class="row">
                     <div class="col-md-12">

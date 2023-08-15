@@ -59,9 +59,12 @@ class Pembelian extends CI_Controller {
 
 	public function save_produk(){
 		$data = $this->input->post();
-
 		if($data !==""){
 			unset($data['nama_produk']);
+			$datetime = $this->db->select('now() as time')->get()->row();
+			$data['insert_date'] = $datetime->time;
+			$data['insert_by'] = $this->session->userdata('id_user');
+			$datetime = $this->db->select('now() as time')->get()->row();
 			$sql = $this->db->insert('tx_beli_rencana',$data);
 			if($sql){
 				echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
@@ -136,16 +139,131 @@ class Pembelian extends CI_Controller {
 
 	public function hapus_produk(){
 		$id = $_POST['id'];
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$sql = $this->db->where('id_rencana_beli',$id)->update('tx_beli_rencana',
+											array(
+												'is_delete'=>1,
+												'delete_by'=>$this->session->userdata('id_user'),
+												'delete_date'=>$datetime->time
+											)
+										);
+		if($sql){
+			echo json_encode(array('status'=>1,'msg'=>'Success Delete Data'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data Deleting'));
+		}
+	}
 
-		$sql = $this->where('')
+	public function get_pesan_produk(){
+		$id_bel = $_POST['id'];
+		$user = $this->session->userdata('id_user');
+		$id = implode(',',$id_bel);
+		$sql = "update tx_beli_rencana SET is_selesai = 1 where id_rencana_beli in ($id)";
+		$ext = $this->db->query($sql);
+			if($ext){
+				echo json_encode(array('status'=>1,'msg'=>'Success Select Data'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Filed Select Data'));
+			}
 	}
 	// Rencana Pembelian End
 
-	public function membuat_pesanan(){
-		$var['content'] = 'view-kasir';
-		$var['js'] = 'js-kasir';
-		$this->load->view('view-index-kasir',$var);
+	// Buat Pesanan
+	public function buat_pesanan(){
+		$var['content'] = 'view-buat-pesanan';
+		$var['js'] = 'js-buat-pesanan';
+		$this->load->view('view-index',$var);
 	}
+
+	public function load_data_pesan(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+		$where = " r.is_delete = 0 AND r.is_selesai = 1";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR t.nama_satuan like '%" . $searchValue . "%'			
+			) ";
+		}
+	
+		$where .=  $searchQuery;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_beli_rencana`
+		where is_delete = 0 and is_selesai = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_beli_rencana` as r
+		LEFT JOIN tx_produk as p ON r.id_produk = p.id_produk
+		LEFT JOIN tx_produk_stok as s on r.id_produk = s.id_produk
+		LEFT JOIN tm_satuan as t ON r.id_satuan = t.id_satuan
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.nama_produk,r.jumlah_produk,t.nama_satuan,CONCAT(s.jumlah_stok,' ',t.nama_satuan) as stok,r.id_rencana_beli
+				FROM `tx_beli_rencana` as r
+				LEFT JOIN tx_produk as p ON r.id_produk = p.id_produk
+				LEFT JOIN tx_produk_stok as s on r.id_produk = s.id_produk
+				LEFT JOIN tm_satuan as t ON r.id_satuan = t.id_satuan
+		WHERE $where
+		order by id_rencana_beli " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
+	public function save_produk_pesan(){
+		$data = $this->input->post();
+		if($data !==""){
+			unset($data['nama_produk']);
+			$datetime = $this->db->select('now() as time')->get()->row();
+			$data['insert_date'] = $datetime->time;
+			$data['insert_by'] = $this->session->userdata('id_user');
+			$data['is_selesai'] = "1";
+			$datetime = $this->db->select('now() as time')->get()->row();
+			$sql = $this->db->insert('tx_beli_rencana',$data);
+			if($sql){
+				echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Filed Insert Data'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Empty'));
+		}
+	}
+
+	public function get_produk_buat_pesan(){
+		$sql = "SELECT nama_supplier,id_supplier FROM `tm_supplier` WHERE is_delete = 0 ORDER BY nama_supplier asc";
+		$data = $this->db->query($sql)->result();
+		
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Find','data'=>$data));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Find','data'=>null));
+		}
+	}
+	// end Buat Pesan
 
 
 

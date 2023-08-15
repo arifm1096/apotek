@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	load_select("pil", "pil", "pil");
 	load_produk_rencana("");
+	load_select_sup();
 });
 
 $(".tgl_piker").datepicker({
@@ -66,11 +67,36 @@ function load_select(id_produk, id_jenis_pesanan) {
 	});
 }
 
+function load_select_sup() {
+	var html_sup = "<option value='pil'> -- Pilih Supplier -- </option>";
+	$.ajax({
+		url: URL + "pembelian/get_produk_buat_pesan",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == "1") {
+				res.data.forEach((e) => {
+					html_sup +=
+						'<option value="' +
+						e.id_supplier +
+						'"' +
+						(e.id_supplier === id_supplier ? 'selected="selected"' : "") +
+						">" +
+						e.nama_supplier +
+						"</option>";
+				});
+			}
+			$("#id_supplier").html(html_sup);
+		},
+	});
+}
+
 $("#produk_add").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "pembelian/save_produk",
+		url: URL + "pembelian/save_produk_pesan",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -104,13 +130,12 @@ $("#produk_add").submit(function (e) {
 function load_produk_rencana(text) {
 	$("#tbl_produk_ren").DataTable({
 		ajax: {
-			url: URL + "pembelian/load_data_produk",
+			url: URL + "pembelian/load_data_pesan",
 			type: "POST",
-			data: { text: text },
+			data: {},
 		},
 		processing: true,
 		serverSide: true,
-		searching: false,
 		serverMethod: "POST",
 		columns: [
 			{
@@ -124,22 +149,10 @@ function load_produk_rencana(text) {
 				orderable: false,
 				render: function (data, type, row) {
 					var id_el = `add_prod_` + row.id_rencana_beli;
-					return (
-						`<div class="custom-control custom-checkbox">
-								<input class="custom-control-input" type="checkbox" name="add_prod" id="` +
-						id_el +
-						`" value="` +
-						row.id_rencana_beli +
-						`">
-								<label for="` +
-						id_el +
-						`" class="custom-control-label">` +
-						row.nama_produk +
-						`</label>
-							</div>`
-					);
+					return `<h6>` + row.nama_produk + `</h6>`;
 				},
 			},
+
 			{ data: "jumlah_produk" },
 			{ data: "nama_satuan" },
 			{ data: "stok" },
@@ -202,8 +215,8 @@ function clear_filter() {
 }
 
 function get_pesanan() {
-	var arr_id = [];
-	var checkbox_checked_count = $("input[name='add_prod']:checked").length;
+	var arr_approve = [];
+	var checkbox_checked_count = $("input[name='is_approve']:checked").length;
 
 	if (checkbox_checked_count < 1) {
 		Swal.fire({
@@ -212,32 +225,18 @@ function get_pesanan() {
 			text: "Pilih Approve Terlebih Dahulu",
 		});
 	} else {
-		$.each($("input[name='add_prod']:checked"), function () {
-			arr_id.push($(this).val());
+		$.each($("input[name='is_approve']:checked"), function () {
+			arr_approve.push($(this).val());
 		});
-		arr_id.join(", ");
+		arr_approve.join(", ");
 		$.ajax({
-			url: URL + "pembelian/get_pesan_produk",
+			url: URL + "Transaksi_gaji_jalan/update_approve",
 			type: "POST",
 			data: {
-				id: arr_id,
+				id_tgaji_jalan: arr_approve,
 			},
 			success: function (data) {
 				var res = JSON.parse(data);
-				if (res.status == 1) {
-					Swal.fire({
-						icon: "success",
-						title: "Success",
-						text: res.msg,
-					});
-					window.open(URL + "pembelian/buat_pesanan");
-				} else {
-					Swal.fire({
-						icon: "Error",
-						title: "Perhatian !!",
-						text: res.msg,
-					});
-				}
 			},
 		});
 	}
