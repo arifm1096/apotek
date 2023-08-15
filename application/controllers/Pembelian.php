@@ -263,6 +263,10 @@ class Pembelian extends CI_Controller {
 			echo json_encode(array('status'=>0,'msg'=>'Data Find','data'=>null));
 		}
 	}
+
+	public function save_pesanan(){
+		
+	}
 	// end Buat Pesan
 
 
