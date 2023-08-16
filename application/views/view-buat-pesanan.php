@@ -9,43 +9,44 @@
         <div class="card card-danger card-outline">
 
             <div class="card-header">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>No. Surat</label>
-                            <input type="text" id="no_sp" name="no_sp" class="form-control"
-                                placeholder="Kosongkan Untuk Otomatis" required>
+                <form id="add_pesanan">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>No. Surat</label>
+                                <input type="text" id="no_sp" name="no_sp" class="form-control"
+                                    placeholder="Kosongkan Untuk Otomatis" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Supplier</label>
+                                <select class="form-control select2" name="id_supplier" id="id_supplier">
+                                    <option value="pil"> --Pilih Produk--</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Tgl. Pesan</label>
+                                <input type="text" id="no_sp" name="no_sp" class="form-control"
+                                    placeholder="Tanggal Pesan" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-app bg-info float-right ">
+                                <i class="fa fa-plus"></i> Simpan Pesanan
+                            </button>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Supplier</label>
-                            <select class="form-control select2" name="id_supplier" id="id_supplier">
-                                <option value="pil"> --Pilih Produk--</option>
-                            </select>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
+                                data-target="#modal_add_produk">
+                                <i class="fa fa-plus"></i> Tambah Produk
+                            </button>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Tgl. Pesan</label>
-                            <input type="text" id="no_sp" name="no_sp" class="form-control" placeholder="Tanggal Pesan"
-                                required>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="button" class="btn btn-app bg-info float-right ">
-                            <i class="fa fa-plus"></i> Simpan Pesanan
-                        </button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
-                            data-target="#modal_add_produk">
-                            <i class="fa fa-plus"></i> Tambah Produk
-                        </button>
-                    </div>
-                </div>
             </div>
 
 

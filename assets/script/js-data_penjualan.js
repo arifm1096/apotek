@@ -61,6 +61,23 @@ const rupiah = (number) => {
 		currency: "IDR",
 	}).format(number);
 };
+function load_total_penjualan(text, tgl1, tgl2) {
+	$.ajax({
+		url: URL + "penjualan/load_sum_pejualan",
+		type: "POST",
+		data: { text: text, tgl1: tgl1, tgl2: tgl2 },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				var nom = rupiah(res.result.total);
+				$("#total_pejualan").html(nom);
+			} else {
+				var nom = rupiah(0);
+				$("#total_pejualan").html(nom);
+			}
+		},
+	});
+}
 
 function load_penjualan(text, tgl1, tgl2) {
 	$("#tbl_penjualan").DataTable({
@@ -117,6 +134,7 @@ function filter_data() {
 	var tgl2 = $("#tanggal2").val();
 	$("#tbl_penjualan").DataTable().destroy();
 	load_penjualan(text, tgl1, tgl2);
+	load_total_penjualan(text, tgl1, tgl2);
 }
 
 function clear_filter() {
@@ -124,6 +142,7 @@ function clear_filter() {
 	load_penjualan((text = ""), (tgl = ""));
 	$("#filter_text").val("");
 	$("#tanggal").val("");
+	load_total_penjualan(text, tgl1, tgl2);
 }
 
 function export_excel() {

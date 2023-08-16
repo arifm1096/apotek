@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-header bg-danger">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label>Cari Produk:</label>
 
                     </div>
@@ -27,10 +27,15 @@
                     <div class="col-md-3">
                         <label>Filter Tanggal:</label>
                     </div>
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-2">
+                        <label>Total Penjualan:</label>
+                    </div>
 
                 </div>
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
 
                         <div class="input-group">
                             <input type="search" class="form-control form-control" id="filter_text"
@@ -53,6 +58,9 @@
                     <div class="col-md-1">
                         <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 id="total_pejualan" style="font-weight:bold"></h4>
                     </div>
                 </div>
             </div>

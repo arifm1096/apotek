@@ -585,6 +585,33 @@ class Penjualan extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
+	public function load_sum_pejualan(){
+		$where = "is_delete = 0 AND is_selesai = 1 ";
+		$searchValue = $_POST['text'];
+		if ($searchValue != '') {
+			$where .= " and (nama_produk like '%" . $searchValue . "%'
+			 					OR no_nota like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+
+		$sql = "SELECT SUM(total_harga) AS total FROM tx_jual where $where";
+		$data = $this->db->query($sql)->row();
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Not Find','result'=>null));
+		}
+	}
+
 	public function load_data_penjualan(){
 		// Read Value 
 		$draw = $_POST['draw'];
