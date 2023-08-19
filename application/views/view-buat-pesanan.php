@@ -10,12 +10,14 @@
 
             <div class="card-header">
                 <form id="add_pesanan">
+                    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                        value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>No. Surat</label>
                                 <input type="text" id="no_sp" name="no_sp" class="form-control"
-                                    placeholder="Kosongkan Untuk Otomatis" required>
+                                    placeholder="Kosongkan Untuk Otomatis">
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -29,24 +31,25 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Tgl. Pesan</label>
-                                <input type="text" id="no_sp" name="no_sp" class="form-control"
+                                <input type="text" id="tgl_pesan" name="tgl_pesan" class="form-control tgl_piker"
                                     placeholder="Tanggal Pesan" required>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-app bg-info float-right ">
+                            <button type="submit" class="btn btn-app bg-info float-right ">
                                 <i class="fa fa-plus"></i> Simpan Pesanan
                             </button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
-                                data-target="#modal_add_produk">
-                                <i class="fa fa-plus"></i> Tambah Produk
-                            </button>
-                        </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
+                            data-target="#modal_add_produk">
+                            <i class="fa fa-plus"></i> Tambah Produk
+                        </button>
                     </div>
+                </div>
             </div>
 
 

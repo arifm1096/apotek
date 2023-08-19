@@ -25,7 +25,7 @@ class Pembelian extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-		$this->load->model('Model_penjualan');
+		$this->load->model('Model_pembelian');
 
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
@@ -265,7 +265,37 @@ class Pembelian extends CI_Controller {
 	}
 
 	public function save_pesanan(){
-		
+		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		if($_POST['no_sp'] ==""){
+			$data['no_sp'] = $this->Model_pembelian->get_no_sp($id);
+		}else{
+			$data['no_sp'] = $_POST['no_sp'];
+		}
+
+		$data = array(
+						'tgl_pesan' => date('Y-m-d', strtotime($_POST['tgl_pesan'])),
+						'id_supplier'=> $_POST['id_supplier'],
+						'insert_by' => $id,
+						'insert_date' =>$datetime->time
+					 );
+
+		$this->db->insert('tx_beli_pesan', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+			'id_pesan_beli' => $insert_id,
+			'is_selesai'=> 2
+		);
+
+		$ext_up = $this->db->where('is_selesai',1)
+						   ->where('insert_by',$id)
+						   ->update('tx_beli_rencana',$data_up);
+		if($ext_up){
+			echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Filed Insert Data'));
+		}
 	}
 	// end Buat Pesan
 

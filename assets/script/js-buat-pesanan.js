@@ -92,11 +92,11 @@ function load_select_sup() {
 	});
 }
 
-$("#produk_add").submit(function (e) {
+$("#add_pesanan").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "pembelian/save_produk_pesan",
+		url: URL + "pembelian/save_pesanan",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -114,7 +114,8 @@ $("#produk_add").submit(function (e) {
 					title: "Success",
 					text: res.message,
 				});
-				$("#modal_add_produk").modal("hide");
+				$("#tbl_produk_ren").DataTable().destroy();
+				load_produk_rencana("");
 				clear_filter();
 			} else {
 				Swal.fire({
@@ -206,12 +207,9 @@ function filter_data() {
 }
 
 function clear_filter() {
-	$("#tbl_produk_ren").DataTable().destroy();
-	load_produk_rencana((text = ""));
-	$("#jumlah_produk").val("");
-	$("#harga_beli").val("");
-	$("#keterangan").val("");
-	load_select("pil", "pil", "pil");
+	$("#no_sp").val("");
+	$("#tgl_pesan").val("");
+	load_select_sup("pil");
 }
 
 function get_pesanan() {

@@ -209,7 +209,7 @@ function get_pesanan() {
 		Swal.fire({
 			icon: "warning",
 			title: "Perhatian...",
-			text: "Pilih Approve Terlebih Dahulu",
+			text: "Pilih Produk Terlebih Dahulu",
 		});
 	} else {
 		$.each($("input[name='add_prod']:checked"), function () {
