@@ -3,70 +3,54 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Buat Pesanan</h4>
+                <h4>Rencana Pembelian</h4>
             </div>
         </div>
-        <div class="card card-danger card-outline">
+        <div class="card">
 
-            <div class="card-header">
-                <form id="add_pesanan">
-                    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
-                        value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>No. Surat</label>
-                                <input type="text" id="no_sp" name="no_sp" class="form-control"
-                                    placeholder="Kosongkan Untuk Otomatis">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Supplier</label>
-                                <select class="form-control select2" name="id_supplier" id="id_supplier">
-                                    <option value="pil"> --Pilih Produk--</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>Tgl. Pesan</label>
-                                <input type="text" id="tgl_pesan" name="tgl_pesan" class="form-control tgl_piker"
-                                    placeholder="Tanggal Pesan" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-app bg-info float-right ">
-                                <i class="fa fa-plus"></i> Simpan Pesanan
-                            </button>
+            <div class="card-header bg-danger">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="input-group">
+                            <input type="search" class="form-control" id="filter_text" name="filter_text"
+                                oninput="filter_data()" placeholder="Masukan Pencarian Nama Produk Atau Barcode">
                         </div>
                     </div>
-                </form>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
-                            data-target="#modal_add_produk">
-                            <i class="fa fa-plus"></i> Tambah Produk
-                        </button>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-success btn-md float-right ml-1" onclick="clear_list();"
+                            data-toggle="tooltip" data-placement="top" title="Export Excel"><i class="fa fa-file-excel"
+                                aria-hidden="true"></i></button>
+                                <button type="button" class="btn btn-warning btn-md float-right  " onclick="clear_list();"
+                            data-toggle="tooltip" data-placement="top" title="Export Pdf"><i class="fa fa-file-pdf"
+                                aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
 
 
             <!-- /.card-header -->
-
+            <div class="row p-1">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-sm btn-danger float-right ml-1" onclick="get_pesanan();">
+                        <i class="fa fa-plus"></i> Buat Pesanan
+                    </button>
+                </div>
+            </div>
             <div class="card-body table-responsive">
                 <div class="row">
                     <div class="col-md-12">
-                        <table id="tbl_produk_ren" class="table table-striped" style="font-size: 14px;">
+                        <table id="tbl_pesanan" class="table table-striped" style="font-size: 14px;">
                             <thead>
                                 <tr>
                                     <th style="width: 10px; text-align: right;">No.</th>
+                                    <th>Tgl. Pesan</th>
+                                    <th>No. Sp.</th>
                                     <th>Produk</th>
                                     <th>Kuantitas </th>
                                     <th>Satuan </th>
-                                    <th>Stok Terkini</th>
-                                    <th style="width: 30px; text-align: right;">Action</th>
+                                    <th>Status</th>
+                                    <th style="width: 120px; text-align: right;">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -84,7 +68,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk Pesan
+                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -96,7 +80,6 @@
                         <form id="produk_add">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                                <input type="hidden" name="is_selesai" value="1">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">

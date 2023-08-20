@@ -25,7 +25,7 @@
 			$date = date('Y-m-d');
 			if($data_max->num_rows()>0){
 				if($date == $r_max->tgl_tran){
-					$no= (int) substr($r_max->no_nota, 11,11);
+					$no= (int) substr($r_max->no_sp, 11,11);
 					$urutan = $no + 1;
 				}else{
 					$urutan = 1;

@@ -184,7 +184,8 @@ class Pembelian extends CI_Controller {
 		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 		$searchValue = $_POST['search']['value'];
-		$where = " r.is_delete = 0 AND r.is_selesai = 1";
+		$id_user = $this->session->userdata('id_user');
+		$where = " r.is_delete = 0 AND r.is_selesai = 1 AND r.insert_by = $id_user";
 	
 		// Search
 		$searchQuery = "";
@@ -266,35 +267,136 @@ class Pembelian extends CI_Controller {
 
 	public function save_pesanan(){
 		$id = $this->session->userdata('id_user');
+		$cek_data = $this->db->get_where('tx_beli_rencana',array('is_selesai'=>1,'insert_by'=>$id));
 		$datetime = $this->db->select('now() as time')->get()->row();
-		if($_POST['no_sp'] ==""){
-			$data['no_sp'] = $this->Model_pembelian->get_no_sp($id);
+		if($cek_data->num_rows()>0){
+			if($_POST['no_sp'] ==""){
+				$sp_no = $this->Model_pembelian->get_no_sp($id);
+			}else{
+				$sp_no = $_POST['no_sp'];
+			}
+	
+			$data = array(
+							'tgl_pesan' => date('Y-m-d', strtotime($_POST['tgl_pesan'])),
+							'id_supplier'=> $_POST['id_supplier'],
+							'insert_by' => $id,
+							'insert_date' =>$datetime->time,
+							'no_sp' => $sp_no
+						 );
+	
+			$this->db->insert('tx_beli_pesan', $data);
+			   $insert_id = $this->db->insert_id();
+	
+			$data_up = array(
+				'id_pesan_beli' => $insert_id,
+				'is_selesai'=> 2
+			);
+	
+			$ext_up = $this->db->where('is_selesai',1)
+							   ->where('insert_by',$id)
+							   ->update('tx_beli_rencana',$data_up);
+			if($ext_up){
+				echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Filed Insert Data'));
+			}
 		}else{
-			$data['no_sp'] = $_POST['no_sp'];
+			echo json_encode(array('status'=>0,'msg'=>'Data Produk Masih Kosong'));
 		}
 
-		$data = array(
-						'tgl_pesan' => date('Y-m-d', strtotime($_POST['tgl_pesan'])),
-						'id_supplier'=> $_POST['id_supplier'],
-						'insert_by' => $id,
-						'insert_date' =>$datetime->time
-					 );
+		
+	}
 
-		$this->db->insert('tx_beli_pesan', $data);
-   		$insert_id = $this->db->insert_id();
+	public function data_pesanan(){
+		$var['content'] = 'view-data-pesanan';
+		$var['js'] = 'js-data-pesanan';
+		$this->load->view('view-index',$var);
+	}
 
-		$data_up = array(
-			'id_pesan_beli' => $insert_id,
-			'is_selesai'=> 2
-		);
+	public function load_data_pesan_beli(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue_ = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$id_user = $this->session->userdata('id_user');
+		$where = " br.is_delete = 0 AND br.is_selesai = 2";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR s.nama_satuan like '%" . $searchValue . "%'			
+			) ";
+		}
+	
+		$where .=  $searchQuery;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_beli_rencana`
+		where is_delete = 0 and is_selesai = 2";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_beli_rencana` as br
+		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
+		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,s.nama_satuan,br.status_terima,br.id_rencana_beli
+		FROM `tx_beli_rencana` as br
+		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
+		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		WHERE $where
+		order by id_rencana_beli " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
 
-		$ext_up = $this->db->where('is_selesai',1)
-						   ->where('insert_by',$id)
-						   ->update('tx_beli_rencana',$data_up);
-		if($ext_up){
-			echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Filed Insert Data'));
+	public function get_terima_pesan(){
+		$user = $this->session->userdata('id_user');
+		$id = $_POST['id'];
+		$ext = $this->db->where('id_rencana_beli',$id)
+						->update('tx_beli_rencana',array('status_terima'=>1,'update_by'=>$user));
+
+		if($ext){
+			echo json_encode(array('status'=>1,'msg'=>'Data Berhasil DIupdate'));
+		}else{	
+			echo json_encode(array('status'=>0,'msg'=>'Data Gagal DIupdate'));
+		}
+	}
+
+	public function hapus_pesanan(){
+		$user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$id = $_POST['id'];
+		$ext = $this->db->where('id_rencana_beli',$id)
+						->update('tx_beli_rencana',array('is_delete'=>1,'delete_by'=>$user,'delete_date'=>$datetime->time));
+
+		if($ext){
+			echo json_encode(array('status'=>1,'msg'=>'Data Berhasil Dihapus'));
+		}else{	
+			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Dihapus'));
 		}
 	}
 	// end Buat Pesan
