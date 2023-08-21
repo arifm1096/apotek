@@ -224,7 +224,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('pembelian/data_retur'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Retur Pembelian</p>
                             </a>
