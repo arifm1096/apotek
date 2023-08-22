@@ -1,7 +1,6 @@
 $(document).ready(function () {
-	load_select("pil", "pil", "pil");
+	load_select_retur_add("pil", "pil");
 	load_produk_rencana("");
-	load_select_sup();
 });
 
 $(".tgl_piker").datepicker({
@@ -13,9 +12,7 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function load_select(id_produk, id_jenis_pesanan) {
-	var html_jenis_pes =
-		"<option value='pil'> -- Pilih Jenis Pesanan -- </option>";
+function load_select_retur_add(id_produk, id_satuan) {
 	var html_produk = "<option value='pil'>-- Pilih Produk --</option>";
 	var html_satuan = "<option value='pil'>-- Pilih Patuan --</option>";
 	$.ajax({
@@ -25,19 +22,6 @@ function load_select(id_produk, id_jenis_pesanan) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == "1") {
-				res.jenis_pesanan.forEach((e) => {
-					html_jenis_pes +=
-						'<option value="' +
-						e.id_jenis_pesanan +
-						'"' +
-						(e.id_jenis_pesanan === id_jenis_pesanan
-							? 'selected="selected"'
-							: "") +
-						">" +
-						e.nama_jenis_pesanan +
-						"</option>";
-				});
-
 				res.produk.forEach((e) => {
 					html_produk +=
 						'<option value="' +
@@ -61,33 +45,47 @@ function load_select(id_produk, id_jenis_pesanan) {
 				});
 			}
 			$("#id_produk").html(html_produk);
-			$("#jenis_pesanan").html(html_jenis_pes);
 			$("#id_satuan").html(html_satuan);
 		},
 	});
 }
 
-function load_select_sup() {
-	var html_sup = "<option value='pil'> -- Pilih Supplier -- </option>";
+function load_select_retur_add(id_produk, id_satuan) {
+	var html_produk = "<option value='pil'>-- Pilih Produk --</option>";
+	var html_satuan = "<option value='pil'>-- Pilih Patuan --</option>";
 	$.ajax({
-		url: URL + "pembelian/get_produk_buat_pesan",
+		url: URL + "pembelian/get_reture_select",
 		type: "POST",
 		data: {},
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == "1") {
-				res.data.forEach((e) => {
-					html_sup +=
+				res.produk.forEach((e) => {
+					html_produk +=
 						'<option value="' +
-						e.id_supplier +
+						e.id_produk +
 						'"' +
-						(e.id_supplier === id_supplier ? 'selected="selected"' : "") +
+						(e.id_produk === id_produk ? 'selected="selected"' : "") +
 						">" +
-						e.nama_supplier +
+						e.nama_produk +
+						"</option>";
+				});
+
+				res.satuan.forEach((e) => {
+					html_satuan +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === id_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
 						"</option>";
 				});
 			}
-			$("#id_supplier").html(html_sup);
+			$("#id_supplier").html(html_produk);
+			$("#id_gudang").html(html_satuan);
+			$("#id_penerima").html(html_satuan);
+			$("#no_sp").html(html_satuan);
 		},
 	});
 }

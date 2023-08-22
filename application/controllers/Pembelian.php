@@ -471,7 +471,77 @@ class Pembelian extends CI_Controller {
 	}
 
 	public function load_retur(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
+			 					OR j.no_nota like '%" . $searchValue . "%'
+								 OR s.nama_satuan like '%" . $searchValue . "%'				
+			) ";
+		}
 
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+
+		// else{
+		// 	$where .= " AND  DATE_FORMAT(j.insert_date,'%Y-%m-%d')  = DATE_FORMAT(NOW(),'%Y-%m-%d')";
+		// }
+	
+		$where .=  $searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_jual` as j
+		where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_jual` as j
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.total_harga,ps.jumlah_stok,j.no_nota
+		FROM `tx_jual` as j
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where
+		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
 	}
 
 	public function retur_detail(){
@@ -492,16 +562,16 @@ class Pembelian extends CI_Controller {
 		$data_st = $this->db->query($sql_st)->result();
 
 		$sql_user = "SELECT nama,id_user FROM `tm_user` where is_delete = 0";
-		$data_user = $this->db->query($sql_st)->result();
+		$data_user = $this->db->query($sql_user)->result();
 		
-		$sql_gd = "SELECT _wilayah,id_wilayah FROM `tm_wilayah` where is_delete = 0";
-		$data_gd = $this->db->query($sql_st)->result();
+		$sql_gd = "SELECT nama_wilayah,id_wilayah FROM `tm_wilayah` where is_delete = 0";
+		$data_gd = $this->db->query($sql_gd)->result();
 
 		$sql_sp = "SELECT no_sp 
 					FROM `tx_beli_pesan`
 					WHERE is_delete = 0
 					GROUP BY no_sp";
-		$data_sp = $this->db->query($sql_st)->result();
+		$data_sp = $this->db->query($sql_sp)->result();
 		
 		if(!empty($data)){
 			echo json_encode(array('status'=>1,

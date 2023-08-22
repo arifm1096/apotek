@@ -51,8 +51,8 @@ function filter_data_penjualan(id) {
 	});
 }
 
-function add_data() {
-	$("#modal_input_produk").modal("show");
+function add_data_retur() {
+	window.open(URL +'pembelian/retur_detail');
 }
 
 const rupiah = (number) => {

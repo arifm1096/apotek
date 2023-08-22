@@ -30,7 +30,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Gudang Penerima</label>
-                                <select class="form-control select2" name="id_supplier" id="id_supplier">
+                                <select class="form-control select2" name="id_gudang" id="id_gudang">
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -38,7 +38,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Petugas Penerima</label>
-                                <select class="form-control select2" name="id_supplier" id="id_supplier">
+                                <select class="form-control select2" name="id_penerima" id="id_penerima">
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -46,7 +46,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Tgl. Retur</label>
-                                <input type="text" id="tgl_pesan" name="tgl_pesan" class="form-control tgl_piker"
+                                <input type="text" id="tgl_retur" name="tgl_retur" class="form-control tgl_piker"
                                     placeholder="Tanggal Pesan" required>
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Total Pembelian</label>
-                                <input type="text" id="tgl_pesan" name="tgl_pesan" class="form-control"
+                                <input type="text" id="total_beli" name="total_beli" class="form-control"
                                     placeholder="Tanggal Pesan" required>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <form id="produk_add">
+                        <form id="retur_add">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                             <input type="hidden" name="id_detail_retur">
@@ -184,7 +184,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Jumlah Retur</label>
-                                        <input type="text" id="jumlah_reture" name="jumlah_reture" class="form-control"
+                                        <input type="text" id="jumlah_retur" name="jumlah_retur" class="form-control"
                                             placeholder="Inputkan Harga Beli" required>
                                     </div>
                                 </div>
