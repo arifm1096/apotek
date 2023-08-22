@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	load_select_retur_add("pil", "pil");
 	load_produk_rencana("");
+	load_select_retur_head();
 });
 
 $(".tgl_piker").datepicker({
@@ -50,9 +51,11 @@ function load_select_retur_add(id_produk, id_satuan) {
 	});
 }
 
-function load_select_retur_add(id_produk, id_satuan) {
-	var html_produk = "<option value='pil'>-- Pilih Produk --</option>";
-	var html_satuan = "<option value='pil'>-- Pilih Patuan --</option>";
+function load_select_retur_head(id_supplier, id_wilayah, no_sp, id_user) {
+	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
+	var html_gudang = "<option value='pil'>-- Pilih Gudang --</option>";
+	var html_no_sp = "<option value='pil'>-- Pilih No. SP --</option>";
+	var html_penerima = "<option value='pil'>-- Pilih Penerima --</option>";
 	$.ajax({
 		url: URL + "pembelian/get_reture_select",
 		type: "POST",
@@ -60,41 +63,79 @@ function load_select_retur_add(id_produk, id_satuan) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == "1") {
-				res.produk.forEach((e) => {
-					html_produk +=
+				res.supplier.forEach((e) => {
+					html_supplier +=
 						'<option value="' +
-						e.id_produk +
+						e.id_supplier +
 						'"' +
-						(e.id_produk === id_produk ? 'selected="selected"' : "") +
+						(e.id_supplier === id_supplier ? 'selected="selected"' : "") +
 						">" +
-						e.nama_produk +
+						e.nama_supplier +
 						"</option>";
 				});
 
-				res.satuan.forEach((e) => {
-					html_satuan +=
+				res.gudang.forEach((e) => {
+					html_gudang +=
 						'<option value="' +
-						e.id_satuan +
+						e.id_wilayah +
 						'"' +
-						(e.id_satuan === id_satuan ? 'selected="selected"' : "") +
+						(e.id_wilayah === id_wilayah ? 'selected="selected"' : "") +
 						">" +
-						e.nama_satuan +
+						e.nama_wilayah +
+						"</option>";
+				});
+
+				res.no_sp.forEach((e) => {
+					html_no_sp +=
+						'<option value="' +
+						e.no_sp +
+						'"' +
+						(e.no_sp === no_sp ? 'selected="selected"' : "") +
+						">" +
+						e.no_sp +
+						"</option>";
+				});
+
+				res.user.forEach((e) => {
+					html_penerima +=
+						'<option value="' +
+						e.id_user +
+						'"' +
+						(e.id_user === id_user ? 'selected="selected"' : "") +
+						">" +
+						e.nama +
 						"</option>";
 				});
 			}
-			$("#id_supplier").html(html_produk);
-			$("#id_gudang").html(html_satuan);
-			$("#id_penerima").html(html_satuan);
-			$("#no_sp").html(html_satuan);
+			$("#id_supplier").html(html_supplier);
+			$("#id_gudang").html(html_gudang);
+			$("#no_sp").html(html_no_sp);
+			$("#id_penerima").html(html_penerima);
 		},
 	});
 }
 
-$("#add_pesanan").submit(function (e) {
+function get_ksu_pro() {
+	var id_produk = $("#id_produk").val();
+	$.ajax({
+		url: URL + "pembelian/get_ksu",
+		type: "POST",
+		data: { id_produk: id_produk },
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				$("#kode_ksu").val(res.result.kode);
+			}
+		},
+	});
+}
+
+$("#retur_add").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "pembelian/save_pesanan",
+		url: URL + "pembelian/save_produk_retur",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -164,9 +205,9 @@ $("#produk_add").submit(function (e) {
 });
 
 function load_produk_rencana(text) {
-	$("#tbl_produk_ren").DataTable({
+	$("#tbl_produk_re").DataTable({
 		ajax: {
-			url: URL + "pembelian/load_data_pesan",
+			url: URL + "pembelian/load_detail_retur",
 			type: "POST",
 			data: {},
 		},
@@ -180,19 +221,14 @@ function load_produk_rencana(text) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{
-				data: null,
-				orderable: false,
-				render: function (data, type, row) {
-					var id_el = `add_prod_` + row.id_rencana_beli;
-					return `<h6>` + row.nama_produk + `</h6>`;
-				},
-			},
 
-			{ data: "jumlah_produk" },
-			{ data: "nama_satuan" },
-			{ data: "stok" },
-
+			{ data: "nama_produk" },
+			{ data: "kode_ksu" },
+			{ data: "tgl_exp" },
+			{ data: "harga" },
+			{ data: "jumlah_produk_beli" },
+			{ data: "jumlah_retur" },
+			{ data: "keterangan" },
 			{
 				data: null,
 				orderable: false,

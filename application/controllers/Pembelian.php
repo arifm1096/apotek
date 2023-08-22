@@ -551,6 +551,9 @@ class Pembelian extends CI_Controller {
 	}
 
 	public function get_reture_select(){
+
+		$sql_spl = "SELECT nama_supplier,id_supplier FROM `tm_supplier` WHERE is_delete = 0 ORDER BY nama_supplier asc";
+		$data_spl = $this->db->query($sql_spl)->result();
 		
 		$sql = "SELECT nama_produk,id_produk FROM `tx_produk` WHERE is_delete = 0 ORDER BY nama_produk asc";
 		$data = $this->db->query($sql)->result();
@@ -581,7 +584,8 @@ class Pembelian extends CI_Controller {
 								'satuan'=>$data_st,
 								'user' => $data_user,
 								'gudang'=>$data_gd,
-								'no_sp'=>$data_sp
+								'no_sp'=>$data_sp,
+								'supplier'=>$data_spl
 							));
 		}else{
 			echo json_encode(array('status'=>0,
@@ -591,16 +595,131 @@ class Pembelian extends CI_Controller {
 									'satuan'=>null,
 									'user' => null,
 									'gudang'=>null,
-									'no_sp'=>null
+									'no_sp'=>null,
+									'supplier'=>null
 								));
 		}
 	}
 
+	public function get_ksu(){
+		$id_pro = $_POST['id_produk'];
+		$data = $this->db->select('sku_kode_produk as kode')
+						 ->from('tx_produk')
+						 ->where('id_produk',$id_pro)
+						 ->get();
+			if(!empty($data)){
+				echo json_encode(array('status'=>1,'msg'=>'Data is find','result'=>$data->row()));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data not find','result'=>null));
+			}
+
+	}
+
 	public function save_produk_retur(){
 		$data = $this->input->post();
+		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$tgl_exp = $_POST['tgl_exp'];
+		$ext = 0;
+		if($_POST['id_detail_retur']==""){
+			unset($data['tgl_exp']);
+			$data['insert_by'] = $id;
+			$data['insert_date'] = $datetime->time;
+			$data['is_selesai'] = 1;
+			$data['tgl_exp'] = date('Y-m-d',strtotime($tgl_exp));
+			$sql = $this->db->insert('tx_retur_detail',$data);
+			if($sql){
+				$ext += 1;
+			}
 
-		
+		}else{
+			unset($data['id_detail_retur']);
+			$data['update_by'] = $id;
+			$sql = $this->db->where('id_detail_retur',$_POST['id_detail_retur'])->update('tx_retur_detail',$data);
+			if($sql){
+				$ext += 1;
+			}
+		}
+		if($ext > 0){
+			echo json_encode(array('status'=>1,'msg'=>'Data Berhasil Disimpan'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Disimpan'));
+		}
+	}
 
+	public function load_detail_retur(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+		// $searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " rd.is_delete = 0 AND rd.is_selesai = 1 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR rd.kode_ksu like '%" . $searchValue . "%'
+								 OR s.nama_satuan like '%" . $searchValue . "%'				
+			) ";
+		}
+
+	
+		$where .=  $searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM tx_retur_detail
+		where is_delete = 0 and is_selesai = 1";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_retur_detail` as rd
+		LEFT JOIN tx_produk as p ON rd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT rd.id_detail_retur,p.nama_produk,rd.kode_ksu,rd.tgl_exp,rd.harga,rd.jumlah_produk_beli,rd.jumlah_retur,rd.keterangan
+		FROM `tx_retur_detail` as rd
+		LEFT JOIN tx_produk as p ON rd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		WHERE $where
+		order by rd.id_detail_retur " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
+	public function save_retur(){
+		$data = $this->input->post();
+		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+
+		if($data['no_faktur'] ==""){
+			unset($data['no_faktur']);
+			$data['no_faktur'] = $this->model_pembelian->get_no_faktur($id);
+		}
+
+		$this->db->insert('tx_beli_pesan', $data);
+		$insert_id = $this->db->insert_id();
 	}
 	// end retrun
 

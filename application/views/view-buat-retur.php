@@ -103,14 +103,17 @@
             <div class="card-body table-responsive">
                 <div class="row">
                     <div class="col-md-12">
-                        <table id="tbl_produk_ren" class="table table-striped" style="font-size: 14px;">
+                        <table id="tbl_produk_re" class="table table-striped" style="font-size: 14px;">
                             <thead>
                                 <tr>
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Produk</th>
-                                    <th>Kuantitas </th>
-                                    <th>Satuan </th>
-                                    <th>Stok Terkini</th>
+                                    <th>KSU KODE</th>
+                                    <th>Tgl. Exp</th>
+                                    <th>Harga</th>
+                                    <th>Qty. Beli</th>
+                                    <th>Qty. Retur</th>
+                                    <th>Ket.</th>
                                     <th style="width: 30px; text-align: right;">Action</th>
                                 </tr>
                             </thead>
@@ -147,7 +150,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Nama Produk</label>
-                                        <select class="form-control select2" name="id_produk" id="id_produk">
+                                        <select class="form-control select2" name="id_produk" id="id_produk"
+                                            onchange="get_ksu_pro();">
                                             <option value="pil"> --Pilih Produk--</option>
                                         </select>
                                     </div>
@@ -162,7 +166,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Tgl. Exp.</label>
-                                        <input type="text" id="tgl_exp" name="tgl_exp" class="form-control"
+                                        <input type="text" id="tgl_exp" name="tgl_exp" class="form-control tgl_piker"
                                             placeholder="Inputkan Kuantitias" required>
                                     </div>
                                 </div>
@@ -172,6 +176,13 @@
                                         <select class="form-control select2" name="id_satuan" id="id_satuan">
                                             <option value="pil"> --Pilih Produk--</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Harga</label>
+                                        <input type="text" id="harga" name="harga" class="form-control"
+                                            placeholder="Inputkan Kuantitias" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
