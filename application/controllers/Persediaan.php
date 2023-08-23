@@ -98,9 +98,10 @@ class Persediaan extends CI_Controller {
 		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
 		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
 		LEFT JOIN (SELECT p.id_produk,ph.id_jenis_harga,ph.id_harga,p.harga_beli,ph.harga_jual,(ph.harga_jual - p.harga_beli) as marup, jg.nama_jenis_harga
-		FROM tx_produk as p
-		LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
-		LEFT JOIN tm_jenis_harga as jg ON ph.id_jenis_harga = jg.id_jenis_harga) as phg ON p.id_produk = phg.id_produk
+					FROM tx_produk as p
+					LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
+					LEFT JOIN tm_jenis_harga as jg ON ph.id_jenis_harga = jg.id_jenis_harga
+				   ) as phg ON p.id_produk = phg.id_produk
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;

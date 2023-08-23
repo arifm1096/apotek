@@ -50,7 +50,7 @@
 
 		public function get_no_faktur($id){
 			$sql_max = "SELECT no_faktur,id_retur,DATE_FORMAT(insert_date,'%Y-%m-%d') as tgl_tran
-						FROM `tx_beli_pesan` as b
+						FROM `tx_retur`
 						WHERE insert_by = $id and is_delete = 0
 						ORDER BY id_retur DESC";
 			$data_max = $this->db->query($sql_max);
@@ -58,7 +58,7 @@
 			$date = date('Y-m-d');
 			if($data_max->num_rows()>0){
 				if($date == $r_max->tgl_tran){
-					$no= (int) substr($r_max->no_sp, 11,11);
+					$no= (int) substr($r_max->no_faktur, 12,12);
 					$urutan = $no + 1;
 				}else{
 					$urutan = 1;

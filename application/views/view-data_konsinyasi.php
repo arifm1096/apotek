@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Retur Pembelian</h4>
+                <h4>Konsiyasi Masuk</h4>
             </div>
             <div class="col-sm-6">
 
@@ -70,14 +70,14 @@
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
-                <table id="tbl_retur" class="table table-bordered table-striped">
+                <table id="tbl_konsiyasi" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Tgl. Retur</th>
+                            <th>Tgl. Konsiyasi</th>
                             <th>No. Faktur</th>
                             <th>Produk</th>
-                            <th>Total retur</th>
+                            <th>Qty. Konsiyasi</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>
