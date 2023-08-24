@@ -1,10 +1,9 @@
 $(document).ready(function () {
-	load_select_retur_add("pil", "pil");
-	load_produk_retur();
-	load_edit_retur();
+	load_select_konsinyasi_add("pil", "pil");
+	load_produk_konsinyasi();
+	load_edit_konsinyasi();
+	load_select_konsinyasi_head();
 });
-
-
 
 $(".tgl_piker").datepicker({
 	todayHighlight: "TRUE",
@@ -12,41 +11,43 @@ $(".tgl_piker").datepicker({
 	format: "dd-mm-yyyy",
 	showButtonPanel: true,
 });
+
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function load_edit_retur(){
-	var id = $("#id_retur").val();
-	if(id !==""){
-		$.ajax({
-			type : 'POST',
-			url : URL +'pembelian/get_data_retur',
-			data : {id:id},
-			success : function(data){
-				var res = JSON.parse(data)
-				if(res.status == 1){
-					load_select_retur_head(res.result.id_supplier,
-											res.result.id_gudang,
-											res.result.no_sp,
-											res.result.insert_by,
-											res.result.metode_pembayaran,
-										  );
-					$("#no_faktur").val(res.result.no_faktur);
-					$("#tgl_retur").val(res.result.tgl_retur);
-					$("#tgl_pesan").val(res.result.tgl_pesan);
-				}else{
-					load_select_retur_head();
-				}
-			}
-		})
-	}
-}
+// function load_edit_konsinyasi() {
+// 	var id = $("#id_konsinyasi").val();
+// 	if (id !== "") {
+// 		$.ajax({
+// 			type: "POST",
+// 			url: URL + "konsinyasi/get_data_konsinyasi",
+// 			data: { id: id },
+// 			success: function (data) {
+// 				var res = JSON.parse(data);
+// 				if (res.status == 1) {
+// 					load_select_konsinyasi_head(
+// 						res.result.id_supplier,
+// 						res.result.id_gudang,
+// 						res.result.no_sp,
+// 						res.result.insert_by,
+// 						res.result.metode_pembayaran
+// 					);
+// 					$("#no_faktur").val(res.result.no_faktur);
+// 					$("#tgl_konsinyasi").val(res.result.tgl_konsinyasi);
+// 					$("#tgl_pesan").val(res.result.tgl_pesan);
+// 				} else {
+// 					load_select_konsinyasi_head();
+// 				}
+// 			},
+// 		});
+// 	}
+// }
 
-function load_select_retur_add(id_produk, id_satuan) {
+function load_select_konsinyasi_add(id_produk, id_satuan) {
 	var html_produk = "<option value='pil'>-- Pilih Produk --</option>";
 	var html_satuan = "<option value='pil'>-- Pilih Patuan --</option>";
 	$.ajax({
-		url: URL + "pembelian/get_reture_select",
+		url: URL + "konsinyasi/get_konsinyasi_select",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -80,14 +81,20 @@ function load_select_retur_add(id_produk, id_satuan) {
 	});
 }
 
-function load_select_retur_head(id_supplier, id_wilayah, no_sp, id_user,id_pembayaran) {
+function load_select_konsinyasi_head(
+	id_supplier,
+	id_wilayah,
+	no_sp,
+	id_user,
+	id_pembayaran
+) {
 	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
 	var html_gudang = "<option value='pil'>-- Pilih Gudang --</option>";
 	var html_no_sp = "<option value='pil'>-- Pilih No. SP --</option>";
 	var html_penerima = "<option value='pil'>-- Pilih Penerima --</option>";
 	var html_pembayaran = "<option value='pil'>-- Pilih Pembayaran --</option>";
 	$.ajax({
-		url: URL + "pembelian/get_reture_select",
+		url: URL + "konsinyasi/get_konsinyasi_select",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -160,7 +167,7 @@ function load_select_retur_head(id_supplier, id_wilayah, no_sp, id_user,id_pemba
 function get_ksu_pro() {
 	var id_produk = $("#id_produk").val();
 	$.ajax({
-		url: URL + "pembelian/get_ksu",
+		url: URL + "konsinyasi/get_ksu",
 		type: "POST",
 		data: { id_produk: id_produk },
 		success: function (data) {
@@ -177,7 +184,7 @@ $("#retur_add").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "pembelian/save_produk_retur",
+		url: URL + "konsinyasi/save_produk_konsinyasi",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -196,8 +203,8 @@ $("#retur_add").submit(function (e) {
 					text: res.msg,
 				});
 				$("#tbl_produk_re").DataTable().destroy();
-				load_produk_retur();
-				$("#modal_add_produk_retur").modal('hide');
+				load_produk_konsinyasi();
+				$("#modal_add_produk_konsinyasi").modal("hide");
 				clear_filter();
 			} else {
 				Swal.fire({
@@ -214,7 +221,7 @@ $("#retur_submit").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "pembelian/save_retur",
+		url: URL + "konsinyasi/save_konsinyasi",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -235,7 +242,7 @@ $("#retur_submit").submit(function (e) {
 				// $("#modal_add_produk").modal("hide");
 				// clear_filter_pro();
 				// $("#tbl_produk_ren").DataTable().destroy();
-				// load_produk_retur("");
+				// load_produk_konsinyasi("");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -247,13 +254,13 @@ $("#retur_submit").submit(function (e) {
 	});
 });
 
-function load_produk_retur() {
-	var id = $("#id_retur").val();
+function load_produk_konsinyasi() {
+	var id = $("#id_konsinyasi").val();
 	$("#tbl_produk_re").DataTable({
 		ajax: {
-			url: URL + "pembelian/load_detail_retur",
+			url: URL + "konsinyasi/load_detail_konsinyasi",
 			type: "POST",
-			data: {id:id},
+			data: { id: id },
 		},
 		processing: true,
 		serverSide: true,
@@ -271,7 +278,7 @@ function load_produk_retur() {
 			{ data: "tgl_exp" },
 			{ data: "harga" },
 			{ data: "jumlah_produk_beli" },
-			{ data: "jumlah_retur" },
+			{ data: "jumlah_konsinyasi" },
 			{ data: "keterangan" },
 			{
 				data: null,
@@ -279,19 +286,28 @@ function load_produk_retur() {
 				render: function (data, type, row) {
 					return (
 						`<button type="button" class="btn btn-warning btn-sm mr-1" onclick="edit_ren('` +
-						row.id_detail_retur +`','`+
-						row.harga +`','`+
-						row.tgl_exp +`','`+
-						row.tgl_pesan +`','`+
-						row.kode_ksu +`','`+
-						row.jumlah_produk_beli +`','`+
-						row.jumlah_retur +`','`+
-						row.keterangan +`','`+
-						row.id_produk +`','`+
+						row.id_detail_konsinyasi +
+						`','` +
+						row.harga +
+						`','` +
+						row.tgl_exp +
+						`','` +
+						row.tgl_pesan +
+						`','` +
+						row.kode_ksu +
+						`','` +
+						row.jumlah_produk_beli +
+						`','` +
+						row.jumlah_konsinyasi +
+						`','` +
+						row.keterangan +
+						`','` +
+						row.id_produk +
+						`','` +
 						row.id_satuan +
 						`')"><i class="fa fa-pencil-alt"></i></button> 
 						<button type="button" class="btn btn-danger btn-sm" onclick="hapus_ren('` +
-						row.id_detail_retur +
+						row.id_detail_konsinyasi +
 						`')"><i class="fa fa-trash"></i></button>
 						`
 					);
@@ -303,7 +319,7 @@ function load_produk_retur() {
 
 function hapus_ren(id) {
 	$.ajax({
-		url: URL + "pembelian/hapus_detail_retur",
+		url: URL + "konsinyasi/hapus_detail_konsinyasi",
 		type: "POST",
 		data: { id: id },
 		success: function (data) {
@@ -316,7 +332,7 @@ function hapus_ren(id) {
 					text: res.msg,
 				});
 				$("#tbl_produk_re").DataTable().destroy();
-				load_produk_retur();
+				load_produk_konsinyasi();
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -328,40 +344,51 @@ function hapus_ren(id) {
 	});
 }
 
-function edit_ren(id,harga,tgl_exp,tgl_p,kode,jum,jum_re,ket,id_p,id_s){
-	$("#id_detail_retur").val(id);
+function edit_ren(
+	id,
+	harga,
+	tgl_exp,
+	tgl_p,
+	kode,
+	jum,
+	jum_re,
+	ket,
+	id_p,
+	id_s
+) {
+	$("#id_detail_konsinyasi").val(id);
 	$("#harga").val(harga);
 	$("#tgl_exp").val(tgl_exp);
 	$("#tgl_pesan").val(tgl_p);
 	$("#kode_ksu").val(kode);
 	$("#jumlah_produk_beli").val(jum);
-	$("#jumlah_retur").val(jum_re);
+	$("#jumlah_konsinyasi").val(jum_re);
 	$("#keterangan").val(ket);
-	load_select_retur_add(id_p, id_s);
-	$("#modal_add_produk_retur").modal('show');
+	load_select_konsinyasi_add(id_p, id_s);
+	$("#modal_add_produk_konsinyasi").modal("show");
 }
 
 function filter_data() {
 	var text = $("#filter_text").val();
 	$("#tbl_produk_ren").DataTable().destroy();
-	load_produk_retur(text);
+	load_produk_konsinyasi(text);
 }
 
 function clear_filter() {
-	$("#id_detail_retur").val("");
+	$("#id_detail_konsinyasi").val("");
 	$("#harga").val("");
 	$("#tgl_exp").val("");
 	$("#tgl_pesan").val("");
 	$("#kode_ksu").val("");
 	$("#jumlah_produk_beli").val("");
-	$("#jumlah_retur").val("");
+	$("#jumlah_konsinyasi").val("");
 	$("#keterangan").val("");
-	load_select_retur_add("pil", "pil");
+	load_select_konsinyasi_add("pil", "pil");
 }
 
 function clear_filter_pro() {
 	$("#tbl_produk_ren").DataTable().destroy();
-	load_produk_retur((text = ""));
+	load_produk_konsinyasi((text = ""));
 	$("#jumlah_produk").val("");
 	$("#harga_beli").val("");
 	$("#keterangan").val("");

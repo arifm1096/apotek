@@ -45,10 +45,11 @@ class Konsinyasi extends CI_Controller {
 		$var['content'] = 'view-buat-konsinyasi';
 		$var['js'] = 'js-buat-konsinyasi';
 		$var['id_konsinyasi'] = "";
+		$var['nama_menu'] = "Konsinyasi Masuk";
 		$this->load->view('view-index',$var);
 	}
 
-	public function get_reture_select(){
+	public function get_konsinyasi_select(){
 
 		$sql_spl = "SELECT nama_supplier,id_supplier FROM `tm_supplier` WHERE is_delete = 0 ORDER BY nama_supplier asc";
 		$data_spl = $this->db->query($sql_spl)->result();
@@ -86,8 +87,7 @@ class Konsinyasi extends CI_Controller {
 								'user' => $data_user,
 								'gudang'=>$data_gd,
 								'no_sp'=>$data_sp,
-								'supplier'=>$data_spl,
-								'pembayaran'=>$data_pem
+								'supplier'=>$data_spl
 							));
 		}else{
 			echo json_encode(array('status'=>0,
@@ -98,8 +98,7 @@ class Konsinyasi extends CI_Controller {
 									'user' => null,
 									'gudang'=>null,
 									'no_sp'=>null,
-									'supplier'=>null,
-									'pembayaran'=>null
+									'supplier'=>null
 								));
 		}
 	}
@@ -118,33 +117,33 @@ class Konsinyasi extends CI_Controller {
 
 	}
 
-	public function save_produk_retur(){
+	public function save_produk_konsinyasi(){
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$tgl_exp = $_POST['tgl_exp'];
 		$ext = 0;
 
-		if($_POST['id_retur_p']!==""){
-			unset($data['id_retur_p']);
-			$data['id_retur'] = $_POST['id_retur_p'];
+		if($_POST['id_konsinyasi_p']!==""){
+			unset($data['id_konsinyasi_p']);
+			$data['id_konsinyasi'] = $_POST['id_konsinyasi_p'];
 		}
 
-		if($_POST['id_detail_retur']==""){
+		if($_POST['id_detail_konsinyasi']==""){
 			unset($data['tgl_exp']);
 			$data['insert_by'] = $id;
 			$data['insert_date'] = $datetime->time;
 			$data['is_selesai'] = 1;
 			$data['tgl_exp'] = date('Y-m-d',strtotime($tgl_exp));
-			$sql = $this->db->insert('tx_retur_detail',$data);
+			$sql = $this->db->insert('tx_konsinyasi_detail',$data);
 			if($sql){
 				$ext += 1;
 			}
 
 		}else{
-			unset($data['id_detail_retur']);
+			unset($data['id_detail_konsinyasi']);
 			$data['update_by'] = $id;
-			$sql = $this->db->where('id_detail_retur',$_POST['id_detail_retur'])->update('tx_retur_detail',$data);
+			$sql = $this->db->where('id_detail_konsinyasi',$_POST['id_detail_konsinyasi'])->update('tx_konsinyasi_detail',$data);
 			if($sql){
 				$ext += 1;
 			}
@@ -156,7 +155,7 @@ class Konsinyasi extends CI_Controller {
 		}
 	}
 
-	public function load_detail_retur(){
+	public function load_detail_konsinyasi(){
 		// Read Value 
 		$draw = $_POST['draw'];
 		$row = $_POST['start'];
@@ -173,7 +172,7 @@ class Konsinyasi extends CI_Controller {
 			$where .= "  AND rd.is_selesai = 1 ";
 		}else{
 			$id = $_POST['id'];
-			$where .= "  AND rd.id_retur =  $id";
+			$where .= "  AND rd.id_konsinyasi =  $id";
 		}
 		// Search
 		$searchQuery = "";
@@ -181,7 +180,7 @@ class Konsinyasi extends CI_Controller {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
 			 					OR rd.kode_ksu like '%" . $searchValue . "%'
 								 OR s.nama_satuan like '%" . $searchValue . "%'
-								 OR rd.id_retur like '%" . $searchValue . "%'				
+								 OR rd.id_konsinyasi like '%" . $searchValue . "%'				
 			) ";
 		}
 
@@ -190,14 +189,14 @@ class Konsinyasi extends CI_Controller {
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
-		FROM tx_retur_detail
+		FROM tx_konsinyasi_detail
 		where is_delete = 0 and is_selesai = 1";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
 	
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_retur_detail` as rd
+		FROM `tx_konsinyasi_detail` as rd
 		LEFT JOIN tx_produk as p ON rd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
 		WHERE $where";
@@ -205,12 +204,13 @@ class Konsinyasi extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT rd.id_detail_retur,p.id_produk,s.id_satuan,p.nama_produk,rd.kode_ksu,rd.tgl_exp,rd.harga,rd.jumlah_produk_beli,rd.jumlah_retur,rd.keterangan
-		FROM `tx_retur_detail` as rd
-		LEFT JOIN tx_produk as p ON rd.id_produk = p.id_produk
-		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		$sql = "SELECT kd.id_konsinyasi_detail,p.id_produk,s.id_satuan,p.nama_produk,kd.kode_ksu,kd.tgl_exp,
+		kd.harga_beli,kd.harga_pokok,kd.jumlah_konsinyasi,s.nama_satuan
+		FROM `tx_konsinyasi_detail` as kd
+		LEFT JOIN tx_produk as p ON kd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON kd.id_satuan = s.id_satuan
 		WHERE $where
-		order by rd.id_detail_retur " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		order by kd.id_konsinyasi_ " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
 	
 		// Response
@@ -223,7 +223,7 @@ class Konsinyasi extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	public function hapus_detail_retur(){
+	public function hapus_detail_konsinyasi(){
 		$id = $_POST['id'];
 		$id = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
@@ -233,8 +233,8 @@ class Konsinyasi extends CI_Controller {
 			'is_delete'=>1
 			);
 
-			$ext = $this->db->where('id_detail_retur',$_POST['id'])
-							->update('tx_retur_detail', $data);
+			$ext = $this->db->where('id_konsinyasi_detail',$_POST['id'])
+							->update('tx_konsinyasi_detail', $data);
 			if($ext){
 				echo json_encode(array('status'=>1,'msg'=>'Data Berhasil DiHapus'));
 			}else{
@@ -242,11 +242,11 @@ class Konsinyasi extends CI_Controller {
 			}
 	}
 
-	public function get_data_detail_retur(){
+	public function get_data_detail_konsinyasi(){
 		$id = $_POST['id'];
 		$data = $this->db->select('*')
-						 ->from('tx_retur_detail')
-						 ->where('id_detail_retur',$id)
+						 ->from('tx_konsinyasi_detail')
+						 ->where('id_konsinyasi_detail',$id)
 						 ->get();
 		if($data->num_rows()>0){
 			echo json_encode(array('status'=>1,'msg'=>'Data Is FInd','result'=>$data->row()));
@@ -387,12 +387,12 @@ class Konsinyasi extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
-	public function get_data_retur(){
+	public function get_data_konsinyasi(){
 		$id = $_POST['id'];
 
 		$data = $this->db->select('*')
-						 ->from('tx_retur')
-						 ->where('id_retur',$id)
+						 ->from('tx_konsinyasi')
+						 ->where('id_konsinyasi',$id)
 						 ->get();
 		if($data->num_rows()>0){
 			echo json_encode(array('status'=>1,'msg'=>'Data Is FInd','result'=>$data->row()));

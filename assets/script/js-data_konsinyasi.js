@@ -52,7 +52,7 @@ function filter_data_penjualan(id) {
 }
 
 function add_data_retur() {
-	window.location.href =URL +'pembelian/retur_detail';
+	window.location.href = URL + "konsinyasi/konsinyasi_buat";
 }
 
 const rupiah = (number) => {
@@ -142,8 +142,8 @@ function clear_filter() {
 	$("#tanggal2").val("");
 }
 
-function edit_ret(id){
-	window.location.href =URL +'pembelian/edit_retur/'+id;
+function edit_ret(id) {
+	window.location.href = URL + "pembelian/edit_retur/" + id;
 }
 
 function export_excel() {

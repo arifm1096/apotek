@@ -11,11 +11,18 @@
                 <form id="retur_submit">
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                         value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                        <input type="hidden" name="id_retur" id="id_retur" value="<?php echo $id_retur; ?>">
+                    <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value="<?php echo $id_konsinyasi; ?>">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>No. Fakture</label>
+                                <input type="text" id="no_faktur" name="no_faktur" class="form-control"
+                                    placeholder="Kosongkan Untuk Otomatis">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>No. Surat Pesanan</label>
                                 <input type="text" id="no_faktur" name="no_faktur" class="form-control"
                                     placeholder="Kosongkan Untuk Otomatis">
                             </div>
@@ -28,6 +35,22 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Tgl. Faktur</label>
+                                <input type="text" id="tgl_faktur" name="tgl_faktur" class="form-control tgl_piker"
+                                    placeholder="Tanggal Pesan" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Tgl. Terima</label>
+                                <input type="text" id="tgl_terima" name="tgl_terima" class="form-control tgl_piker"
+                                    placeholder="Tanggal Pesan" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Gudang Penerima</label>
@@ -38,49 +61,25 @@
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label>Petugas Penerima</label>
-                                <select class="form-control select2" name="id_penerima" id="id_penerima">
+                                <label>Jenis Kas</label>
+                                <select class="form-control select2" name="id_kas" id="id_kas">
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label>Tgl. Retur</label>
-                                <input type="text" id="tgl_retur" name="tgl_retur" class="form-control tgl_piker"
-                                    placeholder="Tanggal Pesan" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>No. SP</label>
-                                <select class="form-control select2" name="no_sp" id="no_sp">
+                                <label>Jenis Pembayaran</label>
+                                <select class="form-control select2" name="jenis_pembayaran" id="jenis_pembayaran">
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label>Tgl. Pesan</label>
-                                <input type="text" id="tgl_pesan" name="tgl_pesan" class="form-control tgl_piker"
-                                    placeholder="Tanggal Pesan" required>
-                            </div>
-                        </div>
-                        <!-- <div class="col-md-2">
-                            <div class="form-group">
-                                <label>Total Pembelian</label>
-                                <input type="text" id="total_beli" name="total_beli" class="form-control"
-                                    placeholder="Tanggal Pesan" required>
-                            </div>
-                        </div> -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Metode Pembayaran</label>
-                                <select class="form-control select2" name="metode_pembayaran" id="metode_pembayaran">
-                                    <option value="pil"> -- Pilih --</option>
-                                </select>
+                                <label>Jatuh Tempo</label>
+                                <input type="text" id="jatuh_tempo" name="jatuh_tempo" class="form-control tgl_piker"
+                                    placeholder="Tanggal Jatuh Tempo" required>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -88,7 +87,7 @@
                                 <label>*</label>
                                 <div class="d-flex align-items-end">
                                     <button type="submit" class="btn bg-info ">
-                                        <i class="fa fa-plus"></i> Simpan Retur
+                                        <i class="fa fa-plus"></i> Simpan
                                     </button>
                                 </div>
                             </div>
@@ -119,10 +118,10 @@
                                     <th>Produk</th>
                                     <th>KSU KODE</th>
                                     <th>Tgl. Exp</th>
-                                    <th>Harga</th>
-                                    <th>Qty. Beli</th>
-                                    <th>Qty. Retur</th>
-                                    <th>Ket.</th>
+                                    <th>Kuantitias</th>
+                                    <th>Satuan</th>
+                                    <th>Harga Beli</th>
+                                    <th>Harga Pokok</th>
                                     <th style="width: 80px; text-align: right;">Action</th>
                                 </tr>
                             </thead>
@@ -155,7 +154,8 @@
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                             <input type="hidden" name="id_detail_retur">
-                            <input type="hidden" name="id_retur_p" id="id_retur_p" value="<?php echo $id_retur; ?>">
+                            <input type="hidden" name="id_konsinyasi_p" id="id_konsinyasi_p"
+                                value="<?php echo $id_konsinyasi; ?>">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -190,30 +190,23 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Harga</label>
-                                        <input type="text" id="harga" name="harga" class="form-control"
-                                            placeholder="Inputkan Kuantitias" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Qty. Beli</label>
-                                        <input type="text" id="jumlah_produk_beli" name="jumlah_produk_beli"
+                                        <label>Qty.</label>
+                                        <input type="text" id="jumlah_konsinyasi" name="jumlah_konsinyasi"
                                             class="form-control" placeholder="Inputkan Kuantitias" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Jumlah Retur</label>
-                                        <input type="text" id="jumlah_retur" name="jumlah_retur" class="form-control"
-                                            placeholder="Inputkan Harga Beli" required>
+                                        <label>Harga</label>
+                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control"
+                                            placeholder="Inputkan Harga" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Catatan</label>
-                                        <textarea class="form-control" name="keterangan" id="keterangan" cols="30"
-                                            rows="3"></textarea>
+                                        <label>Harga Pokok</label>
+                                        <input type="text" id="harga_pokok" name="harga_pokok" class="form-control"
+                                            placeholder="Inputkan Harga Pokok" required>
                                     </div>
                                 </div>
                             </div>
