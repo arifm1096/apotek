@@ -72,11 +72,9 @@ class Konsinyasi extends CI_Controller {
 		$sql_pem = "SELECT nama_pembayaran,id_pembayaran FROM `tm_pembayaran`";
 		$data_pem = $this->db->query($sql_pem)->result();
 
-		$sql_sp = "SELECT no_sp 
-					FROM `tx_beli_pesan`
-					WHERE is_delete = 0
-					GROUP BY no_sp";
-		$data_sp = $this->db->query($sql_sp)->result();
+		$sql_kas = "SELECT nama_kas,id_kas 
+					FROM tm_kas";
+		$data_kas = $this->db->query($sql_kas)->result();
 		
 		if(!empty($data)){
 			echo json_encode(array('status'=>1,
@@ -86,7 +84,7 @@ class Konsinyasi extends CI_Controller {
 								'satuan'=>$data_st,
 								'user' => $data_user,
 								'gudang'=>$data_gd,
-								'no_sp'=>$data_sp,
+								'kas'=>$data_kas,
 								'supplier'=>$data_spl
 							));
 		}else{
@@ -97,7 +95,7 @@ class Konsinyasi extends CI_Controller {
 									'satuan'=>null,
 									'user' => null,
 									'gudang'=>null,
-									'no_sp'=>null,
+									'kas'=>null,
 									'supplier'=>null
 								));
 		}
@@ -128,7 +126,7 @@ class Konsinyasi extends CI_Controller {
 			unset($data['id_konsinyasi_p']);
 			$data['id_konsinyasi'] = $_POST['id_konsinyasi_p'];
 		}
-
+		unset($data['id_konsinyasi_p']);
 		if($_POST['id_konsinyasi_detail']==""){
 			unset($data['tgl_exp']);
 			$data['insert_by'] = $id;

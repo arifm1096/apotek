@@ -90,7 +90,7 @@ function load_select_konsinyasi_head(
 ) {
 	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
 	var html_gudang = "<option value='pil'>-- Pilih Gudang --</option>";
-	var html_no_sp = "<option value='pil'>-- Pilih No. SP --</option>";
+	var html_kas = "<option value='pil'>-- Pilih No. SP --</option>";
 	var html_penerima = "<option value='pil'>-- Pilih Penerima --</option>";
 	var html_pembayaran = "<option value='pil'>-- Pilih Pembayaran --</option>";
 	$.ajax({
@@ -122,14 +122,14 @@ function load_select_konsinyasi_head(
 						"</option>";
 				});
 
-				res.no_sp.forEach((e) => {
-					html_no_sp +=
+				res.kas.forEach((e) => {
+					html_kas +=
 						'<option value="' +
-						e.no_sp +
+						e.id_kas +
 						'"' +
-						(e.no_sp === no_sp ? 'selected="selected"' : "") +
+						(e.id_kas === id_kas ? 'selected="selected"' : "") +
 						">" +
-						e.no_sp +
+						e.nama_kas +
 						"</option>";
 				});
 
@@ -144,7 +144,7 @@ function load_select_konsinyasi_head(
 						"</option>";
 				});
 
-				res.pembayaran.forEach((e) => {
+				res.jenis_pembayaran.forEach((e) => {
 					html_pembayaran +=
 						'<option value="' +
 						e.id_pembayaran +
@@ -157,9 +157,9 @@ function load_select_konsinyasi_head(
 			}
 			$("#id_supplier").html(html_supplier);
 			$("#id_gudang").html(html_gudang);
-			$("#no_sp").html(html_no_sp);
+			$("#id_kas").html(html_kas);
 			$("#id_penerima").html(html_penerima);
-			$("#metode_pembayaran").html(html_pembayaran);
+			$("#jenis_pembayaran").html(html_pembayaran);
 		},
 	});
 }
@@ -204,7 +204,7 @@ $("#kons_add").submit(function (e) {
 				});
 				$("#tbl_produk_re").DataTable().destroy();
 				load_produk_konsinyasi();
-				$("#modal_add_produk_konsinyasi").modal("hide");
+				$("#modal_add_produk_kons").modal("hide");
 				clear_filter();
 			} else {
 				Swal.fire({
@@ -217,7 +217,7 @@ $("#kons_add").submit(function (e) {
 	});
 });
 
-$("#retur_submit").submit(function (e) {
+$("#kons_submit").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
@@ -276,16 +276,16 @@ function load_produk_konsinyasi() {
 			{ data: "nama_produk" },
 			{ data: "kode_ksu" },
 			{ data: "tgl_exp" },
-			{ data: "harga" },
-			{ data: "jumlah_produk_beli" },
 			{ data: "jumlah_konsinyasi" },
-			{ data: "keterangan" },
+			{ data: "nama_satuan" },
+			{ data: "harga_beli" },
+			{ data: "harga_pokok" },
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
 					return (
-						`<button type="button" class="btn btn-warning btn-sm mr-1" onclick="edit_ren('` +
+						`<button type="button" class="btn btn-warning btn-sm mr-1" onclick="edit_kons('` +
 						row.id_detail_konsinyasi +
 						`','` +
 						row.harga +
@@ -344,7 +344,7 @@ function hapus_ren(id) {
 	});
 }
 
-function edit_ren(
+function edit_kons(
 	id,
 	harga,
 	tgl_exp,
@@ -356,7 +356,7 @@ function edit_ren(
 	id_p,
 	id_s
 ) {
-	$("#id_detail_konsinyasi").val(id);
+	$("#id_konsinyasi_detail").val(id);
 	$("#harga").val(harga);
 	$("#tgl_exp").val(tgl_exp);
 	$("#tgl_pesan").val(tgl_p);
@@ -365,7 +365,7 @@ function edit_ren(
 	$("#jumlah_konsinyasi").val(jum_re);
 	$("#keterangan").val(ket);
 	load_select_konsinyasi_add(id_p, id_s);
-	$("#modal_add_produk_konsinyasi").modal("show");
+	$("#modal_add_produk_kons").modal("show");
 }
 
 function filter_data() {
