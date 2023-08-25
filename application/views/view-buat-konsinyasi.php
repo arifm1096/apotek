@@ -8,7 +8,7 @@
         </div>
         <div class="card card-danger card-outline">
             <div class="card-header">
-                <form id="retur_submit">
+                <form id="kons_submit">
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                         value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                     <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value="<?php echo $id_konsinyasi; ?>">
@@ -98,7 +98,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <button type="button" class="btn btn-sm btn-success float-left " data-toggle="modal"
-                            data-target="#modal_add_produk_retur">
+                            data-target="#modal_add_produk_kons">
                             <i class="fa fa-plus"></i> Tambah Produk
                         </button>
                     </div>
@@ -135,13 +135,13 @@
     </div><!-- /.container-fluid -->
 </section>
 
-<!-- modal add produk retur start -->
-<div class="modal fade" id="modal_add_produk_retur">
+<!-- modal add produk kons start -->
+<div class="modal fade" id="modal_add_produk_kons">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
                 <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk
-                    Retur
+                    kons
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -150,10 +150,10 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <form id="retur_add">
+                        <form id="kons_add">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_detail_retur">
+                            <input type="hidden" name="id_konsinyasi_detail">
                             <input type="hidden" name="id_konsinyasi_p" id="id_konsinyasi_p"
                                 value="<?php echo $id_konsinyasi; ?>">
                             <div class="row">
@@ -238,4 +238,4 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- modal add produk retur end -->
+<!-- modal add produk kons end -->

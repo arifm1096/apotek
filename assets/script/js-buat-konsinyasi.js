@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	load_select_konsinyasi_add("pil", "pil");
 	load_produk_konsinyasi();
-	load_edit_konsinyasi();
+	// load_edit_konsinyasi();
 	load_select_konsinyasi_head();
 });
 
@@ -180,7 +180,7 @@ function get_ksu_pro() {
 	});
 }
 
-$("#retur_add").submit(function (e) {
+$("#kons_add").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({

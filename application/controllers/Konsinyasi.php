@@ -129,7 +129,7 @@ class Konsinyasi extends CI_Controller {
 			$data['id_konsinyasi'] = $_POST['id_konsinyasi_p'];
 		}
 
-		if($_POST['id_detail_konsinyasi']==""){
+		if($_POST['id_konsinyasi_detail']==""){
 			unset($data['tgl_exp']);
 			$data['insert_by'] = $id;
 			$data['insert_date'] = $datetime->time;
@@ -141,9 +141,9 @@ class Konsinyasi extends CI_Controller {
 			}
 
 		}else{
-			unset($data['id_detail_konsinyasi']);
+			unset($data['id_konsinyasi_detail']);
 			$data['update_by'] = $id;
-			$sql = $this->db->where('id_detail_konsinyasi',$_POST['id_detail_konsinyasi'])->update('tx_konsinyasi_detail',$data);
+			$sql = $this->db->where('id_konsinyasi_detail',$_POST['id_konsinyasi_detail'])->update('tx_konsinyasi_detail',$data);
 			if($sql){
 				$ext += 1;
 			}
@@ -165,22 +165,22 @@ class Konsinyasi extends CI_Controller {
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 		$searchValue = $_POST['search']['value'];
 		// $searchValue = $_POST['text'];
-		$where ='rd.is_delete = 0';
+		$where ='kd.is_delete = 0 ';
 		
 		
 		if($_POST['id']==""){
-			$where .= "  AND rd.is_selesai = 1 ";
+			$where .= "  AND kd.is_selesai = 1 ";
 		}else{
 			$id = $_POST['id'];
-			$where .= "  AND rd.id_konsinyasi =  $id";
+			$where .= "  AND kd.id_konsinyasi =  $id";
 		}
 		// Search
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR rd.kode_ksu like '%" . $searchValue . "%'
+			 					OR kd.kode_ksu like '%" . $searchValue . "%'
 								 OR s.nama_satuan like '%" . $searchValue . "%'
-								 OR rd.id_konsinyasi like '%" . $searchValue . "%'				
+								 OR kd.id_konsinyasi like '%" . $searchValue . "%'				
 			) ";
 		}
 
@@ -196,9 +196,9 @@ class Konsinyasi extends CI_Controller {
 	
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_konsinyasi_detail` as rd
-		LEFT JOIN tx_produk as p ON rd.id_produk = p.id_produk
-		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		FROM `tx_konsinyasi_detail` as kd
+		LEFT JOIN tx_produk as p ON kd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON kd.id_satuan = s.id_satuan
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
@@ -210,7 +210,7 @@ class Konsinyasi extends CI_Controller {
 		LEFT JOIN tx_produk as p ON kd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON kd.id_satuan = s.id_satuan
 		WHERE $where
-		order by kd.id_konsinyasi_ " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		order by kd.id_konsinyasi_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
 	
 		// Response
