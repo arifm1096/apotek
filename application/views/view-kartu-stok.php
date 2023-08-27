@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label for="">Bulan</label>
+                            <label for="">Tahun</label>
                             <input type="text" name="tahun_filter" id="tahun_filter" class="form-control thn_piker">
                         </div>
                     </div>

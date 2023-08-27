@@ -25,7 +25,7 @@ class Pembelian extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-		$this->load->model('model_pembelian');
+		$this->load->model('Model_pembelian');
 
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
@@ -414,28 +414,23 @@ class Pembelian extends CI_Controller {
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
 		$searchValue = $_GET['text'];
+		$id_user = $this->session->userdata('id_user');
+		$where = " br.is_delete = 0 AND br.is_selesai = 2";
+	
+		// Search
+		$searchQuery = "";
 		if ($searchValue != '') {
-			$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
-			 					OR j.no_nota like '%" . $searchValue . "%'
-								 OR s.nama_satuan like '%" . $searchValue . "%'				
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR s.nama_satuan like '%" . $searchValue . "%'			
 			) ";
 		}
 
-		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
-		}
 
-
-		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		j.jumlah_produk,s.nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,s.nama_satuan,br.status_terima,br.id_rencana_beli
+		FROM `tx_beli_rencana` as br
+		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
+		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
 		WHERE $where";
 
 		$data_jual = $this->db->query($sql)->result_array();
@@ -460,6 +455,53 @@ class Pembelian extends CI_Controller {
         header('Content-Disposition: attachment;filename=Data_Penjualan.xls'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+	}
+
+	public function export_pdf_data_pesan(){
+
+		
+
+		$searchValue = $_GET['text'];
+		$id_user = $this->session->userdata('id_user');
+		$where = " br.is_delete = 0 AND br.is_selesai = 2";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR s.nama_satuan like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
+		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+		REPLACE(GROUP_CONCAT(br.jumlah_produk),',','<br>') as jumlah_produk,
+		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as nama_satuan,
+		br.status_terima,br.id_rencana_beli
+		FROM `tx_beli_rencana` as br
+		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
+		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		WHERE $where
+		GROUP BY br.id_pesan_beli";
+
+		$var['data'] = $this->db->query($sql)->result();
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-rencana-pembelian-pdf',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('Rekap Rencana Pembelian.pdf', 'P');
 	}
 	// end Buat Pesan
 

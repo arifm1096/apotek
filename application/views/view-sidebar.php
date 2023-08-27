@@ -254,6 +254,41 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-paper-plane"></i></i>
+                        <p>
+                            Laporan
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Master Produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Stok Produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Penjualan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Penjualan Tertolak</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <!-- <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>

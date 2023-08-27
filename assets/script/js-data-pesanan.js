@@ -181,3 +181,14 @@ function hapus_pro(id) {
 		}
 	});
 }
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	window.open(
+		URL +
+			"pembelian/export_pdf_data_pesan?"+
+			"&text=" +
+			text,
+		"_blank"
+	);
+}

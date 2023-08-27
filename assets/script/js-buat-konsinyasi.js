@@ -1,7 +1,7 @@
 $(document).ready(function () {
+	load_edit_konsinyasi();
 	load_select_konsinyasi_add("pil", "pil");
 	load_produk_konsinyasi();
-	load_edit_konsinyasi();
 	// load_select_konsinyasi_head();
 });
 

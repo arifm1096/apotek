@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Persediaan extends CI_Controller {
 
@@ -357,6 +360,84 @@ class Persediaan extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data not Found','data'=>null));
 		}
+	}
+
+	public function export_excel_kartu_stok(){
+		$id = $_GET['id_produk'];
+		$where = "";
+		if($_GET['bulan'] !=='pil' && $_GET['tahun'] !==""){
+			$bln_th = $_GET['tahun'].'-'.$_GET['bulan'];
+			$where .=" AND DATE_FORMAT(ps.insert_date, '%Y-%m') = '$bln_th'";
+		}
+
+		if($_GET['id_gudang'] !=='pil'){
+			$gd = $_GET['id_gudang'] ;
+			$where .=" AND ps.id_gudang = $gd ";
+		}
+
+		if($_GET['kode_batch'] !==""){
+			$kd = $_GET['kode_batch'];
+			$where .=" OR ps.kode_batch LIKE '%$kd%'";
+		}
+		
+		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, p.sku_kode_produk,ps.exp_date,u.nama as petugas,
+				sum(case when s.status_in_out = 1 then ps.jumlah_stok else 0 end) as masuk, 
+				sum(case when s.status_in_out = 0 then ps.jumlah_stok else 0 end) as keluar,
+				CONCAT(s.nama_status,' ','Stok',' ',p.nama_produk) as catat
+				FROM `tx_produk_stok_detail` as ps
+				LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+				LEFT JOIN tm_satus_stok as s ON ps.id_status_stok = s.id_status_stok
+				LEFT JOIN tm_user as u ON ps.insert_by = u.id_user
+				WHERE ps.is_delete = 0 AND p.id_produk =$id $where
+				GROUP BY ps.id_stok_detail";
+		$data = $this->db->query($sql)->result();
+		// var_dump($data);
+
+		$pro = $this->db->select('nama_produk')
+						->from('tx_produk')
+						->where('id_produk',$id)
+						->get()
+						->row();
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('A1', "Nama Produk");
+		$sheet->setCellValue('B1', $pro->nama_produk);
+        $sheet->setCellValue('A2', "No");
+        $sheet->setCellValue('B2', "Tanggal");
+        $sheet->setCellValue('C2', "Catatan Transaksi");
+        $sheet->setCellValue('D2', "Kode KSU");
+        $sheet->setCellValue('E2', "Expired");
+		$sheet->setCellValue('F2', "Petugas");
+		$sheet->setCellValue('G2', "Masuk");
+		$sheet->setCellValue('H2', "Keluar");
+		$sheet->setCellValue('I2', "Sisa");
+
+		$no = 2; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
+		$sisa = 0;
+
+        foreach($data as $val){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+          $sheet->setCellValue('B'.$numrow, $val->tgl);
+          $sheet->setCellValue('C'.$numrow, $val->catat);
+          $sheet->setCellValue('D'.$numrow, $val->sku_kode_produk);
+          $sheet->setCellValue('E'.$numrow, $val->exp_date);
+		  $sheet->setCellValue('F'.$numrow, $val->petugas);
+		  $sheet->setCellValue('G'.$numrow, $val->masuk);
+		  $sheet->setCellValue('H'.$numrow, $val->keluar);
+		  $sisa += (int)$val->masuk - $val->keluar ;
+		  $sheet->setCellValue('I'.$numrow, $sisa);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Kartu_stok.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
 	}
 
 	public function defecta(){

@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Daftar Penjualan</h4>
+                <h4>Laporan Penjualan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -30,7 +30,7 @@
                     <div class="col-md-2">
                     </div>
                     <div class="col-md-2">
-                        <label>Total Penjualan:</label>
+                        <!-- <label>Total Penjualan:</label> -->
                     </div>
 
                 </div>
@@ -60,7 +60,7 @@
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
                     <div class="col-md-3">
-                        <h4 id="total_pejualan" style="font-weight:bold"></h4>
+                        <!-- <h4 id="total_pejualan" style="font-weight:bold"></h4> -->
                     </div>
                 </div>
             </div>
@@ -82,6 +82,11 @@
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot>
+                        <th colspan="3">Total</th>
+                        <th><div id="qty_pejualan"></div></th>
+                        <th><div id="total_pejualan"></div></th>
+                    </tfoot>
 
                 </table>
             </div>

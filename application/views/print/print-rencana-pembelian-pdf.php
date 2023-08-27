@@ -1,7 +1,7 @@
    <style>
 .tabel {
     border-collapse: collapse;
-    font-size: 11px;
+    font-size: 13px;
     margin: auto;
     padding-top: 200px;
 }
@@ -67,7 +67,7 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP MASTER PRODUK</p>
+           <p class="judul_content"> REKAP RENCANA PEMBELIAN</p>
        </page_header>
 
        <!-- End HEader -->
@@ -75,32 +75,43 @@
        <table border="1px" class="tabel">
            <tr>
                <th style="width: 10px; text-align: right;">No.</th>
-               <th width="10px">SKU KODE</th>
+               <th width="10px">Tgl Pesan</th>
+               <th>No. SP</th>
                <th>Nama Produk</th>
-               <th>Produk By</th>
-               <th>Nama Rak</th>
-               <th>Jumlah Minimal</th>
-               <th>Nama Satuan</th>
-               <th>Status Jual</th>
+               <th>Kuantitas</th>
+               <th>Satuan</th>
+               <!-- <th>Status</th> -->
            </tr>
            <?php 
                 $no = 1;
-                if(!empty($data_produk)){
-                    foreach ($data_produk as $key => $val) {
+                if(!empty($data)){
+                    foreach ($data as $key => $val) {
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td><?php echo wordwrap($val->sku_kode_produk,15,"<br>\n");?></td>
-               <td><?php echo wordwrap($val->nama_produk,25,"<br>\n");?> </td>
-               <td><?php echo $val->produk_by;?> </td>
-               <td><?php echo $val->nama_rak;?></td>
-               <td><?php echo $val->jumlah_minimal;?></td>
+               <!-- <td><?php echo wordwrap($val->sku_kode_produk,15,"<br>\n");?></td> -->
+               <!-- <td><?php echo wordwrap($val->produk,25,"<br>\n");?> </td> -->
+               <td><?php echo $val->tgl;?> </td>
+               <td><?php echo $val->no_sp;?></td>
+               <td><?php echo $val->produk;?></td>
+               <td><?php echo $val->jumlah_produk;?></td>
                <td><?php echo $val->nama_satuan;?></td>
-               <td><?php echo $val->nama_jual;?></td>
+               <!-- <td><?php if($val->status_terima == 0){ ?>
+                    <span style="color:red;font-weight:bold">Belum Diterima</span>
+               <?php }else{ ?>
+                    <span style="color:green;font-weight:bold">Diterima</span>
+               
+               <?php };?>
+               </td> -->
            </tr>
            <?php     }
                 }
           ?>
+       </table>
+
+       <table>
+        <tr><td>Nama Apoteker</td></tr>
+        <tr><td><?php echo $this->session->userdata('nama_user');?></td></tr>
        </table>
 
    </page>

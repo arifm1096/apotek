@@ -21,7 +21,7 @@
                         <button type="button" class="btn btn-success btn-md float-right ml-1" onclick="clear_list();"
                             data-toggle="tooltip" data-placement="top" title="Export Excel"><i class="fa fa-file-excel"
                                 aria-hidden="true"></i></button>
-                                <button type="button" class="btn btn-warning btn-md float-right  " onclick="clear_list();"
+                                <button type="button" class="btn btn-warning btn-md float-right  " onclick="export_pdf();"
                             data-toggle="tooltip" data-placement="top" title="Export Pdf"><i class="fa fa-file-pdf"
                                 aria-hidden="true"></i></button>
                     </div>

@@ -62,9 +62,10 @@ const rupiah = (number) => {
 		currency: "IDR",
 	}).format(number);
 };
+
 function load_total_penjualan(text, tgl1, tgl2) {
 	$.ajax({
-		url: URL + "penjualan/load_sum_pejualan",
+		url: URL + "laporan/load_sum_pejualan",
 		type: "POST",
 		data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		success: function (data) {
@@ -72,9 +73,13 @@ function load_total_penjualan(text, tgl1, tgl2) {
 			if (res.status == 1) {
 				var nom = rupiah(res.result.total);
 				$("#total_pejualan").html(nom);
+				// var qty = rupiah(res.result.qty_pro);
+				$("#qty_pejualan").html(res.result.qty_pro);
 			} else {
 				var nom = rupiah(0);
 				$("#total_pejualan").html(nom);
+				var qty = rupiah(0);
+				$("#qty_pejualan").html(qty);
 			}
 		},
 	});
@@ -83,7 +88,7 @@ function load_total_penjualan(text, tgl1, tgl2) {
 function load_penjualan(text, tgl1, tgl2) {
 	$("#tbl_penjualan").DataTable({
 		ajax: {
-			url: URL + "penjualan/load_data_penjualan",
+			url: URL + "laporan/load_data_penjualan",
 			type: "POST",
 			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		},
@@ -152,7 +157,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	window.open(
 		URL +
-			"penjualan/export_data_penjualan?tgl1=" +
+			"laporan/export_data_penjualan?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

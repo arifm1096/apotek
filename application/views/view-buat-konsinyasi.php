@@ -11,7 +11,7 @@
                 <form id="kons_submit">
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                         value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                    <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value="<?php echo $id_konsinyasi; ?>">
+                    <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value = "<?php echo $id_konsinyasi; ?>">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">

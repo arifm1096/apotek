@@ -44,7 +44,7 @@ class Konsinyasi extends CI_Controller {
 	public function konsinyasi_buat(){
 		$var['content'] = 'view-buat-konsinyasi';
 		$var['js'] = 'js-buat-konsinyasi';
-		$var['id_konsinyasi'] = "";
+		$var['id_konsinyasi'] = "0";
 		$var['nama_menu'] = "Konsinyasi Masuk";
 		$this->load->view('view-index',$var);
 	}
