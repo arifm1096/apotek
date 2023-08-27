@@ -25,7 +25,7 @@ class Konsinyasi extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-		$this->load->model('model_pembelian');
+		$this->load->model('model_konsinyasi');
 
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
@@ -253,34 +253,37 @@ class Konsinyasi extends CI_Controller {
 		}
 	}
 
-	public function save_retur(){
+	public function save_konsinyasi(){
 		$ext = 0;
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
-		unset($data['tgl_retur']);
-		unset($data['tgl_pesan']);
-		$data['tgl_retur'] = date('Y-m-d', strtotime($_POST['tgl_retur']));
-		$data['tgl_pesan'] = date('Y-m-d', strtotime($_POST['tgl_pesan']));
-		if($data['id_retur']==""){
+		unset($data['tgl_faktur']);
+		unset($data['tgl_terima']);
+		unset($data['jatuh_tempo']);
+		$data['tgl_faktur'] = date('Y-m-d', strtotime($_POST['tgl_faktur']));
+		$data['tgl_terima'] = date('Y-m-d', strtotime($_POST['tgl_terima']));
+		$data['jatuh_tempo'] = date('Y-m-d', strtotime($_POST['jatuh_tempo']));
+		if($data['id_konsinyasi']==""){
 			if($data['no_faktur'] ==""){
 				unset($data['no_faktur']);
-				$data['no_faktur'] = $this->model_pembelian->get_no_faktur($id);
+				$data['no_faktur'] = $this->model_konsinyasi->get_no_faktur($id);
 			}
 
 			$data['insert_by'] = $id;
 			$data['insert_date'] = $datetime->time;
-			$this->db->insert('tx_retur', $data);
+			unset($data['id_konsinyasi']);
+			$this->db->insert('tx_konsinyasi', $data);
 			$insert_id = $this->db->insert_id();
 			$up_data = array(
 								'is_selesai'=>2,
-								'id_retur'=> $insert_id
+								'id_konsinyasi'=> $insert_id
 							);
 
 			$ext = $this->db->where('is_delete',0)
 							->where('is_selesai',1)
 							->where('insert_by',$id)
-							->update('tx_retur_detail',$up_data);
+							->update('tx_konsinyasi_detail',$up_data);
 
 			if($ext){
 				$ext += 0;
@@ -288,8 +291,8 @@ class Konsinyasi extends CI_Controller {
 		}else{
 			$data['update_by'] = $id;
 			$data['update_date'] = $datetime->time;
-			$ext = $this->db->where('id_retur',$data['id_retur'])
-							->update('tx_retur', $data);
+			$ext = $this->db->where('id_konsinyasi',$data['id_konsinyasi'])
+							->update('tx_konsinyasi', $data);
 			if($ext){
 				$ext += 0;
 			}
@@ -302,7 +305,7 @@ class Konsinyasi extends CI_Controller {
 		}
 	}
 
-	public function load_retur(){
+	public function load_konsinyasi(){
 		// Read Value 
 		$draw = $_POST['draw'];
 		$row = $_POST['start'];
@@ -313,22 +316,22 @@ class Konsinyasi extends CI_Controller {
 		$searchValue1 = $_POST['search']['value'];
 		$searchValue = $_POST['text'];
 		
-		$where = " r.is_delete = 0 AND rd.is_selesai = 2 ";
+		$where = " k.is_delete = 0 AND kd.is_selesai = 2 ";
 	
 		// Search
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR r.no_faktur like '%" . $searchValue . "%'			
+			 					OR k.no_faktur like '%" . $searchValue . "%'			
 			) ";
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
 			$tgl1 = $_POST['tgl1'];
 			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(r.tgl_retur,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$where .= " AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
-			$where .= "AND DATE_FORMAT(r.tgl_retur,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$where .= "AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 		
@@ -337,34 +340,34 @@ class Konsinyasi extends CI_Controller {
 	
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
-		FROM `tx_retur` 
+		FROM `tx_konsinyasi` 
 		where is_delete = 0
-		GROUP BY id_retur";
+		GROUP BY id_konsinyasi";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
 	
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_retur` as r
-		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
-		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
+		FROM `tx_konsinyasi` as k
+		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
 		$sql = "SELECT 
-		r.id_retur,
-		r.no_faktur,
-		r.tgl_retur,
+		k.id_konsinyasi,
+		k.no_faktur,
+		k.tgl_terima,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
-		REPLACE(GROUP_CONCAT(rd.jumlah_retur),',','<br>') as jumlah_retur_p
-		FROM `tx_retur` as r
-		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
-		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
+		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p
+		FROM `tx_konsinyasi` as k
+		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
 		WHERE $where
-		GROUP BY r.id_retur
-		order by r.id_retur " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		GROUP BY k.id_konsinyasi
+		order by k.id_konsinyasi " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
 	
 		// Response
@@ -377,11 +380,12 @@ class Konsinyasi extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	public function edit_retur(){
+	public function edit_konsinyasi(){
 		$id_r = $this->uri->segment('3');
-		$var['content'] = 'view-buat-retur';
-		$var['js'] = 'js-buat-retur';
-		$var['id_retur'] = $id_r;
+		$var['content'] = 'view-buat-konsinyasi';
+		$var['js'] = 'js-buat-konsinyasi';
+		$var['id_konsinyasi'] = $id_r;
+		$var['nama_menu'] = "Detail Konsinyasi";
 		$this->load->view('view-index',$var);
 	}
 

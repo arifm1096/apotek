@@ -23,14 +23,14 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>No. Surat Pesanan</label>
-                                <input type="text" id="no_faktur" name="no_faktur" class="form-control"
-                                    placeholder="Kosongkan Untuk Otomatis">
+                                <input type="text" id="no_sp" name="no_sp" class="form-control"
+                                    placeholder="Masukan Nomer Surat" required>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Supplier</label>
-                                <select class="form-control select2" name="id_supplier" id="id_supplier">
+                                <select class="form-control select2" name="id_supplier" id="id_supplier" required>
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -54,7 +54,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Gudang Penerima</label>
-                                <select class="form-control select2" name="id_gudang" id="id_gudang">
+                                <select class="form-control select2" name="id_gudang" id="id_gudang" required>
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -62,7 +62,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Jenis Kas</label>
-                                <select class="form-control select2" name="id_kas" id="id_kas">
+                                <select class="form-control select2" name="id_kas" id="id_kas" required>
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -70,7 +70,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Jenis Pembayaran</label>
-                                <select class="form-control select2" name="jenis_pembayaran" id="jenis_pembayaran">
+                                <select class="form-control select2" name="jenis_pembayaran" id="jenis_pembayaran" required>
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>

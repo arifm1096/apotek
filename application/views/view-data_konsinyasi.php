@@ -70,11 +70,11 @@
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
-                <table id="tbl_konsiyasi" class="table table-bordered table-striped">
+                <table id="tbl_konsinyasi" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Tgl. Konsiyasi</th>
+                            <th>Tgl. Terima Konsiyasi</th>
                             <th>No. Faktur</th>
                             <th>Produk</th>
                             <th>Qty. Konsiyasi</th>

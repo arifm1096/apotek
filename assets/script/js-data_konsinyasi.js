@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	// filter_data_penjualan();
-	loda_retur((text = ""), (tgl = ""));
+	loda_konsinyasi((text = ""), (tgl = ""));
 	$("#loading").hide();
 });
 
@@ -80,10 +80,10 @@ const rupiah = (number) => {
 // 	});
 // }
 
-function loda_retur(text, tgl1, tgl2) {
-	$("#tbl_retur").DataTable({
+function loda_konsinyasi(text, tgl1, tgl2) {
+	$("#tbl_konsinyasi").DataTable({
 		ajax: {
-			url: URL + "pembelian/load_retur",
+			url: URL + "konsinyasi/load_konsinyasi",
 			type: "POST",
 			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		},
@@ -98,10 +98,10 @@ function loda_retur(text, tgl1, tgl2) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{ data: "tgl_retur" },
+			{ data: "tgl_terima" },
 			{ data: "no_faktur" },
 			{ data: "produk" },
-			{ data: "jumlah_retur_p" },
+			{ data: "jumlah_konsinyasi_p" },
 			{
 				data: null,
 				orderable: false,
@@ -110,10 +110,10 @@ function loda_retur(text, tgl1, tgl2) {
 						`<div class="row">
 								<div class="col-md-12">
 									<button type="button" class="btn btn-outline-warning btn-sm" onclick="edit_ret('` +
-						row.id_retur +
+						row.id_konsinyasi +
 						`')"><i class="fa fa-pencil-alt"></i></button>
 						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
-						row.id_retur +
+						row.id_konsinyasi +
 						`')"><i class="fa fa-trash"></i></button>
 								</div>
 							</div>
@@ -130,20 +130,20 @@ function filter_data() {
 	var text = $("#filter_text").val();
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
-	$("#tbl_retur").DataTable().destroy();
-	loda_retur(text, tgl1, tgl2);
+	$("#tbl_konsinyasi").DataTable().destroy();
+	loda_konsinyasi(text, tgl1, tgl2);
 }
 
 function clear_filter() {
-	$("#tbl_retur").DataTable().destroy();
-	loda_retur((text = ""), (tgl = ""));
+	$("#tbl_konsinyasi").DataTable().destroy();
+	loda_konsinyasi((text = ""), (tgl = ""));
 	$("#filter_text").val("");
 	$("#tanggal1").val("");
 	$("#tanggal2").val("");
 }
 
 function edit_ret(id) {
-	window.location.href = URL + "pembelian/edit_retur/" + id;
+	window.location.href = URL + "konsinyasi/edit_konsinyasi/" + id;
 }
 
 function export_excel() {

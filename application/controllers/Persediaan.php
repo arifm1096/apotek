@@ -341,8 +341,8 @@ class Persediaan extends CI_Controller {
 		}
 		
 		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, p.sku_kode_produk,ps.exp_date,u.nama as petugas,
-				sum(case when ps.id_status_stok = 1 then ps.jumlah_stok else 0 end) as masuk, 
-				sum(case when ps.id_status_stok = 2 then ps.jumlah_stok else 0 end) as keluar,
+				sum(case when s.status_in_out = 1 then ps.jumlah_stok else 0 end) as masuk, 
+				sum(case when s.status_in_out = 0 then ps.jumlah_stok else 0 end) as keluar,
 				CONCAT(s.nama_status,' ','Stok',' ',p.nama_produk) as catat
 				FROM `tx_produk_stok_detail` as ps
 				LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk

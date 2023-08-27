@@ -372,12 +372,7 @@ class Penjualan extends CI_Controller {
 		$data_cek = $this->db->query($sql_cek_kasir);
 	}
 
-	public function get_update_stok(){
-		$sql = "SELECT j.id_produk,j.nama_produk,pd.jumlah_stok,j.jumlah_produk,(pd.jumlah_stok-j.jumlah_produk) as sisa
-				FROM  tx_jual as j
-				LEFT JOIN `tx_produk_stok` as pd on pd.id_produk = j.id_produk
-				WHERE j.is_selesai = 0  and j.insert_by = $user";
-	}
+	
 
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');
@@ -564,19 +559,78 @@ class Penjualan extends CI_Controller {
 		
     }
 
+	public function get_update_stok(){
+		$user = $this->session->userdata('id_user');
+		$sql = "SELECT NOW() as jam";
+		$time = $this->db->query($sql)->row();
+		$ext = 0;
+		$sql = "SELECT j.id_produk,j.id_satuan,u.gudang,j.nama_produk,pd.jumlah_stok,j.jumlah_produk,
+		(pd.jumlah_stok-j.jumlah_produk) as sisa,j.harga_beli
+		FROM  tx_jual as j
+		LEFT JOIN tx_produk_stok as pd on pd.id_produk = j.id_produk
+		LEFT JOIN tm_user as u ON j.insert_by = u.id_user
+		WHERE j.is_selesai = 0 AND j.is_delete = 0  and j.insert_by = $user";
+
+		$data = $this->db->query($sql);
+
+		if($data->num_rows() > 0){
+			$arr_data = $data->result();
+			$updateStok ="";
+			$inKartuStok_str = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_status_stok,id_satuan,jumlah_stok,harga_beli,insert_by,insert_date)
+			VALUES";
+			foreach ($arr_data as $key => $val) {
+				// $updateStok .="UPDATE `tx_produk_stok` SET jumlah_stok = $val->sisa,update_by =$user,update_date = '$time->jam' WHERE is_delete = 0 AND id_produk = $val->id_produk ;";
+				$time_str = "$time->jam";
+				$up_data = array(
+									'jumlah_stok'=>$val->sisa,
+									'update_by'=>$user,
+									'update_date'=>$time_str
+								);
+				$up = $this->db->where('id_produk',$val->id_produk)
+							   ->where('is_delete',0)
+							   ->update('tx_produk_stok',$up_data);
+			}
+				// $up = $this->db->query($updateStok);
+				if($up){
+					$ext +=1;
+				}
+
+			foreach ($arr_data as $key => $val) {
+				$inKartuStok_str .="($val->id_produk,$val->gudang,3,$val->id_satuan,$val->jumlah_produk,$val->harga_beli,$user,'$time->jam'),";
+			}
+				$inKartuStok = rtrim($inKartuStok_str,",");
+				$in = $this->db->query($inKartuStok);
+				if($in){
+					$ext +=1;
+				}
+
+			if($ext > 0){
+				return 1;
+			}else{
+				return 0;
+			}
+		}
+	}
+
 	public function get_selesai(){
 		$id_user = $this->session->userdata('id_user');
-		$sql = "UPDATE tx_jual as j
+		$Stok_up = $this->get_update_stok();
+		if($Stok_up == 1){
+			$sql = "UPDATE tx_jual as j
 				SET is_selesai = 1
 				WHERE j.insert_by = $id_user
 				AND j.is_delete = 0 AND j.is_selesai = 0";
-		$data = $this->db->query($sql);
+				$data = $this->db->query($sql);
 
-		if($data){
-			echo json_encode(array('status'=> 1,'msg'=>'Data Sudah <b>Kosong</b> & Terimpan'));
+				if($data){
+					echo json_encode(array('status'=> 1,'msg'=>'Data Sudah <b>Kosong</b> & Terimpan'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Data Gagal Di kosongkan'));
+				}
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Di kosongkan'));
+			echo json_encode(array('status'=>0,'msg'=>'Error 3024 || Error UPdate Stok'));
 		}
+		
 	}
 
 	public function data_penjualan(){

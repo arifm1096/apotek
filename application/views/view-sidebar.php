@@ -241,7 +241,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/tambah_data'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Konsi Masuk</p>
                             </a>

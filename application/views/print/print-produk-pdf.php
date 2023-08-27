@@ -54,10 +54,10 @@
 
    <page>
        <page_header>
-           <table class="tabel_head">
+           <!-- <table class="tabel_head">
                <tr>
                    <td>
-                       <img src="assets/images/logo/logo.png" width="110" height="80">
+                       <img src="<?php echo base_url();?>assets/images/logo/logo.png" width="110" height="80">
                    </td>
                    <td>
                        <p class="judul"><?php echo $kop->nama_wilayah;?></p>
@@ -65,7 +65,7 @@
                        <p class="tex">Telp. <?php echo $kop->no_hp; ?></p>
                    </td>
                </tr>
-           </table>
+           </table> -->
            <hr>
            <p class="judul_content"> REKAP MASTER PRODUK</p>
        </page_header>
