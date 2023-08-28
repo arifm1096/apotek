@@ -270,13 +270,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('laporan/data_stok'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Stok Produk</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('laporan/data_penjualan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Penjualan</p>
                             </a>

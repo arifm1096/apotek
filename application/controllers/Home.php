@@ -33,6 +33,7 @@ class Home extends CI_Controller {
 		$var['penjualan'] = $this->Model_home->get_sum_penjualan();
 		$var['stok'] = $this->Model_home->get_sum_stok();
 		$var['pembelian'] = $this->Model_home->get_sum_pembelian();
+		$var['uang'] = $this->Model_home->get_sum_tot_uang();
 		$var['content'] = 'view-home';
 		$var['js'] = 'js-home';
 		$this->load->view('view-index',$var);

@@ -30,6 +30,7 @@ class Laporan extends CI_Controller {
 		}
 	}
 
+	// Laporan Penjualan
 	public function data_penjualan(){
 		$var['content'] = 'view-lap-penjualan';
 		$var['js'] = 'js-lap_penjualan';
@@ -140,13 +141,13 @@ class Laporan extends CI_Controller {
 	public function export_data_penjualan(){
 		$spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-     
-        $sheet->setCellValue('A1', "No");
-        $sheet->setCellValue('B1', "No Nota");
-        $sheet->setCellValue('C1', "Nama Produk");
-        $sheet->setCellValue('D1', "Jumlah");
-        $sheet->setCellValue('E1', "Satuan");
-		$sheet->setCellValue('F1', "Total Penjualan");
+		$sheet->setCellValue('A1',"Apotik Nawasena 24 JAM");
+        $sheet->setCellValue('A2', "No");
+        $sheet->setCellValue('B2', "No Nota");
+        $sheet->setCellValue('C2', "Nama Produk");
+        $sheet->setCellValue('D2', "Jumlah");
+        $sheet->setCellValue('E2', "Satuan");
+		$sheet->setCellValue('F2', "Total Penjualan");
 
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
@@ -212,5 +213,166 @@ class Laporan extends CI_Controller {
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
 	}
+
+	// Laporan Penjualan End
+
+	// Laporan Stok
+	public function data_stok(){
+		$var['content'] = 'view-lap-persediaan';
+		$var['js'] = 'js-lap-persediaan';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_persediaan(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.barcode like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR p.produk_by like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR s.nama_satuan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		if($_POST['status_jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_POST['status_jual']."'";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+	
+		$where .=  $searchQuery .$jual.$rak;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_produk` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM tx_produk as p
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan 
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
+		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
+		p.harga_beli,ps.id_stok
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
+		WHERE $where
+		order by p.id_produk " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+		
+		
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
+	public function export_data_stok(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('A1',"Apotik Nawasena 24 JAM");
+        $sheet->setCellValue('A2', "No");
+        $sheet->setCellValue('B2', "No Nota");
+        $sheet->setCellValue('C2', "Nama Produk");
+        $sheet->setCellValue('D2', "Jumlah");
+        $sheet->setCellValue('E2', "Satuan");
+		$sheet->setCellValue('F2', "Total Penjualan");
+
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.barcode like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR p.jumlah_minimal like '%" . $searchValue . "%'	
+								 OR p.produk_by like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR s.nama_satuan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		if($_POST['status_jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_POST['status_jual']."'";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+
+
+		$sql ="SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
+		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
+		p.harga_beli,ps.id_stok
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
+		WHERE $where";
+
+		$data_jual = $this->db->query($sql)->result_array();
+
+		// var_dump($data_sum);
+
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 3;
+        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+          $sheet->setCellValue('B'.$numrow, $data['no_nota']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
+          $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('F'.$numrow, $data['total_harga']);
+		  
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Laporan_Penjualan.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+	}
+
+	// Laporan Stok
 
 }

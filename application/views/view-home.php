@@ -34,7 +34,7 @@
 
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>53<sup style="font-size: 20px">%</sup></h3>
+                        <h3><sup style="font-size: 20px">RP.</sup><?php number_format($uang->total_uang,0,',','.');?></h3>
                         <p>Dasborad Umum</p>
                     </div>
                     <div class="icon">

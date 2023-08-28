@@ -13,6 +13,19 @@
 			} 
 		}
 
+		public function get_sum_tot_uang(){
+			$data = $this->db->select('sum(k.total) as total_uang')
+							 ->from('tx_kasir as k')
+							 ->where('k.tgl_transaksi >= CURDATE()')
+							 ->where('k.is_delete',0)
+							 ->get();
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
 		public function get_sum_penjualan(){
 			$data = $this->db->select('count(k.id_kasir) as jumlah_penjualan')
 							 ->from('tx_kasir as k')
