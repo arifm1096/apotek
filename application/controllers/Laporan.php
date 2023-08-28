@@ -302,15 +302,13 @@ class Laporan extends CI_Controller {
 	public function export_data_stok(){
 		$spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-		$sheet->setCellValue('A1',"Apotik Nawasena 24 JAM");
+		$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
         $sheet->setCellValue('A2', "No");
-        $sheet->setCellValue('B2', "No Nota");
-        $sheet->setCellValue('C2', "Nama Produk");
-        $sheet->setCellValue('D2', "Jumlah");
-        $sheet->setCellValue('E2', "Satuan");
-		$sheet->setCellValue('F2', "Total Penjualan");
+        $sheet->setCellValue('B2', "Nama Produk");
+        $sheet->setCellValue('C2', "SKU");
+        $sheet->setCellValue('D2', "Jumlah Stok");
 
-		$searchValue = $_POST['text'];
+		$searchValue = $_GET['text'];
 		$jual ='';
 		$rak ='';
 		$where = " p.is_delete = 0 ";
@@ -328,13 +326,15 @@ class Laporan extends CI_Controller {
 			) ";
 		}
 
-		if($_POST['status_jual'] !='pil'){
-			$where .= " AND p.status_jual ='".$_POST['status_jual']."'";
+		if($_GET['status_jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_GET['status_jual']."'";
 		}
 
-		if($_POST['id_rak'] !='pil'){
-			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		if($_GET['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['id_rak']."'";
 		}
+	
+		$where .=  $searchQuery .$jual.$rak;
 
 
 		$sql ="SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
@@ -346,29 +346,27 @@ class Laporan extends CI_Controller {
 		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
 		WHERE $where";
 
-		$data_jual = $this->db->query($sql)->result_array();
-
-		// var_dump($data_sum);
+		$data_stok = $this->db->query($sql)->result_array();
+		// var_dump($data_stok);
 
         $no = 1; // Untuk penomoran tabel, di awal set dengan 1
         $numrow = 3;
-        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+        foreach($data_stok as $data){ // Lakukan looping pada variabel siswa
           $sheet->setCellValue('A'.$numrow, $no);
-          $sheet->setCellValue('B'.$numrow, $data['no_nota']);
           $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['sku_kode_produk']);
           $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-		  $sheet->setCellValue('F'.$numrow, $data['total_harga']);
+		  $sheet->setCellValue('F'.$numrow, $data['stok']);
 		  
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
 
         $writer = new Xlsx($spreadsheet);
-        
+        $tgl = date('Y-m-d_H-i');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Laporan_Penjualan.xls'); 
+        header('Content-Disposition: attachment;filename=Laporan_Stok_'.$tgl.'.xls'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
 	}

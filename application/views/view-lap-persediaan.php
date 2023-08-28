@@ -13,7 +13,7 @@
                         <i class="fa fa-plus"></i> Add Data
                     </button> -->
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right;"
-                        onclick="add_data();">
+                        onclick="export_excel();">
                         <i class="fa fa-file-excel"></i> Export
                     </button>
                 </ol>
@@ -96,4 +96,3 @@
         </div>
     </div><!-- /.container-fluid -->
 </section>
-

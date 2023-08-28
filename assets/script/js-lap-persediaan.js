@@ -112,7 +112,6 @@ function load_persediaan(text, jual, rak) {
 			{ data: "nama_produk" },
 			{ data: "sku_kode_produk" },
 			{ data: "stok" },
-			
 		],
 	});
 }
@@ -132,4 +131,18 @@ function clear_filter() {
 	load_select_filter("pil", "pil");
 }
 
-
+function export_excel() {
+	var text = $("#filter_text").val();
+	var jual = $("#filter_status_jual").val();
+	var rak = $("#filter_rak").val();
+	window.open(
+		URL +
+			"laporan/export_data_stok?status_jual=" +
+			jual +
+			"&id_rak=" +
+			rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}
