@@ -18,6 +18,7 @@
 							 ->from('tx_kasir as k')
 							 ->where('k.tgl_transaksi >= CURDATE()')
 							 ->where('k.is_delete',0)
+							 ->where('k.is_delete',0)
 							 ->get();
 			if($data->num_rows()>0){
 				return $data->row();
