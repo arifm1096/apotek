@@ -8,10 +8,10 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <button type="button" class="btn btn-danger btn-sm" style="align-items: right;"
+                    <!-- <button type="button" class="btn btn-danger btn-sm" style="align-items: right;"
                         onclick="add_data();">
                         <i class="fa fa-plus"></i> Add Data
-                    </button>
+                    </button> -->
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right;"
                         onclick="add_data();">
                         <i class="fa fa-file-excel"></i> Export
