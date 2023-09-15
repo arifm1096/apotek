@@ -1,5 +1,6 @@
 $(document).ready(function () {
 	viewpass();
+	$("#view_shif").hide();
 });
 
 $(document).on("keydown", "body", function (e) {
@@ -20,62 +21,15 @@ function viewpass() {
 	}
 }
 
-// function Login() {
-// 	var arrInput = $("#contentLogin").find("input[name]").toArray();
-// 	var value_input = "";
+function get_shif() {
+	var id = $("#panel").val();
 
-// 	var username = "";
-
-// 	arrInput.forEach(function (item, index) {
-// 		value_input = $("#contentLogin").find("input[name]").eq(index).val();
-// 		if (value_input == "") {
-// 			Swal.fire({
-// 				icon: "error",
-// 				title: "Perhatian...",
-// 				text: "Inputan Wajib Diisi",
-// 			});
-// 		}
-// 	});
-
-// 	if (value_input !== "") {
-// 		//start ajax
-// 		var form = document.querySelector("form");
-
-// 		var request = new XMLHttpRequest();
-// 		var formData = new FormData(form);
-
-// 		form.addEventListener(
-// 			"submit",
-// 			function (e) {
-// 				e.preventDefault();
-// 			},
-// 			false
-// 		);
-
-// 		request.onreadystatechange = function () {
-// 			if (request.readyState == 4 && request.status == 200) {
-// 				var json = JSON.parse(request.responseText);
-// 				if (json.status == 1) {
-// 					// alert('sukses');
-// 					window.location.href = URL + "home/index";
-// 				} else {
-// 					if (json.status == 2) {
-// 						// alert('sukses');
-// 						window.location.href = URL + "home/index";
-// 					} else {
-// 						Swal.fire({
-// 							icon: "warning",
-// 							title: "Perhatian...",
-// 							text: "Username atau Password Tidak Ditemukan",
-// 						});
-// 					}
-// 				}
-// 			}
-// 		};
-// 		request.open("post", URL + "login/proses_login", true);
-// 		request.send(formData);
-// 	}
-// }
+	if (id == 3) {
+		$("#view_shif").show();
+	} else {
+		$("#view_shif").hide();
+	}
+}
 
 $("#contentLogin").submit(function (e) {
 	e.preventDefault();

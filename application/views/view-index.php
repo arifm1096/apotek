@@ -181,12 +181,12 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-divider"></div>
-                        <a href="<?php echo base_url('login/proses_logout')?>" class="dropdown-item">
+                        <button onclick="p_logout();" class="dropdown-item">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                             <span class="float-right text-muted text-sm">Jam :
                                 <i class="fa fa-clock"></i> <b style="color:blue;" class="jam"></b></a>
-                        </span>
-                        </a>
+                            </span>
+                        </button>
                         <div class="dropdown-divider"></div>
                         <a href="" class="dropdown-item dropdown-footer">Close</a>
                     </div>
@@ -302,10 +302,30 @@
     var URL = "<?php echo base_url(); ?>";
     var csfrData = {};
     csfrData['<?php echo $this->security->get_csrf_token_name(); ?>'] = '<?php echo
-  $this->security->get_csrf_hash(); ?>';
+                $this->security->get_csrf_hash(); ?>';
     $.ajaxSetup({
         data: csfrData
     });
+
+    function p_logout() {
+        $.ajax({
+            url: URL + 'login/proses_logout_admin',
+            type: 'POST',
+            data: {},
+            success: function(data) {
+                var res = JSON.parse(data);
+                if (res.status == 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Perhatian...",
+                        text: res.msg,
+                    });
+                } else {
+                    window.location.href = URL + 'login';
+                }
+            }
+        })
+    }
     </script>
 
 

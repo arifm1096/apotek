@@ -146,6 +146,7 @@
                                     <div class="form-group">
                                         <label>Nama Produk</label>
                                         <input type="hidden" id="jenis_produk">
+                                        <input type="hidden" id="jenis_produk_param">
                                         <input type="text" id="nama_produk" name="nama_produk" class="form-control"
                                             placeholder="Inputkan Nama Produk" required>
                                     </div>

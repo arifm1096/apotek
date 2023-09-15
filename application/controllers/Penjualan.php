@@ -389,12 +389,12 @@ class Penjualan extends CI_Controller {
 						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
 						'kembalian' => $_POST['kembalian'],
 						'id_wilayah'=> $this->session->userdata('gudang'),
+						'id_shif'=> $this->session->userdata('id_shif'),
 						'insert_by' => $id_user,
 						'insert_date' => $datetime->time
 
 					);
 					
-		
 		$this->db->insert('tx_kasir', $data);
    		$insert_id = $this->db->insert_id();
 

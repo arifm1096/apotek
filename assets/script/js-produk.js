@@ -5,7 +5,7 @@ $(document).ready(function () {
 	load_select_filter();
 	$("#loading").hide();
 	$("#param_row").val(1);
-	$("#jenis_produk").val("obat");
+	$("#jenis_produk_param").val("obat");
 	$("#p_fleksibel").val(1);
 	$("#p_grosir").val(1);
 	$("#p_member").val(1);
@@ -182,7 +182,7 @@ function loop_satuan(
 											<option value=""> Pilih Satuan</option>
 										</select>
 									</div>
-									<div class="col-md-4">
+									<div class="col-md-6">
 										<div class="input-group mb-3">
 											<input type="number" name="jumlah_produk2" value="` +
 		p_jumlah_produk2 +
@@ -328,7 +328,7 @@ function hapus(id, supplier, ket) {
 }
 
 function get_ksu() {
-	var p_jenis_produk = $("#jenis_produk").val();
+	var p_jenis_produk = $("#jenis_produk_param").val();
 	var p_nama_produk = $("#nama_produk").val();
 
 	var e_jenis_produk = $("#edit_jenis_produk").val();
@@ -395,6 +395,7 @@ $("input[type=radio][name=jnp_options]").change(function () {
 	}
 
 	$("#jenis_produk").val(value);
+	$("#jenis_produk_param").val(value);
 	$("#edit_jenis_produk").val(value);
 });
 
@@ -682,6 +683,7 @@ function save_data_produk() {
 				$("#tbl_produk").DataTable().destroy();
 				load_produk(text, jual, rak);
 				$("#modal_input_produk").modal("hide");
+				window.location.reload();
 			} else {
 				Swal.fire({
 					icon: "warning",
@@ -703,7 +705,8 @@ $("#modal_input_produk").on("hide.bs.modal", function () {
 	$("#satuan_utama").val("");
 	$("#id_rak").val("");
 	$("#jumlah_minimal").val("");
-	$("input[type=radio][name=harga_option]").val("");
+	// $("input[type=radio][name=harga_option]").val("");
+	$("#harga_option_param").val(1);
 	$("#harga_beli").val("");
 	$("#jenis_produk").val("");
 	load_select("pil", "pil", "pil");
@@ -719,7 +722,8 @@ $("#modal_edit_produk").on("hide.bs.modal", function () {
 	$("#satuan_utama").val("");
 	$("#id_rak").val("");
 	$("#jumlah_minimal").val("");
-	$("input[type=radio][name=harga_option]").val("");
+	// $("input[type=radio][name=harga_option]").val("");
+	$("#harga_option_param").val(1);
 	$("#harga_beli").val("");
 	$("#jenis_produk").val("");
 	load_select("pil", "pil", "pil");
@@ -1504,6 +1508,7 @@ function save_edit_data_produk() {
 				$("#tbl_produk").DataTable().destroy();
 				load_produk(text, jual, rak);
 				$("#modal_edit_produk").modal("hide");
+				window.location.reload();
 			} else {
 				Swal.fire({
 					icon: "warning",

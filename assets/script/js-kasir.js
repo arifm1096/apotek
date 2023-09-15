@@ -453,3 +453,38 @@ function close_kasir() {
 		},
 	});
 }
+
+function close_bill() {
+	Swal.fire({
+		html: "<b>Apakah Anda Yakin CLOSE BILL ?</b>",
+		icon: "info",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Ya, Close Bill",
+	}).then((result) => {
+		if (result.value) {
+			$.ajax({
+				url: URL + "master/close_shif",
+				type: "POST",
+				data: {},
+				success: function (res) {
+					var r = JSON.parse(res);
+					if (r.status == 1) {
+						Swal.fire({
+							icon: "success",
+							title: "Success !!",
+							text: r.msg,
+						});
+					} else {
+						Swal.fire({
+							icon: "error",
+							title: "Perhatian...",
+							text: r.msg,
+						});
+					}
+				},
+			});
+		}
+	});
+}

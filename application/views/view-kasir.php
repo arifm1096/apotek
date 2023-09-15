@@ -18,7 +18,13 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-block btn-info btn-md float-left" onclick="close_bill();">
+                            <b style="text-transform: uppercase;"><?php echo $this->session->userdata('nama_shif');?>
+                            </b>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
                         <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
                             data-toggle="tooltip" data-placement="top" title="Hapus Semua Data"><i class="fa fa-trash"
                                 aria-hidden="true"></i></button>

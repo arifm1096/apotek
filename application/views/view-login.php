@@ -39,7 +39,7 @@
 
                 <form id="contentLogin">
                     <div class="input-group mb-3">
-                        <select class="form-control select2" name="panel" id="panel">
+                        <select class="form-control select2" name="panel" id="panel" onchange="get_shif();">
                             <option selected disabled> -- Pilih Hak Akses -- </option>
                             <?php if(!empty($ls_hak_akses)){?>
                             <?php foreach ($ls_hak_akses as $key => $value) {?>
@@ -50,6 +50,21 @@
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-home"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3" id="view_shif">
+                        <select class="form-control select2" name="shif" id="shif">
+                            <option selected disabled> -- Pilih Shif -- </option>
+                            <?php if(!empty($ls_shif)){?>
+                            <?php foreach ($ls_shif as $key => $value) {?>
+                            <option value="<?php echo $value->id_shif ?>"> <?php echo $value->nama_shif; ?>
+                            </option>
+                            <?php }}?>
+                        </select>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-key"></span>
                             </div>
                         </div>
                     </div>

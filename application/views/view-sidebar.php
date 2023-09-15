@@ -108,6 +108,12 @@
                                 <p> Rak / Penyimpanan</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('master/data_shif'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Shif</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item has-treeview">

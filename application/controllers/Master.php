@@ -534,8 +534,8 @@ class Master extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT id_shif,nama_shif,jam_pulang,jam_masuk,aktif,(CASE WHEN (aktif ='y') THEN 'Aktif' 
-		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
+		$sql = "SELECT id_shif,nama_shif,jam_pulang,jam_masuk,aktif,(CASE WHEN (aktif ='1') THEN 'Aktif' 
+		WHEN	(aktif = '0') THEN 'Tidak Aktif'
 		END) as is_aktif 
 		FROM `tm_shif`
 		WHERE $where
@@ -576,6 +576,7 @@ class Master extends CI_Controller{
 		}
 		
 	}
+
 	public function hapus_shif(){
 		$id = $_POST['id'];
 		$delete_by = $this->session->userdata('id_user');
@@ -592,6 +593,22 @@ class Master extends CI_Controller{
 			echo json_encode(array('status'=>1,'msg'=>'Hapus Data Success'));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Hapus Data Falied'));
+		}
+	}
+
+	public function close_shif(){
+		 $sql_time = $this->db->select('now() AS time ')->get()->row();
+		$update = $this->db->where('close',0)
+						   ->update('tx_log_shif',array(
+													'close' => 1,
+													'tgl_close'=>$sql_time->time
+						   						   )
+									);
+									// echo $this->db->last_query();
+		if($update){
+			echo json_encode(array('status'=>1,'msg'=>'Close Shif Success, Silahkan Logout'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Close Shif Falied'));
 		}
 	}
 // End shif
