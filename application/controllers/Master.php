@@ -42,7 +42,7 @@ class Master extends CI_Controller{
 		$sql_shif = $this->db->select('*')
 						->from('tm_shif')
 						->where('is_delete',0)
-						->where('aktif','y')
+						->where('aktif','1')
 						->get();
 		$data_shif = $sql_shif->result();
 

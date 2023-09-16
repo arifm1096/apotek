@@ -110,6 +110,11 @@
     .datepicker {
         background-color: #bbdefb;
     }
+
+    .ui-datepicker {
+        margin-left: 100px;
+        z-index: 1000;
+    }
     </style>
 
 </head>

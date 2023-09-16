@@ -81,7 +81,7 @@ const rupiah = (number) => {
 
 function load_total_penjualan(text, tgl1, tgl2, shif) {
 	$.ajax({
-		url: URL + "penjualan/load_sum_pejualan",
+		url: URL + "penjualan/load_sum_pejualan_shif",
 		type: "POST",
 		data: { text: text, tgl1: tgl1, tgl2: tgl2, shif: shif },
 		success: function (data) {
@@ -100,7 +100,7 @@ function load_total_penjualan(text, tgl1, tgl2, shif) {
 function load_penjualan(text, tgl1, tgl2, shif) {
 	$("#tbl_penjualan").DataTable({
 		ajax: {
-			url: URL + "penjualan/load_data_penjualan",
+			url: URL + "penjualan/load_data_penjualan_shif",
 			type: "POST",
 			data: { text: text, tgl1: tgl1, tgl2: tgl2, shif: shif },
 		},
@@ -172,7 +172,7 @@ function export_excel() {
 	var shif = $("#shif").val();
 	window.open(
 		URL +
-			"penjualan/export_data_penjualan?tgl1=" +
+			"penjualan/export_data_penjualan_shif?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

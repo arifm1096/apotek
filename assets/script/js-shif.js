@@ -14,11 +14,11 @@ function status_aktif(p_status) {
 	var html = "<option value='pil'> Pilih Status </option>";
 	var data = [
 		{
-			id: "y",
+			id: "1",
 			title: "Aktif",
 		},
 		{
-			id: "n",
+			id: "0",
 			title: "Tidak Aktif",
 		},
 	];
@@ -122,11 +122,13 @@ $("#add_shif").submit(function (e) {
 	});
 });
 
-function edit(p_id_shif, p_nama, p_aktif) {
+function edit(p_id_shif, p_nama, p_jam_m, p_jam_p, p_aktif) {
 	status_aktif(p_aktif);
 	$("#mediumModalLabel").html("Edit Rak");
 	$("#id_shif").val(p_id_shif);
 	$("#nama_shif").val(p_nama);
+	$("#jam_masuk").val(p_jam_m);
+	$("#jam_pulang").val(p_jam_p);
 	status_aktif(p_aktif);
 	$("#modal_input_shif").modal("show");
 }
