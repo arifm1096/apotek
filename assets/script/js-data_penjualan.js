@@ -1,8 +1,9 @@
 $(document).ready(function () {
 	// filter_data_penjualan();
 	load_penjualan((text = ""), (tgl = ""));
-	load_total_penjualan(text="", tgl1="", tgl2="");
+	load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""));
 	$("#loading").hide();
+	filter_data_penjualan();
 });
 
 $(".tgl_piker").datepicker({
@@ -14,9 +15,11 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function filter_data_penjualan(id) {
+function filter_data_penjualan(id = null) {
 	var html_kondisi = "<option value='pil'> Pilih Kondisi </option>";
 	var html_gudang = "<option value='pil'> Pilih Gudang </option>";
+	var html_shif = "<option value='pil'> Pilih Shif </option>";
+
 	$.ajax({
 		url: URL + "master/get_filter_penjualan",
 		type: "POST",
@@ -24,30 +27,43 @@ function filter_data_penjualan(id) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == "1") {
-				res.kondisi.forEach((e) => {
-					html_kondisi +=
+				// res.kondisi.forEach((e) => {
+				// 	html_kondisi +=
+				// 		'<option value="' +
+				// 		e.id_kondisi +
+				// 		'"' +
+				// 		(e.id_kondisi === id ? 'selected="selected"' : "") +
+				// 		">" +
+				// 		e.nama_kondisi +
+				// 		"</option>";
+				// });
+
+				res.shif.forEach((e) => {
+					html_shif +=
 						'<option value="' +
-						e.id_kondisi +
+						e.id_shif +
 						'"' +
-						(e.id_kondisi === id ? 'selected="selected"' : "") +
+						(e.id_shif === id ? 'selected="selected"' : "") +
 						">" +
-						e.nama_kondisi +
+						e.nama_shif +
 						"</option>";
 				});
 
-				res.gudang.forEach((e) => {
-					html_gudang +=
-						'<option value="' +
-						e.id_gudang +
-						'"' +
-						(e.id_gudang === id ? 'selected="selected"' : "") +
-						">" +
-						e.nama_gudang +
-						"</option>";
-				});
+				// res.gudang.forEach((e) => {
+				// 	html_gudang +=
+				// 		'<option value="' +
+				// 		e.id_gudang +
+				// 		'"' +
+				// 		(e.id_gudang === id ? 'selected="selected"' : "") +
+				// 		">" +
+				// 		e.nama_gudang +
+				// 		"</option>";
+				// });
 			}
-			$("#gudang_filter").html(html_gudang);
-			$("#kondisi_filter").html(html_kondisi);
+
+			$("#shif").html(html_shif);
+			// $("#gudang_filter").html(html_gudang);
+			// $("#kondisi_filter").html(html_kondisi);
 		},
 	});
 }
@@ -62,11 +78,12 @@ const rupiah = (number) => {
 		currency: "IDR",
 	}).format(number);
 };
-function load_total_penjualan(text, tgl1, tgl2) {
+
+function load_total_penjualan(text, tgl1, tgl2, shif) {
 	$.ajax({
 		url: URL + "penjualan/load_sum_pejualan",
 		type: "POST",
-		data: { text: text, tgl1: tgl1, tgl2: tgl2 },
+		data: { text: text, tgl1: tgl1, tgl2: tgl2, shif: shif },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
@@ -80,12 +97,12 @@ function load_total_penjualan(text, tgl1, tgl2) {
 	});
 }
 
-function load_penjualan(text, tgl1, tgl2) {
+function load_penjualan(text, tgl1, tgl2, shif) {
 	$("#tbl_penjualan").DataTable({
 		ajax: {
 			url: URL + "penjualan/load_data_penjualan",
 			type: "POST",
-			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
+			data: { text: text, tgl1: tgl1, tgl2: tgl2, shif: shif },
 		},
 		processing: true,
 		serverSide: true,
@@ -134,16 +151,18 @@ function filter_data() {
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
 	$("#tbl_penjualan").DataTable().destroy();
-	load_penjualan(text, tgl1, tgl2);
-	load_total_penjualan(text, tgl1, tgl2);
+	load_penjualan(text, tgl1, tgl2, shif);
+	load_total_penjualan(text, tgl1, tgl2, shif);
 }
 
 function clear_filter() {
 	$("#tbl_penjualan").DataTable().destroy();
 	load_penjualan((text = ""), (tgl = ""));
 	$("#filter_text").val("");
-	$("#tanggal").val("");
-	load_total_penjualan(text, tgl1, tgl2);
+	$("#tanggal1").val("");
+	$("#tanggal2").val("");
+	load_total_penjualan(text, tgl1, tgl2, shif);
+	filter_data_penjualan("pil");
 }
 
 function export_excel() {

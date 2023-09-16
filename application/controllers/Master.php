@@ -33,6 +33,26 @@ class Master extends CI_Controller{
 		}
 	}
 
+	public function get_filter_penjualan(){
+		$sql = $this->db->select('*')
+						->from('tm_bulan')
+						->get();
+		$data = $sql->result();
+
+		$sql_shif = $this->db->select('*')
+						->from('tm_shif')
+						->where('is_delete',0)
+						->where('aktif','y')
+						->get();
+		$data_shif = $sql_shif->result();
+
+		if(!empty($sql)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data,'shif'=>$data_shif));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data not Find','result'=>null));
+		}
+	}
+
 	public function get_filter_defecta(){
 		
 		$kondisi = array(

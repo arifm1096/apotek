@@ -643,20 +643,28 @@ class Penjualan extends CI_Controller {
 		$where = "is_delete = 0 AND is_selesai = 1 ";
 		$searchValue = $_POST['text'];
 		if ($searchValue != '') {
-			$where .= " and (nama_produk like '%" . $searchValue . "%'
-			 					OR no_nota like '%" . $searchValue . "%'			
+			$where .= " and (j.nama_produk like '%" . $searchValue . "%'
+			 					OR j.no_nota like '%" . $searchValue . "%'			
 			) ";
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
 			$tgl1 = $_POST['tgl1'];
 			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
-			$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
-		$sql = "SELECT SUM(total_harga) AS total FROM tx_jual where $where";
+		if($_POST['shif'] !=="pil"){
+			 $shif=$_POST['shif'];
+			$where .="AND k.id_shif = $shif";
+		}
+
+		$sql = "SELECT SUM(j.total_harga) AS total 
+		FROM tx_jual as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+		where $where";
 		$data = $this->db->query($sql)->row();
 
 		if(!empty($data)){
@@ -697,6 +705,11 @@ class Penjualan extends CI_Controller {
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
+		if($_POST['shif'] !=="pil"){
+			 $shif=$_POST['shif'];
+			$where .="AND k.id_shif = $shif";
+		}
+
 		// else{
 		// 	$where .= " AND  DATE_FORMAT(j.insert_date,'%Y-%m-%d')  = DATE_FORMAT(NOW(),'%Y-%m-%d')";
 		// }
@@ -713,6 +726,7 @@ class Penjualan extends CI_Controller {
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
 		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
 		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
 		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
 		WHERE $where";
@@ -724,6 +738,7 @@ class Penjualan extends CI_Controller {
 		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
 		j.total_harga,ps.jumlah_stok,j.no_nota
 		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
 		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
 		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
 		WHERE $where
@@ -787,11 +802,17 @@ class Penjualan extends CI_Controller {
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
+		if($_GET['shif'] !=="pil"){
+			 $shif=$_GET['shif'];
+			$where .="AND k.id_shif = $shif";
+		}
+
 
 		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
 		j.jumlah_produk,s.nama_satuan,
 		j.total_harga,ps.jumlah_stok,j.no_nota
 		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
 		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
 		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
 		WHERE $where";
@@ -834,5 +855,7 @@ class Penjualan extends CI_Controller {
 			}
 		}
 	}
+
+	
 
 }
