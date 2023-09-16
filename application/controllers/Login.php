@@ -90,10 +90,16 @@ class Login extends CI_Controller
        
     }
 
-     public function proses_logout_admin()
-    {
-             $this->session->sess_destroy();
-	        redirect(base_url('login'));
+     public function proses_logout_admin(){
+        if(1 > 0){
+            $this->session->sess_destroy();
+	        // redirect(base_url('login'));
+            echo json_encode(array('status'=>1,'msg'=>'Logout Success'));
+        }else{
+            echo json_encode(array('status'=>0,'msg'=>'Close Shif Terlebih Dahulu Sebelum, Logout'));
+        }
+            //  $this->session->sess_destroy();
+	        // redirect(base_url('login'));
         
        
     }
