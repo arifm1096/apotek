@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	// filter_data_penjualan();
-	load_penjualan((text = ""), (tgl = ""));
-	load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""));
+	load_penjualan((text = ""), (tgl = ""), (tgl2 = ""), (shif = "pil"));
+	load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""), (shif = "pil"));
 	$("#loading").hide();
 	filter_data_penjualan();
 });
