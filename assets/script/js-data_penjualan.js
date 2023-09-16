@@ -150,6 +150,7 @@ function filter_data() {
 	var text = $("#filter_text").val();
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
+	var shif = $("#shif").val();
 	$("#tbl_penjualan").DataTable().destroy();
 	load_penjualan(text, tgl1, tgl2, shif);
 	load_total_penjualan(text, tgl1, tgl2, shif);
@@ -169,6 +170,7 @@ function export_excel() {
 	var text = $("#filter_text").val();
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
+	var shif = $("#shif").val();
 	window.open(
 		URL +
 			"penjualan/export_data_penjualan?tgl1=" +
@@ -177,6 +179,7 @@ function export_excel() {
 			tgl2 +
 			"&text=" +
 			text,
+		+"&shif=" + shif,
 		"_blank"
 	);
 }

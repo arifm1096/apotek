@@ -19,10 +19,12 @@
                         </form>
                     </div>
                     <div class="col-md-2">
+                        <?php if($this->session->userdata('nama_shif') !==""){?>
                         <button type="button" class="btn btn-block btn-info btn-md float-left" onclick="close_bill();">
                             <b style="text-transform: uppercase;"><?php echo $this->session->userdata('nama_shif');?>
                             </b>
                         </button>
+                        <?php };?>
                     </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
