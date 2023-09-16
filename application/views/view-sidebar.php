@@ -196,9 +196,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?php echo base_url('penjualan/data_penjualan_shif'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Penjulan Pershif</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url('penjualan/data_penjualan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Daftar Penjulan</p>
+                                <p> Laporan Penjulan</p>
                             </a>
                         </li>
                         <li class="nav-item">

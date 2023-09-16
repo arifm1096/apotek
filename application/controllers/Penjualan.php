@@ -656,10 +656,10 @@ class Penjualan extends CI_Controller {
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
-		if($_POST['shif'] !=="pil"){
-			 $shif=$_POST['shif'];
-			$where .="AND k.id_shif = $shif";
-		}
+		// if($_POST['shif'] !=="pil"){
+		// 	 $shif=$_POST['shif'];
+		// 	$where .="AND k.id_shif = $shif";
+		// }
 
 		$sql = "SELECT SUM(j.total_harga) AS total 
 		FROM tx_jual as j
@@ -705,10 +705,10 @@ class Penjualan extends CI_Controller {
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
-		if($_POST['shif'] !=="pil"){
-			 $shif=$_POST['shif'];
-			$where .="AND k.id_shif = $shif";
-		}
+		// if($_POST['shif'] !=="pil"){
+		// 	 $shif=$_POST['shif'];
+		// 	$where .="AND k.id_shif = $shif";
+		// }
 
 		// else{
 		// 	$where .= " AND  DATE_FORMAT(j.insert_date,'%Y-%m-%d')  = DATE_FORMAT(NOW(),'%Y-%m-%d')";
@@ -802,10 +802,10 @@ class Penjualan extends CI_Controller {
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
-		if($_GET['shif'] !=="pil"){
-			 $shif=$_GET['shif'];
-			$where .="AND k.id_shif = $shif";
-		}
+		// if($_GET['shif'] !=="pil"){
+		// 	 $shif=$_GET['shif'];
+		// 	$where .="AND k.id_shif = $shif";
+		// }
 
 
 		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
@@ -833,15 +833,16 @@ class Penjualan extends CI_Controller {
         }
 
         $writer = new Xlsx($spreadsheet);
+		$time = $this->db->select('now() as wkt')->get()->row();
         
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Data_Penjualan.xls'); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-	}
+        header('Content-Disposition: attachment;filename=Data_Penjualan'.$time->wkt.'.xls');
+header('Cache-Control: max-age=0');
+$writer->save('php://output');
+}
 
-	// end penjualan
+// end penjualan
 
 	public function data_penjualan_shif(){
 		$var['content'] = 'view-data_penjualan_shif';
@@ -853,28 +854,28 @@ class Penjualan extends CI_Controller {
 		$where = "j.is_delete = 0 AND j.is_selesai = 1 ";
 		$searchValue = $_POST['text'];
 		if ($searchValue != '') {
-			$where .= " and (j.nama_produk like '%" . $searchValue . "%'
-			 					OR j.no_nota like '%" . $searchValue . "%'			
-			) ";
+		$where .= " and (j.nama_produk like '%" . $searchValue . "%'
+		OR j.no_nota like '%" . $searchValue . "%'
+		) ";
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		$tgl1 = $_POST['tgl1'];
+		$tgl2 = $_POST['tgl2'];
+		$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
-			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 		if($_POST['shif'] !=="pil"){
-			 $shif=$_POST['shif'];
+			$shif=$_POST['shif'];
 			$where .="AND k.id_shif = $shif";
 		}
 
-		$sql = "SELECT SUM(j.total_harga) AS total 
-		FROM tx_jual as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		where $where";
+		$sql = "SELECT SUM(j.total_harga) AS total
+			FROM tx_jual as j
+			LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+			where $where";
 		$data = $this->db->query($sql)->row();
 
 		if(!empty($data)){
@@ -885,7 +886,7 @@ class Penjualan extends CI_Controller {
 	}
 
 	public function load_data_penjualan_shif(){
-		// Read Value 
+		// Read Value
 		$draw = $_POST['draw'];
 		$row = $_POST['start'];
 		$rowperpage = $_POST['length']; // Rows display per page
@@ -897,42 +898,42 @@ class Penjualan extends CI_Controller {
 		$jual ='';
 		$rak ='';
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-	
+
 		// Search
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
-			 					OR j.no_nota like '%" . $searchValue . "%'
-								 OR s.nama_satuan like '%" . $searchValue . "%'				
+			OR j.no_nota like '%" . $searchValue . "%'
+			OR s.nama_satuan like '%" . $searchValue . "%'
 			) ";
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !='' && $_POST['shif'] !=="pil"){
-			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
-			$tgl1 = $_POST['tgl1'].' '.$data->jam_masuk;
-			$tgl2 = $_POST['tgl2'].' '.$data->jam_pulang;
-			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
-			// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
+		$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
+		$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
+		$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
-		// if(){
-		// 	 $shif=$_POST['shif'];
-		// 	$where .="AND k.id_shif = $shif";
-		// }
+	// if(){
+	// $shif=$_POST['shif'];
+	// $where .="AND k.id_shif = $shif";
+	// }
 
-		// else{
-		// 	$where .= " AND  DATE_FORMAT(j.insert_date,'%Y-%m-%d')  = DATE_FORMAT(NOW(),'%Y-%m-%d')";
-		// }
-	
-		$where .=  $searchQuery .$jual.$rak;
-	
+	// else{
+	// $where .= " AND DATE_FORMAT(j.insert_date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')";
+	// }
+
+		$where .= $searchQuery .$jual.$rak;
+
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
 		FROM `tx_jual` as j
 		where is_delete = 0";
 		$records = $this->db->query($sql_count)->row_array();
 		$totalRecords = $records['allcount'];
-	
+
 		// Total number records with filter
 		$sql_filter = "SELECT count(*) as allcount
 		FROM `tx_jual` as j
@@ -942,7 +943,7 @@ class Penjualan extends CI_Controller {
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
-	
+
 		// Fetch Records
 		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
 		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
@@ -954,109 +955,108 @@ class Penjualan extends CI_Controller {
 		WHERE $where
 		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
-	
-		// Response
-		$output = array(
-			"draw" => intval($draw),
-			"iTotalRecords" => $totalRecords,
-			"iTotalDisplayRecords" => $totalRecordsFilter,
-			"aaData" => $data
-		); 
-		echo json_encode($output);
+	// echo $this->db->last_query();
+
+			// Response
+			$output = array(
+				"draw" => intval($draw),
+				"iTotalRecords" => $totalRecords,
+				"iTotalDisplayRecords" => $totalRecordsFilter,
+				"aaData" => $data
+			);
+			echo json_encode($output);
+		}
+
+		public function get_detail_data_jual_shif(){
+			$id = $_POST['id_jual'];
+			$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+			CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+			j.total_harga,ps.jumlah_stok
+			FROM `tx_jual` as j
+			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+			where j.id_jual = $id";
+			$data = $this->db->query($sql);
+
+			if($data->num_rows()>0){
+				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
+			}
+		}
+
+public function export_data_penjualan_shif(){
+	$spreadsheet = new Spreadsheet();
+	$sheet = $spreadsheet->getActiveSheet();
+	$sheet->setCellValue('A1', "No");
+	$sheet->setCellValue('B1', "No Nota");
+	$sheet->setCellValue('C1', "Nama Produk");
+	$sheet->setCellValue('D1', "Jumlah");
+	$sheet->setCellValue('E1', "Satuan");
+	$sheet->setCellValue('F1', "Total Penjualan");
+	$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+
+	$searchValue = $_GET['text'];
+	if ($searchValue != '') {
+		$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
+		OR j.no_nota like '%" . $searchValue . "%'
+		OR s.nama_satuan like '%" . $searchValue . "%'
+		) ";
 	}
 
-	public function get_detail_data_jual_shif(){
-		$id = $_POST['id_jual'];
-		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-		j.total_harga,ps.jumlah_stok
-		FROM `tx_jual` as j
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		where j.id_jual = $id";
-		$data = $this->db->query($sql);
-		
-		if($data->num_rows()>0){
-			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
-		}
+	if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+		$tgl1 = $_GET['tgl1'];
+		$tgl2 = $_GET['tgl2'];
+		$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+	}else{
+		$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 	}
 
-	public function export_data_penjualan_shif(){
-		$spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-     
-        $sheet->setCellValue('A1', "No");
-        $sheet->setCellValue('B1', "No Nota");
-        $sheet->setCellValue('C1', "Nama Produk");
-        $sheet->setCellValue('D1', "Jumlah");
-        $sheet->setCellValue('E1', "Satuan");
-		$sheet->setCellValue('F1', "Total Penjualan");
-
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-
-		$searchValue = $_GET['text'];
-		if ($searchValue != '') {
-			$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
-			 					OR j.no_nota like '%" . $searchValue . "%'
-								 OR s.nama_satuan like '%" . $searchValue . "%'				
-			) ";
-		}
-
-		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
-		}
-
-		if($_GET['shif'] !=="pil"){
-			 $shif=$_GET['shif'];
-			$where .="AND k.id_shif = $shif";
-		}
-
-
-		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		j.jumlah_produk,s.nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where";
-
-		$data_jual = $this->db->query($sql)->result_array();
-		echo $this->db->last_query();
-        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
-        $numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
-        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
-          $sheet->setCellValue('A'.$numrow, $no);
-          $sheet->setCellValue('B'.$numrow, $data['no_nota']);
-          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
-          $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-		  $sheet->setCellValue('f'.$numrow, $data['total_harga']);
-          $no++; // Tambah 1 setiap kali looping
-          $numrow++; // Tambah 1 setiap kali looping
-        }
-
-        $writer = new Xlsx($spreadsheet);
-        
-        ob_end_clean();
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Data_Penjualan.xls'); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
+	if($_GET['shif'] !=="pil"){
+		$shif=$_GET['shif'];
+		$where .="AND k.id_shif = $shif";
 	}
+
+
+	$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+	j.jumlah_produk,s.nama_satuan,
+	j.total_harga,ps.jumlah_stok,j.no_nota
+	FROM `tx_jual` as j
+	LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+	LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+	LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+	WHERE $where";
+
+	$data_jual = $this->db->query($sql)->result_array();
+	// echo $this->db->last_query();
+	$no = 1; // Untuk penomoran tabel, di awal set dengan 1
+	$numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
+	foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+		$sheet->setCellValue('A'.$numrow, $no);
+		$sheet->setCellValue('B'.$numrow, $data['no_nota']);
+		$sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+		$sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
+		$sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
+		$sheet->setCellValue('f'.$numrow, $data['total_harga']);
+		$no++; // Tambah 1 setiap kali looping
+		$numrow++; // Tambah 1 setiap kali looping
+	}
+
+$writer = new Xlsx($spreadsheet);
+
+	ob_end_clean();
+	header('Content-Type: application/vnd.ms-excel');
+	header('Content-Disposition: attachment;filename=Data_Penjualan_Shif.xls');
+	header('Cache-Control: max-age=0');
+	$writer->save('php://output');
+}
 
 	public function save_penjulan_tolak(){
 		$data = $this->input->post();
 		$data['insert_by'] = 'NOW()';
 
 		if($data !==""){
-			$sql = $this->db->insert('tx_jual_tolak',$data);
+		$sql = $this->db->insert('tx_jual_tolak',$data);
 
 			if($sql){
 				echo json_encode(array('status'=>1,'msg'=>'Data Success Diinput'));
@@ -1065,7 +1065,4 @@ class Penjualan extends CI_Controller {
 			}
 		}
 	}
-
-	
-
 }

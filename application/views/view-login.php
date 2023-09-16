@@ -58,7 +58,8 @@
                             <option selected disabled> -- Pilih Shif -- </option>
                             <?php if(!empty($ls_shif)){?>
                             <?php foreach ($ls_shif as $key => $value) {?>
-                            <option value="<?php echo $value->id_shif ?>"> <?php echo $value->nama_shif; ?>
+                            <option value="<?php echo $value->id_shif ?>">
+                                <?php echo $value->nama_shif.' - ('. $value->jam_masuk.' s/d '.$value->jam_pulang.')'; ?>
                             </option>
                             <?php }}?>
                         </select>

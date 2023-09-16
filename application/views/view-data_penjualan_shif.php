@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Daftar Penjualan Shif</h4>
+                <h4>Laporan Penjualan Pershif</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -48,7 +48,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <select name="shif" id="shif" class="form-control select2">
+                            <select name="shif" id="shif" class="form-control select2" onchange="filter_data();">
                             </select>
                         </div>
                     </div>
@@ -64,12 +64,12 @@
                     <div class="col-md-2">
                         <label>Filter Tanggal :</label>
                         <input type="text" class="form-control tgl_piker" name="tanggal1" id="tanggal1"
-                            onchange="filter_data();">
+                            onchange="filter_data();" autocomplete="off">
                     </div>
                     <div class="col-md-2">
                         <label>*</label>
                         <input type="text" class="form-control tgl_piker" name="tanggal2" id="tanggal2"
-                            onchange="filter_data();">
+                            onchange="filter_data();" autocomplete="off">
                     </div>
                 </div>
             </div>

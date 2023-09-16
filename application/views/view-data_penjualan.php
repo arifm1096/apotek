@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Daftar Penjualan</h4>
+                <h4>Laporan Penjualan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -25,7 +25,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label>Filter Shif:</label>
+                        <label>Filter Tanggal:</label>
                     </div>
                     <div class="col-md-2">
                     </div>
@@ -47,12 +47,20 @@
                         </div>
                     </div>
                     <div class="col-md-2">
+                        <input autocomplete="off" type="text" class="form-control tgl_piker" name="tanggal1"
+                            id="tanggal1" onchange="filter_data();">
+                    </div>
+                    <div class="col-md-2">
+                        <input autocomplete="off" type="text" class="form-control tgl_piker" name="tanggal2"
+                            id="tanggal2" onchange="filter_data();">
+                    </div>
+                    <!-- <div class="col-md-2">
                         <div class="form-group">
                             <select name="shif" id="shif" class="form-control select2">
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-3">
+                    </div> -->
+                    <div class="col-md-1">
                         <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
@@ -61,16 +69,7 @@
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <div class="col-md-2">
-                        <label>Filter Tanggal :</label>
-                        <input type="text" class="form-control tgl_piker" name="tanggal1" id="tanggal1"
-                            onchange="filter_data();">
-                    </div>
-                    <div class="col-md-2">
-                        <label>*</label>
-                        <input type="text" class="form-control tgl_piker" name="tanggal2" id="tanggal2"
-                            onchange="filter_data();">
-                    </div>
+
                 </div>
             </div>
 

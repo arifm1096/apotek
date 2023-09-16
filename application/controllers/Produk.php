@@ -269,7 +269,7 @@ class Produk extends CI_Controller {
 		$resolution = array(215, 330);
 		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
 		$pdf->WriteHTML($html);
-		$pdf->Output('REKAP MASTER PRODUK.pdf', 'P');
+		$pdf->Output('REKAP MASTER PRODUK.pdf', 'L');
 
        
 	}

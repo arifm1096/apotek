@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	// filter_data_penjualan();
-	load_penjualan((text = ""), (tgl = ""), (tgl2 = ""), (shif = "pil"));
-	load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""), (shif = "pil"));
+	// load_penjualan((text = ""), (tgl = ""), (tgl2 = ""), (shif = "pil"));
+	// load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""), (shif = "pil"));
 	$("#loading").hide();
 	filter_data_penjualan();
 });
@@ -177,8 +177,9 @@ function export_excel() {
 			"&tgl2=" +
 			tgl2 +
 			"&text=" +
-			text,
-		+"&shif=" + shif,
+			text +
+			"&shif=" +
+			shif,
 		"_blank"
 	);
 }
