@@ -163,6 +163,7 @@ function clear_filter() {
 	$("#tanggal2").val("");
 	filter_data_penjualan("pil");
 	load_penjualan((text = ""), (tgl = ""), (tgl2 = ""), (shif = "pil"));
+	load_total_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""), (shif = "pil"));
 }
 
 function export_excel() {
