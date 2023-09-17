@@ -859,12 +859,26 @@ $writer->save('php://output');
 		) ";
 		}
 
-		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
-		$tgl1 = $_POST['tgl1'];
-		$tgl2 = $_POST['tgl2'];
-		$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-		$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		// if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+		// $tgl1 = $_POST['tgl1'];
+		// $tgl2 = $_POST['tgl2'];
+		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }else{
+		// $where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		// }
+
+		// if($_POST['shif'] !=="pil"){
+		// 	$shif=$_POST['shif'];
+		// 	$where .="AND k.id_shif = $shif";
+		// }
+
+
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !='' && $_POST['shif'] !=="pil"){
+			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
+			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
+			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
 		if($_POST['shif'] !=="pil"){
@@ -909,17 +923,17 @@ $writer->save('php://output');
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !='' && $_POST['shif'] !=="pil"){
-		$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
-		$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
-		$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
-		$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
+			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
+			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
-	// if(){
-	// $shif=$_POST['shif'];
-	// $where .="AND k.id_shif = $shif";
-	// }
+		if($_POST['shif'] !=="pil"){
+			$shif=$_POST['shif'];
+			$where .="AND k.id_shif = $shif";
+		}
 
 	// else{
 	// $where .= " AND DATE_FORMAT(j.insert_date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')";
@@ -955,7 +969,6 @@ $writer->save('php://output');
 		WHERE $where
 		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
-	// echo $this->db->last_query();
 
 			// Response
 			$output = array(
@@ -994,6 +1007,7 @@ public function export_data_penjualan_shif(){
 	$sheet->setCellValue('D1', "Jumlah");
 	$sheet->setCellValue('E1', "Satuan");
 	$sheet->setCellValue('F1', "Total Penjualan");
+	$sheet->setCellValue('G1', "Sub Total Penjualan");
 	$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
 	$searchValue = $_GET['text'];
@@ -1004,12 +1018,12 @@ public function export_data_penjualan_shif(){
 		) ";
 	}
 
-	if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
-		$tgl1 = $_GET['tgl1'];
-		$tgl2 = $_GET['tgl2'];
-		$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-	}else{
-		$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+	if($_GET['tgl1'] !='' && $_GET['tgl2'] !='' && $_GET['shif'] !=="pil"){
+		$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_GET['shif'])->get()->row();
+		$tgl1 = date("Y-m-d", strtotime($_GET['tgl1'])).' '.$data->jam_masuk;
+		$tgl2 = date("Y-m-d", strtotime($_GET['tgl2'])).' '.$data->jam_pulang;
+		$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+	// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 	}
 
 	if($_GET['shif'] !=="pil"){
@@ -1030,7 +1044,8 @@ public function export_data_penjualan_shif(){
 	$data_jual = $this->db->query($sql)->result_array();
 	// echo $this->db->last_query();
 	$no = 1; // Untuk penomoran tabel, di awal set dengan 1
-	$numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
+	$numrow = 3;
+	$total = 0; // Set baris pertama untuk isi tabel adalah baris ke 4
 	foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
 		$sheet->setCellValue('A'.$numrow, $no);
 		$sheet->setCellValue('B'.$numrow, $data['no_nota']);
@@ -1038,11 +1053,14 @@ public function export_data_penjualan_shif(){
 		$sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
 		$sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
 		$sheet->setCellValue('f'.$numrow, $data['total_harga']);
-		$no++; // Tambah 1 setiap kali looping
-		$numrow++; // Tambah 1 setiap kali looping
+		$no++; 
+		$numrow++;
+		$total += $data['total_harga']; 
 	}
-
-$writer = new Xlsx($spreadsheet);
+	$sheet->setCellValue('G2', $total);
+	$sheet->getStyle('G1')->getFont()->setBold(true);
+	$sheet->getStyle('G2')->getFont()->setBold(true);
+	$writer = new Xlsx($spreadsheet);
 
 	ob_end_clean();
 	header('Content-Type: application/vnd.ms-excel');
