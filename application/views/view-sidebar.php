@@ -175,6 +175,12 @@
                                 <p> Kasir</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('penjualan/data_penjualan_retur'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Data Penjualan</p>
+                            </a>
+                        </li>
 
                     </ul>
                 </li>
@@ -207,12 +213,12 @@
                                 <p> Laporan Penjulan</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penjualan Tertolak</p>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                 </li>
                 <li class="nav-item has-treeview">

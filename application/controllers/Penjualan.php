@@ -940,9 +940,9 @@ class Penjualan extends CI_Controller {
 			$where .="AND k.id_shif = $shif";
 		}
 
-	// else{
-	// $where .= " AND DATE_FORMAT(j.insert_date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')";
-	// }
+			// else{
+			// $where .= " AND DATE_FORMAT(j.insert_date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')";
+			// }
 
 		$where .= $searchQuery .$jual.$rak;
 
@@ -985,23 +985,24 @@ class Penjualan extends CI_Controller {
 			echo json_encode($output);
 		}
 
+	
 		public function get_detail_data_jual_shif(){
-			$id = $_POST['id_jual'];
-			$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-			CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-			j.total_harga,ps.jumlah_stok
-			FROM `tx_jual` as j
-			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-			where j.id_jual = $id";
-			$data = $this->db->query($sql);
+		$id = $_POST['id_jual'];
+		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.total_harga,ps.jumlah_stok
+		FROM `tx_jual` as j
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		where j.id_jual = $id";
+		$data = $this->db->query($sql);
 
-			if($data->num_rows()>0){
-				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
-			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
-			}
+		if($data->num_rows()>0){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
 		}
+	}
 
 	public function export_data_penjualan_shif(){
 		$spreadsheet = new Spreadsheet();
@@ -1088,4 +1089,212 @@ class Penjualan extends CI_Controller {
 			}
 		}
 	}
+
+
+	// Return Penjualan
+	Public function data_penjualan_retur(){
+		$var['content'] = 'view-data_penjualan_retur';
+		$var['js'] = 'js-data_penjualan_retur';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_data_penjualan_retur(){
+		// Read Value
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+		$sql = "SELECT DATE_FORMAT(NOW(),'%Y-%m-%d') as tgl_hari_ini,(CURDATE() + INTERVAL -1 DAY) as tgl_kemarin,(CURDATE() + INTERVAL +1 DAY) as tgl_besuk";
+		$tgl = $this->db->query($sql)->row();
+
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
+			OR j.no_nota like '%" . $searchValue . "%'
+			OR s.nama_satuan like '%" . $searchValue . "%'
+			) ";
+		}
+
+		$where .= $searchQuery;
+		
+		$user = $this->session->userdata('id_user');
+		$shif = $this->session->userdata('id_shif');
+		$sql_shif ="SELECT DATE_FORMAT(tgl_masuk,'%Y-%m-%d') as tgl_masuk
+					FROM `tx_log_shif`
+					WHERE `close` = 0 and id_user = $user
+					LIMIT 1";
+		$shif_log = $this->db->query($sql_shif)->row();
+		$shif_dt = $this->db->select('DATE_ADD(jam_pulang, INTERVAL 1 HOUR) as jam_pulang,jam_masuk')->from('tm_shif')->where('id_shif',$shif)->get()->row();
+		// echo $this->db->last_query();
+		$str_tgl1 ="";
+		$str_tgl2 ="";
+		$jam1 = "";
+		$jam2 = "";
+		// var_dump($shif);
+		if($shif !== "3"){
+			$jam1 = $shif_dt->jam_masuk;
+			$jam2 = $shif_dt->jam_pulang;
+			$str_tgl1 = $tgl->tgl_hari_ini;
+			$str_tgl2 = $tgl->tgl_hari_ini;
+			echo "1";
+		}else{
+			if($shif_log == $tgl->tgl_hari_ini){
+				$jam1 = $shif_dt->jam_masuk;
+				$jam2 = $shif_dt->jam_pulang;
+				$str_tgl1 = $tgl->tgl_hari_ini;
+				$str_tgl2 = $tgl->tgl_besuk;
+			}else{
+				$jam1 = $shif_dt->jam_masuk;
+				$jam2 = $shif_dt->jam_pulang;
+				$str_tgl1 = $tgl->tgl_kemarin;
+				$str_tgl2 = $tgl->tgl_hari_ini;
+			}
+		}
+
+
+		$tgl1 = $str_tgl1.' '.$jam1;
+		$tgl2 = $str_tgl2.' '.$jam2;			
+		$where .= " AND j.insert_by = $user AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_jual` as j
+		where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+
+		// Fetch Records
+		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.total_harga,ps.jumlah_stok,j.no_nota
+		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where
+		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+		// echo $this->db->last_query();
+			// Response
+			$output = array(
+				"draw" => intval($draw),
+				"iTotalRecords" => $totalRecords,
+				"iTotalDisplayRecords" => $totalRecordsFilter,
+				"aaData" => $data
+			);
+			echo json_encode($output);
+	}
+
+	
+	public function get_detail_data_jual_retur(){
+		$id = $_POST['id_jual'];
+		$sql = "SELECT j.id_produk,j.no_nota,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.total_harga,ps.jumlah_stok,ph.harga_jual,ps.id_stok,ps.id_gudang,j.id_satuan
+		FROM `tx_jual` as j
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		LEFT JOIN tx_produk_harga as ph ON j.id_produk = ph.id_produk AND j.id_jenis_harga = ph.id_jenis_harga
+		where j.id_jual = $id";
+		$data = $this->db->query($sql);
+
+		if($data->num_rows()>0){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
+		}
+	}
+
+	public function save_retur(){
+		$id_jual = $_POST['id_jual'];
+		$id_stok = $_POST['id_stok'];
+		$jumlah = $_POST['jumlah_produk'];
+		$jumlah_p = $_POST['jumlah_produk_p'];
+		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		if($id_jual !==""){
+			$data_up_j = array();
+			$jum = (int)$_POST['jumlah_produk_p'] - (int)$jumlah ;
+			$harga_tot = $jum * $_POST['harga_jual'];
+			$data_up_jual1 = array(
+									'jumlah_produk'=>$jum,
+									'update_by' =>$id,
+									'update_date'=>$datetime->time,
+									'total_harga'=> $harga_tot
+								); 
+			$data_up_jual2 = array(
+								'jumlah_produk'=>$jum,
+								'update_by' =>$id,
+								'update_date'=>$datetime->time,
+								'is_selesai'=>0,
+								'total_harga'=> $harga_tot
+							); 
+			if($jum > 0 ){
+				$data_up_j = $data_up_jual1;
+			}else{
+				$data_up_j = $data_up_jual2;
+			}
+
+			$up_jual = $this->db->where('id_jual',$id_jual)->update('tx_jual',$data_up_j);
+
+			if($up_jual){
+				$sql_st = "SELECT * FROM `tx_produk_stok` WHERE id_stok = $id_stok";
+				$data_st = $this->db->query($sql_st)->row();
+				$jumlah_st = (int)$jumlah + (int)$data_st->jumlah_stok;
+				$data_up_st = array(
+					'jumlah_stok'=>$jumlah_st,
+					'update_by' =>$id,
+					'update_date'=>$datetime->time
+				); 
+				$up_stok = $this->db->where('id_stok',$id_stok )->update('tx_produk_stok',$data_up_st);
+				if($up_stok){
+					$data_stok_detail = array(
+						'jumlah_stok'=>$jum,
+						'update_by' =>$id,
+						'insert_date'=>$datetime->time,
+						'id_status_stok'=>7,
+						'id_satuan' => $_POST['id_satuan'],
+						'id_gudang' => $_POST['id_gudang'],
+						'id_produk' => $_POST['id_produk']
+					); 
+
+					$insert = $this->db->insert('tx_produk_stok_detail',$data_stok_detail);
+					if($insert){
+						echo json_encode(array('status'=> 1,'msg'=>'Success Retur Produk'));
+					}else{
+						echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3475'));
+					}
+
+				}else{
+					echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3476'));
+				}
+			}else{
+				echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3477'));
+			}
+		}else{
+			echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3478'));
+		}
+	}
+	
+	 
+	// Return Penjualan
 }
