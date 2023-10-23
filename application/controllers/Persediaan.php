@@ -782,6 +782,155 @@ class Persediaan extends CI_Controller {
 
 	}
 
+	// startr Riwayat SO
+
+	public function riwayat_stok_opname(){
+		$var['content'] = 'view-detail_stok_opname';
+		$var['js'] = 'js-detail_riwayat_stok_opname';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_riwayat_stok_opname(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		$jual ='';
+		$rak ='';
+		$where = " sd.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'		
+								 OR sd.catatan like '%" . $searchValue . "%'
+								  OR u.nama like '%" . $searchValue . "%'				
+			) ";
+		}
+
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+	
+		$where .=  $searchQuery ;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM tx_produk_stok_opname_detail
+		where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_produk_stok_opname_detail` as sd
+		LEFT JOIN tx_produk_stok as ps ON sd.id_stok = ps.id_stok
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_user as u ON sd.insert_by = u.id_user
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT sd.id_stok_opname_detail,p.nama_produk,p.sku_kode_produk,ps.jumlah_stok,sd.stok_fisik,sd.penyesuaian,sd.catatan,sd.verifikasi,u.nama,sd.tgl_so
+		FROM `tx_produk_stok_opname_detail` as sd
+		LEFT JOIN tx_produk_stok as ps ON sd.id_stok = ps.id_stok
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_user as u ON sd.insert_by = u.id_user
+		WHERE $where
+		order by sd.id_stok_opname_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
+	public function export_data_riwayat_so(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+     
+        $sheet->setCellValue('A1', "No");
+        $sheet->setCellValue('B1', "Kode");
+        $sheet->setCellValue('C1', "Nama Produk");
+		$sheet->setCellValue('D1', "Tgl. SO");
+        $sheet->setCellValue('E1', "Stok sistem");
+        $sheet->setCellValue('F1', "Stok Fisik");
+		$sheet->setCellValue('G1', "Penyesuaian");
+		$sheet->setCellValue('H1', "Catatan");
+		$sheet->setCellValue('I1', "Verifikasi");
+		$sheet->setCellValue('J1', "User");
+
+		$where = " sd.is_delete = 0";
+
+		$searchValue = $_GET['text'];
+		if ($searchValue != '') {
+			$where .= " AND (p.sku_kode_produk like '%" . $searchValue . "%'
+							OR p.nama_produk like '%" . $searchValue . "%'
+							OR sd.catatan like '%" . $searchValue . "%'
+							OR u.nama like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= "AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+
+		$sql ="SELECT sd.id_stok_opname_detail,p.nama_produk,p.sku_kode_produk,ps.jumlah_stok,sd.stok_fisik,
+		sd.penyesuaian,sd.catatan,sd.verifikasi,u.nama,sd.tgl_so
+		FROM `tx_produk_stok_opname_detail` as sd
+		LEFT JOIN tx_produk_stok as ps ON sd.id_stok = ps.id_stok
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_user as u ON sd.insert_by = u.id_user
+		WHERE $where";
+
+		$data_jual = $this->db->query($sql)->result_array();
+		echo $this->db->last_query();
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 3;
+        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+          $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['tgl_so']);
+          $sheet->setCellValue('E'.$numrow, $data['jumlah_stok']);
+		  $sheet->setCellValue('F'.$numrow, $data['stok_fisik']);
+		  $sheet->setCellValue('G'.$numrow, $data['penyesuaian']);
+		  $sheet->setCellValue('H'.$numrow, $data['catatan']);
+		  $sheet->setCellValue('I'.$numrow, $data['verifikasi']);
+		  $sheet->setCellValue('J'.$numrow, $data['nama']);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++;
+        }
+        $writer = new Xlsx($spreadsheet);
+		$time = $this->db->select('now() as wkt')->get()->row();
+        
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Riwayat_SO'.$time->wkt.'.xls');
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+	}
+
 	
 
 }
