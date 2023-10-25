@@ -305,6 +305,18 @@
                                 <p> Laporan Penjualan Tertolak</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_modal'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Modal</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_margin'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Margin</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <!-- <li class="nav-item has-treeview">

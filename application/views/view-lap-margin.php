@@ -40,8 +40,11 @@
                         <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
+                    <div class="col-md-2">
+                        <h4 id="total_pejualan" style="font-weight:bold">Total Margin :</h4>
+                    </div>
                     <div class="col-md-3">
-                        <!-- <h4 id="total_pejualan" style="font-weight:bold"></h4> -->
+                        <h4 id="total_nominal" style="font-weight:bold"></h4>
                     </div>
                 </div>
             </div>

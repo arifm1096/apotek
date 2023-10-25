@@ -556,8 +556,8 @@ class Laporan extends CI_Controller {
 		$columnIndex = $_POST['order'][0]['column']; // Column index
 		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-		$searchValue1 = $_POST['search']['value'];
-		$searchValue = $_POST['text'];
+		$searchValue = $_POST['search']['value'];
+		// $searchValue = $_POST['text'];
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND p.is_delete = 0 ";
 	
 		// Search
@@ -569,12 +569,12 @@ class Laporan extends CI_Controller {
 			) ";
 		}
 
-		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
 			$tgl1 = $_POST['tgl1'];
 			$tgl2 = $_POST['tgl2'];
 			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}
-	
+		
 		$where .=  $searchQuery;
 	
 		// Total number records without filtering
@@ -611,6 +611,14 @@ class Laporan extends CI_Controller {
 		GROUP BY p.id_produk
 		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
+
+		$sql_tot = "SELECT 
+		sum(j.harga_jual) - (p.harga_beli * sum(j.jumlah_produk)) as tot_margin 
+		FROM `tx_jual` as j 
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where";
+
+		$data_tot = $this->db->query($sql_tot)->row();
 		
 	
 		// Response
@@ -618,9 +626,79 @@ class Laporan extends CI_Controller {
 			"draw" => intval($draw),
 			"iTotalRecords" => $totalRecords,
 			"iTotalDisplayRecords" => $totalRecordsFilter,
-			"aaData" => $data
+			"aaData" => $data,
+			"total_nominal" => "Rp. ".number_format($data_tot->tot_margin,0,',','.'),
 		); 
 		echo json_encode($output);
+	}
+
+	public function export_excel_margin(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
+		$sheet->setCellValue('A2', "Total Modal");
+        $sheet->setCellValue('A3', "No");
+        $sheet->setCellValue('B3', "SKU");
+        $sheet->setCellValue('C3', "Nama Produk");
+        $sheet->setCellValue('D3', "Harga Beli");
+		$sheet->setCellValue('E3', "Total Terjual");
+		$sheet->setCellValue('F3', "Total Harga Beli");
+		$sheet->setCellValue('G3', "Total Harga Jual");
+		$sheet->setCellValue('H3', "Margin");
+
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND p.is_delete = 0 ";
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT j.id_jual,p.sku_kode_produk,p.nama_produk,
+		p.harga_beli,
+		sum(j.jumlah_produk) as tot_produk_jual,
+		(p.harga_beli * sum(j.jumlah_produk)) as tot_harga_beli,
+		sum(j.harga_jual) as tot_harga_jual,
+		(sum(j.harga_jual) - p.harga_beli * sum(j.jumlah_produk)) as margin
+		FROM `tx_jual` as j
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_jual ";
+		$data_res = $this->db->query($sql)->result_array();
+
+		$sql_tot = "SELECT 
+		sum(j.harga_jual) - (p.harga_beli * sum(j.jumlah_produk)) as tot_margin 
+		FROM `tx_jual` as j 
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where";
+
+		$data_tot = $this->db->query($sql_tot)->row();
+
+		$sheet->setCellValue('B2', $data_tot->tot_margin);
+		
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 4;
+        foreach($data_res as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+		  $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['harga_beli']);
+          $sheet->setCellValue('E'.$numrow, $data['tot_produk_jual']);
+		  $sheet->setCellValue('F'.$numrow, $data['tot_harga_beli']);
+		  $sheet->setCellValue('G'.$numrow, $data['tot_harga_jual']);
+		  $sheet->setCellValue('H'.$numrow, $data['margin']);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $tgl = date('Y-m-d_H-i');
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Laporan_Margin_'.$tgl.'.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
 	}
 
 }

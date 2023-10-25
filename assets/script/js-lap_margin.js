@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	// filter_data_penjualan();
-	load_penjualan((text = ""), (tgl1 = ""), (tgl2 = ""));
+	// load_margin((text = ""), (tgl1 = ""), (tgl2 = ""));
 	$("#loading").hide();
 });
 
@@ -13,12 +13,12 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function load_penjualan(text, tgl1, tgl2) {
+function load_margin(tgl1, tgl2) {
 	$("#tbl_margin").DataTable({
 		ajax: {
 			url: URL + "laporan/load_margin",
 			type: "POST",
-			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
+			data: { tgl1: tgl1, tgl2: tgl2 },
 		},
 		processing: true,
 		serverSide: true,
@@ -50,38 +50,41 @@ function load_penjualan(text, tgl1, tgl2) {
 			},
 			{ data: "margin", render: $.fn.dataTable.render.number(".", ".", 0) },
 		],
+		drawCallback: function (settings) {
+			$("#total_nominal").html(settings.json.total_nominal);
+		},
 	});
 }
 
 function filter_data() {
-	var text = $("#filter_text").val();
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
-	$("#tbl_margin").DataTable().destroy();
-	load_penjualan(text, tgl1, tgl2);
-	load_total_penjualan(text, tgl1, tgl2);
+	if (tgl1 !== "" && tgl2 !== "") {
+		$("#tbl_margin").DataTable().destroy();
+		load_margin(tgl1, tgl2);
+	}
 }
 
 function clear_filter() {
 	$("#tbl_margin").DataTable().destroy();
-	load_penjualan((text = ""), (tgl = ""));
+	load_margin((text = ""), (tgl = ""));
 	$("#filter_text").val("");
 	$("#tanggal").val("");
-	load_total_penjualan(text, tgl1, tgl2);
 }
 
 function export_excel() {
-	var text = $("#filter_text").val();
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
-	window.open(
-		URL +
-			"laporan/export_data_penjualan?tgl1=" +
-			tgl1 +
-			"&tgl2=" +
-			tgl2 +
-			"&text=" +
-			text,
-		"_blank"
-	);
+	if (tgl1 !== "" && tgl2 !== "") {
+		window.open(
+			URL + "laporan/export_excel_margin?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			+"_blank"
+		);
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian !!",
+			text: "Pilih FIlter Terlebih Dahulu",
+		});
+	}
 }
