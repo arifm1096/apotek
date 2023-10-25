@@ -3,13 +3,17 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Laporan Data Modal</h4>
+                <h4>Laporan Modal</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>
 
@@ -19,44 +23,13 @@
         <div class="card">
             <div class="card-header bg-danger">
                 <div class="row">
-                    <div class="col-md-4">
-                        <label>Cari Produk:</label>
+                    <div class="col-md-3">
+                        <h4> Total Modal : </h4>
+                        <h4 id="total_nominal" style="font-weight:bold"></h4>
                     </div>
                     <div class="col-md-3">
-                        <label>Filter Tanggal:</label>
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-
-                        <div class="input-group">
-                            <input type="search" class="form-control form-control" id="filter_text"
-                                placeholder="Masukan Pencarian Anda" oninput="filter_data();">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-default">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control tgl_piker" name="tanggal1" id="tanggal1"
-                            onchange="filter_data();">
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control tgl_piker" name="tanggal2" id="tanggal2"
-                            onchange="filter_data();">
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-default btn-md" onclick="clear_filter();"> <i
-                                class="fa fa-window-close" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="col-md-3">
-                        <!-- <h4 id="total_pejualan" style="font-weight:bold"></h4> -->
+                        <h4> Total Produk : </h4>
+                        <h4 id="total_produk" style="font-weight:bold"></h4>
                     </div>
                 </div>
             </div>
@@ -69,22 +42,18 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>No Nota</th>
                             <th>Nama Produk</th>
-                            <th>Jumlah</th>
-                            <th>Total Penjualan</th>
-                            <!-- <th style="width: 75px; ">Action</th> -->
+                            <th>Harga Beli</th>
+                            <th>Jumlah Stok</th>
+                            <th>Total Beli</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
                     <tfoot>
-                        <th colspan="3">Total</th>
+                        <th colspan="4">Total Modal</th>
                         <th>
-                            <div id="qty_pejualan"></div>
-                        </th>
-                        <th>
-                            <div id="total_pejualan"></div>
+                            <div id="qw"></div>
                         </th>
                     </tfoot>
 
