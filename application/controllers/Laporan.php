@@ -701,4 +701,18 @@ class Laporan extends CI_Controller {
         $writer->save('php://output');
 	}
 
+	public function laporan_beli_langsung(){
+		$sql ="SELECT * 
+				FROM `tx_produk_stok_detail` as psd
+				LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk";
+	}
+
+	public function laporan_beli_rencana(){
+
+	}
+
+	public function laporan_keuagan(){
+		
+	}
+
 }
