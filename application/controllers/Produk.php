@@ -820,4 +820,10 @@ class Produk extends CI_Controller {
 		}
 	}
 
+	public function laporan(){
+		$var['content'] = 'view-produk-lap';
+		$var['js'] = 'js-produk-lap';
+		$this->load->view('view-index',$var);
+	}
+
 }

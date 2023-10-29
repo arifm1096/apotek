@@ -79,6 +79,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?php echo base_url('master/data_dokter'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Doktor</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url('master/data_pelanggan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Pelanggan</p>
@@ -282,7 +288,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('konsinyasi/data_konsinyasi'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('produk/laporan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Master Produk</p>
                             </a>
@@ -315,6 +321,24 @@
                             <a href="<?php echo base_url('laporan/laporan_margin'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Margin</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_beli_langsung'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Pembelian <br>Langsung</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_beli_rencana'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Pembelian <br>Rencana</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_beli_rencana'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Keuangan</p>
                             </a>
                         </li>
                     </ul>

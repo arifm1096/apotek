@@ -702,13 +702,173 @@ class Laporan extends CI_Controller {
 	}
 
 	public function laporan_beli_langsung(){
-		$sql ="SELECT * 
-				FROM `tx_produk_stok_detail` as psd
-				LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk";
+		$var['content'] = 'view-lap-langsung';
+		$var['js'] = 'js-lap_langsung';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_beli_langsung(){
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+		// $searchValue = $_POST['text'];
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+								 OR p.sku_kode_produk like '%" . $searchValue . "%'				
+			) ";
+		}
+
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+		
+		$where .=  $searchQuery;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT COUNT(b.allcount) as allcount
+		FROM(
+		SELECT count(*) as allcount
+		FROM `tx_produk_stok_detail` as j
+		where is_delete = 0
+		GROUP BY id_produk) as b";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT COUNT(b.id_produk) as allcount
+		FROM(
+		SELECT p.id_produk
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+				WHERE $where
+				GROUP BY p.id_produk) as b";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+		
+		// Fetch Records
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_stok) as stok,
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_stok_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+
+		$sql_tot = "SELECT 
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where";
+
+		$data_tot = $this->db->query($sql_tot)->row();
+		
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data,
+			"total_nominal" => "Rp. ".number_format($data_tot->tot_harga_beli,0,',','.'),
+		); 
+		echo json_encode($output);
 	}
 
 	public function laporan_beli_rencana(){
+		$var['content'] = 'view-lap-rencana';
+		$var['js'] = 'js-lap_rencana';
+		$this->load->view('view-index',$var);
+	}
 
+	public function load_beli_rencana(){
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+		// $searchValue = $_POST['text'];
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 AND psd.status_terima = 1 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+								 OR p.sku_kode_produk like '%" . $searchValue . "%'				
+			) ";
+		}
+
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+		
+		$where .=  $searchQuery;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT COUNT(b.allcount) as allcount
+		FROM(
+		SELECT count(*) as allcount
+		FROM `tx_beli_rencana`
+		where is_delete = 0
+		GROUP BY id_produk) as b";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT COUNT(b.id_produk) as allcount
+		FROM(
+		SELECT p.id_produk
+		FROM `tx_beli_rencana` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+				WHERE $where
+				GROUP BY p.id_produk) as b";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+		
+		// Fetch Records
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_produk) as stok,
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_beli_rencana`as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_rencana_beli " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+
+		$sql_tot = "SELECT 
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_beli_rencana` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where";
+
+		$data_tot = $this->db->query($sql_tot)->row();
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data,
+			"total_nominal" => "Rp. ".number_format($data_tot->tot_harga_beli,0,',','.'),
+		); 
+		echo json_encode($output);
 	}
 
 	public function laporan_keuagan(){

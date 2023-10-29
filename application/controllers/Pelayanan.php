@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Penjualan extends CI_Controller {
+class Pelayanan extends CI_Controller {
 
 	/**
 	 * Index Page for this controller.
