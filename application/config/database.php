@@ -80,9 +80,9 @@ $db['default'] = array(
 	'username' => 'root',
 	'password' => '',
 
-	'hostname' => '192.168.71.6',
-	'username' => 'administrator',
-	'password' => '@R0s4l144dm1n',
+	// 'hostname' => '192.168.71.6',
+	// 'username' => 'administrator',
+	// 'password' => '@R0s4l144dm1n',
 	
 	'database' => 'apotek_db_ext',
 	'dbdriver' => 'mysqli',

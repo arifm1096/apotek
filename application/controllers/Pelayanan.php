@@ -316,8 +316,8 @@ class Pelayanan extends CI_Controller {
 					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
 			}
 
-			$up_ex = $this->db->where('id_jual',$id_jual)->update('tx_jual',$res_up);
-			$result = $this->db->select('harga_jual,total_harga')->from('tx_jual')->where('id_jual',$id_jual)->get();
+			$up_ex = $this->db->where('id_resep_detail',$id_resep_detail)->update('tx_resep_detail',$res_up);
+			$result = $this->db->select('harga_jual,total_harga')->from('tx_resep_detail')->where('id_resep_detail',$id_resep_detail)->get();
 			$sub_tot = $this->get_sub_total();
 			if($up_ex){
 				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));

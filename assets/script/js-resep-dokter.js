@@ -191,12 +191,9 @@ function load_kasir() {
 						`);"><i class="fa fa-trash"
                                                 aria-hidden="true"></i></button></td>
 											
-                            </tr> <select class="form-control" id="jenis_harga_` +
-						e.id_jual +
-						`"  onchange="get_nom(` +
-						e.id_jual +
-						`,3,this.value)">
-                                        </select>`;
+                            </tr> <input type="hidden" id="jenis_harga_` +
+						e.id_resep_detail +
+						`"  value="4"t>`;
 					no++;
 				});
 			}
