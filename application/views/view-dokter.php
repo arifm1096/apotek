@@ -29,9 +29,10 @@
                             <th style="width: 10px; text-align: right;">No.</th>
                             <th>Kode dokter</th>
                             <th>Nama dokter</th>
+                            <th>Username</th>
+                            <th>Klinik</th>
                             <th>Alamat</th>
                             <th>No. HP</th>
-                            <th>Status Aktif</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>
@@ -90,7 +91,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Klinik / Rumah sakit</label>
-                                <textarea class="form-control" name="klinik_rs" id="klinik_rs" cols="30" rows="3"></textarea>
+                                <textarea class="form-control" name="klinik_rs" id="klinik_rs" cols="30"
+                                    rows="3"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>No. HP</label>

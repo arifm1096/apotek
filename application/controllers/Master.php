@@ -250,7 +250,7 @@ class Master extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 
 		// Fetch Records
-		$sql = "SELECT kode_dokter,nama_dokter,username,alamat,klinik_rs,no_hp
+		$sql = "SELECT id_dokter,kode_dokter,nama_dokter,username,alamat,klinik_rs,no_hp
 		FROM `tm_dokter`
 		WHERE $where
 		order by id_dokter " . $columnSortOrder . " limit " . $row . "," . $rowperpage;

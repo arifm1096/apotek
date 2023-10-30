@@ -74,8 +74,6 @@ function load_dokter() {
 						row.alamat +
 						"','" +
 						row.no_hp +
-						"','" +
-						row.aktif +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
 						row.id_dokter +
@@ -132,18 +130,18 @@ function edit(
 	p_id_dokter,
 	p_kode_dokter,
 	p_nama_dokter,
+	p_klinik,
+	p_username,
 	p_alamat,
-	p_no_hp,
-	p_aktif
+	p_no_hp
 ) {
-	status_aktif(p_aktif);
-	$("#mediumModalLabel").html("Edit Supplier");
+	$("#mediumModalLabel").html("Edit Dokter");
 	$("#id_dokter").val(p_id_dokter);
 	$("#kode_dokter").val(p_kode_dokter);
 	$("#alamat").val(p_alamat);
+	$("#klinik_rs").val(p_klinik);
 	$("#no_hp").val(p_no_hp);
-	$("#username").val(p_no_hp);
-	$("#klinik_rs").val(p_no_hp);
+	$("#username").val(p_username);
 	$("#nama_dokter").val(p_nama_dokter);
 	$("#modal_input_dokter").modal("show");
 }

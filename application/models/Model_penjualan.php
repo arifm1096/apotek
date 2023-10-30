@@ -50,6 +50,39 @@
 			return $no_ta;
 		}
 
+		public function get_no_resep($id){
+			$sql_max = "SELECT r.kode_resep,r.id_resep,DATE_FORMAT(r.tgl_transaksi,'%Y-%m-%d') as tgl_tran
+					FROM `tx_resep` as r
+					WHERE r.insert_by = $id and is_delete = 0
+					ORDER BY r.id_resep DESC";
+			$data_max = $this->db->query($sql_max);
+			$r_max = $data_max->row();
+			$date = date('Y-m-d');
+			if($data_max->num_rows()>0){
+
+				if($date == $r_max->tgl_tran){
+					$no= (int) substr($r_max->no_nota, 11,11);
+					$urutan = $no + 1;
+				}else{
+					$urutan = 1;
+				}
+				
+			}else{
+				$urutan = 1;
+			}
+
+			$sql_id = "SELECT id_dokter,kode_dokter,nama_dokter,username,alamat,klinik_rs,no_hp
+						FROM `tm_dokter` where id_dokter = $id";
+			$data_id = $this->db->query($sql_id)->row();
+
+			$us = sprintf("%02s", "RE");
+			$wil =  $data_id->kode_dokter;
+			$date = sprintf("%06s", date('dmy'));
+			$no_tx = sprintf("%03s", $urutan);
+			$no_ta = $wil.$us.$date.$no_tx;
+			return $no_ta;
+		}
+
 		public function get_kasir_detail($id){
 			
 			$sql = "SELECT k.no_nota,k.id_kasir,

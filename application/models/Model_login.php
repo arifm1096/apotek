@@ -22,7 +22,25 @@ class Model_login extends CI_Model{
         }
     }
 
-     function list_kasir($username, $password){
+    function check_login_dokter($username, $password){
+        $filed = "count(a.username) as total, 'DOKTER' as hak_akses,
+        a.username as username, a.id_dokter, a.alamat,a.klinik_rs,a.no_hp, a.nama_dokter as nama_user ";
+
+        $data=	$this->db
+                ->select($filed)
+                ->from('tm_dokter as a')
+                ->where('a.is_delete',0)
+                ->where('a.username ='.$username)
+                ->where('a.password',$password)
+                ->get();
+        if($data->num_rows()>0){
+            return $data->row_array();
+        }else{
+            return null;
+        }
+    }
+
+    function list_kasir($username, $password){
         $filed = "count(a.username) as total, h.nama as hak_akses,h.id_hak_akses,
         a.username as username, a.id_user, a.aktif, a.gudang, a.nama as nama_user,s.nama_shif,l.id_shif ";
 

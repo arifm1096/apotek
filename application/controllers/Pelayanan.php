@@ -34,8 +34,17 @@ class Pelayanan extends CI_Controller {
 	}
 
 	public function index(){
-		$var['content'] = 'view-kasir';
-		$var['js'] = 'js-kasir';
+		$id = $this->session->userdata('id_user');
+		$var['pelanggan'] = $this->db->select('*')
+									 ->from('tm_pelanggan')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get()
+									 ->result();
+		$var['nama_dokter'] = $this->session->userdata('nama_user');
+		$var['kode_resep'] = $this->Model_penjualan->get_no_resep($id);
+		$var['content'] = 'view-resep-dokter';
+		$var['js'] = 'js-resep-dokter';
 		$this->load->view('view-index-kasir',$var);
 	}
 
@@ -95,14 +104,14 @@ class Pelayanan extends CI_Controller {
 
 	public function load_data_produk(){
 		$id_user = $this->session->userdata('id_user');
-		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				WHERE j.insert_by = $id_user
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual
-				ORDER BY j.id_jual DESC";
+				GROUP BY j.id_resep_detail
+				ORDER BY j.id_resep_detail DESC";
 		$data = $this->db->query($sql);
 		$sub_tot = $this->get_sub_total();
 		if(!empty($data)){
@@ -162,13 +171,13 @@ class Pelayanan extends CI_Controller {
 						'insert_date' => $datetime->time
 				);
 			$id_user = $this->session->userdata('id_user');
-			$sql_jul ="SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+			$sql_jul ="SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				WHERE j.insert_by = $id_user and p.id_produk = $prod_data->id_produk
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual";
+				GROUP BY j.id_resep_detail";
 			$res_jual = $this->db->query($sql_jul);
 			$data_jual = $res_jual->row();
 			$up_jumlah = 0;
@@ -189,12 +198,12 @@ class Pelayanan extends CI_Controller {
 			if($cek == 1){
 				if(!empty($data)){
 						if($res_jual->num_rows()>0){
-							$update = $this->db->where('id_jual',$data_jual->id_jual)->update('tx_jual',$r_up);
+							$update = $this->db->where('id_resep_detail',$data_jual->id_resep_detail)->update('tx_resep_detail',$r_up);
 							if($update){
 								$ex +=1;
 							}
 						}else{
-							$insert = $this->db->insert('tx_jual',$r_in);
+							$insert = $this->db->insert('tx_resep_detail',$r_in);
 							if($insert){
 								$ex +=1;
 							}
@@ -218,7 +227,7 @@ class Pelayanan extends CI_Controller {
 	}
 
 	public function get_nom_change(){
-		$id_jual = $_POST['id'];
+		$id_resep_detail = $_POST['id'];
 		$id_user = $this->session->userdata('id_user');
 		$date_time = date('Y-m-d H:i:s');
 		$where = "";
@@ -228,7 +237,7 @@ class Pelayanan extends CI_Controller {
 		// satuan
 		// if($_POST['el']== 2){
 			$sat = $_POST['sat'];
-			$sql_cek = "SELECT * FROM `tx_jual` WHERE id_satuan_utama =$sat and id_jual =$id_jual";
+			$sql_cek = "SELECT * FROM `tx_resep_detail` WHERE id_satuan_utama =$sat and id_resep_detail =$id_resep_detail";
 			$cek = $this->db->query($sql_cek);
 			if($cek->num_rows()==0){
 				$where .=" AND d.id_satuan = $sat ";
@@ -243,15 +252,15 @@ class Pelayanan extends CI_Controller {
 			$where .=" AND h.id_jenis_harga = $ejn_har";
 		// }
 		
-		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
 				j.harga_jual,h.harga_jual as jual_ex,d.jumlah_produk_p,d.jumlah_produk as jum_p,j.id_satuan_utama
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
 				LEFT JOIN tx_produk_detail as d ON p.id_produk = d.id_produk
-				WHERE j.id_jual = $id_jual $where
+				WHERE j.id_resep_detail = $id_resep_detail $where
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual";
+				GROUP BY j.id_resep_detail";
 		$get_data = $this->db->query($sql);
 		if($get_data->num_rows()>0){
 			$data = $get_data->row();
@@ -260,10 +269,10 @@ class Pelayanan extends CI_Controller {
 					 'update_date' => $date_time
 					);
 			$p_kali = 0;
-				$sql_sat = "SELECT j.id_jual,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
-							FROM `tx_jual` as j
+				$sql_sat = "SELECT j.id_resep_detail,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
+							FROM `tx_resep_detail` as j
 							LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
-							WHERE j.insert_by = $id_user and j.id_jual = $id_jual 
+							WHERE j.insert_by = $id_user and j.id_resep_detail = $id_resep_detail 
 							AND j.is_delete = 0 AND j.is_selesai = 0";
 				$data_sat = $this->db->query($sql_sat)->row();
 				if($data_sat->jumlah_produk_p==""){
@@ -326,8 +335,8 @@ class Pelayanan extends CI_Controller {
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$user = $this->session->userdata('id_user');
 		if(!empty($id)){
-			$del = $this->db->where('id_jual',$id)
-							->update('tx_jual',array(
+			$del = $this->db->where('id_resep_detail',$id)
+							->update('tx_resep_detail',array(
 								'is_delete'=>1,
 								'delete_by' => $user,
 								'delete_date' => $datetime->time
@@ -388,6 +397,43 @@ class Pelayanan extends CI_Controller {
 						'total' => str_replace(".","",$_POST['tot']),
 						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
 						'kembalian' => $_POST['kembalian'],
+						'id_wilayah'=> $this->session->userdata('gudang'),
+						'id_shif'=> $this->session->userdata('id_shif'),
+						'insert_by' => $id_user,
+						'insert_date' => $datetime->time
+
+					);
+					
+		$this->db->insert('tx_kasir', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+						'id_kasir'=>$insert_id,
+						'no_nota'=>$noTa
+		);
+
+		if(!empty($insert_id)){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',0)
+						   ->where('is_delete',0)
+						   ->update('tx_jual',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
+	}
+
+	public function get_add_resep(){
+		$id_user = $this->session->userdata('id_user');
+		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$data = array(
+						'no_nota' => $noTa,
+						'tgl_transaksi' => $datetime->time,
 						'id_wilayah'=> $this->session->userdata('gudang'),
 						'id_shif'=> $this->session->userdata('id_shif'),
 						'insert_by' => $id_user,

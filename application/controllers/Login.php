@@ -18,12 +18,18 @@ class Login extends CI_Controller
     }
 
     public function proses_login() {
-        $data =  $_POST ;
+            $data =  $this->input->post() ;
             $encrypt_password = md5(sha1($data['password']));
             $sub_ep = substr($encrypt_password,9,20);
             $user = $this->db->escape($data['username']);
-            $check_login = $this->model_login->check_login($user,$sub_ep);
             $sql_time = $this->db->select('now() AS time ')->get()->row();
+
+            if($data['panel'] !== "4"){
+                 $check_login = $this->model_login->check_login($user,$sub_ep);
+            }else{
+                $encrypt_ = md5(sha1($data['password']));
+                $check_login = $this->model_login->check_login_dokter($user,$encrypt_);
+            }
             // echo $this->db->last_query();
             if($check_login['total'] > 0) {
                 if($data['panel']==3){
@@ -50,6 +56,16 @@ class Login extends CI_Controller
                         );
                     }
                      
+                }else if($data['panel']==4){
+                    $data_session = array(
+                        'id_user' => $check_login['id_dokter'],
+                        'hak_akses' => $check_login['hak_akses'],
+                        'username' => $check_login['username'],
+                        'nama_user' => $check_login['nama_user'],
+                        'alamat' => $check_login['alamat'],
+                        'klinik_rs' => $check_login['klinik_rs'],
+                        'status' => "login"
+                    );
                 }else{
                     $data_session = array(
                     'id_user' => $check_login['id_user'],
@@ -64,9 +80,8 @@ class Login extends CI_Controller
                 }
                 
 
-            $this->session->set_userdata($data_session);
-
-            echo json_encode(array('status'=>1,'message'=>'Data Ditemukan'));
+                $this->session->set_userdata($data_session);
+                echo json_encode(array('status'=>1,'message'=>'Data Ditemukan'));
             
             } else {
                 echo json_encode(array('status'=>9,'message'=>'Data Tidak Ditemukan'));

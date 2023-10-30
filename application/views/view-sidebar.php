@@ -257,6 +257,40 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
+                        <i class="fas fa-credit-card"></i></i>
+                        <p>Pelayanan
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('pelayanan'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Penerimaan Resep Dokter</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('pembelian/data_pesanan'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Penebusan Resep</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('pembelian/data_retur'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Penggunaan Reacian</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('pembelian/data_retur'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Detail Resep</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
                         <i class="fas fa-paper-plane"></i></i>
                         <p>
                             Konsiyasi
