@@ -4,50 +4,19 @@
             <div class="card-header">
                 <h5>Resep Dokter</h5>
                 <div class="row" style="vertical-align: text-bottom;">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Nama Dokter</label>
-                            <input type="hidden" name="id_dokter" id="id_dokter" value="<?php echo $id_dokter;?>">
-                            <input type="hidden" name="id_resep" id="id_resep">
-                            <input type="text" id="dokter" name="dokter" class="form-control"
-                                value="<?php echo $nama_dokter;?>" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Kode Resep</label>
-                            <input type="text" id="kode_resep" name="kode_resep" class="form-control"
-                                value="<?php echo $kode_resep;?>" readonly>
+                            <input type="text" id="kode_resep" name="kode_resep" class="form-control">
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Nama Pelanggan</label>
-                            <select name="id_pelanggan" id="id_pelanggan" class="form-control select2" required>
-                                <option value="0"> -- Pilih Pelanggan --</option>
-                                <?php if(!empty($pelanggan)){
-                                    foreach ($pelanggan as $key => $val) {
-                                ?>
-                                <option value="<?php echo $val->id_pelanggan;?>">
-                                    <?php echo $val->kode_pelanggan.' - '. $val->nama_pelanggan;?>
-                                </option>
-                                <?php }}?>
-                            </select>
+                    <div class="col-md-2">
+                        <div style="margin-top : 30px;">
+                            <button type="button" class="btn btn-md bg-info" onclick="add_resep();"
+                                data-toggle="tooltip" data-placement="top" title="Simpan Data"><i class="fa fa-search"
+                                    aria-hidden="true"></i>
+                                Cari</button>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-info"
-                            onclick="add_resep();" data-toggle="tooltip" data-placement="top" title="Simpan Data"><i
-                                class="fa fa-save" aria-hidden="true"></i>
-                            Simpan</button>
-                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-warning"
-                            onclick="nota_resep();" data-toggle="tooltip" data-placement="top"
-                            title="Cetak Nota Resep"><i class="fa fa-print" aria-hidden="true"></i>
-                            Nota Resep</button>
-                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-success"
-                            onclick="add_data();" data-toggle="tooltip" data-placement="top" title="Cetak Nota Resep"><i
-                                class="fa fa-plus" aria-hidden="true"></i>
-                            Data Baru</button>
                     </div>
                 </div>
             </div>
@@ -99,14 +68,61 @@
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Produk</th>
                                     <th>Kuantitas </th>
-                                    <th style="width: 250px; ">Satuan</th>
-                                    <th style="width: 20px; ">Action</th>
+                                    <th style="width: 125px; ">Satuan</th>
+                                    <th style="width: 195px; ">Opsi Harga</th>
+                                    <th style="width: 150px; ">Harga Jual</th>
+                                    <th style="width: 150px; ">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="list_kasir">
 
                             </tbody>
                         </table>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-5 col-form-label">Sub Total</label>
+                            <div class="col-sm-7">
+                                <input type="hidden" name="id_kasir" id="id_kasir">
+                                <input type="hidden" name="str_sub_tot" id="str_sub_tot">
+                                <input type="text" class="form-control" name="sub_tot" id="sub_tot" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Service (Rp.)</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
+                                    name="service" id="service">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Embalase (Rp.)</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
+                                    name="embalase" id="embalase">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Lain (Rp.)</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
+                                    name="lain" id="lain">
+                                <input type="hidden" name="total" id="total">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                            <h1><b>Total : </b></h1>
+                            <h1 id="str_tot"></h1>
+                        </div>
+                        <div class="form-group row">
+                            <button class="btn btn-block btn-success" type="button" onclick="bayar();">
+                                <i class="fas fa-shopping-bag"></i> Bayar Pembelian (B)
+                            </button>
+                            <!-- <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
+                                <i class="fa fa-print"></i> Cetak Struk (F9)
+                            </button> -->
+                        </div>
                     </div>
                 </div>
 
