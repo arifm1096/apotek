@@ -1,5 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-	class Model_penjualan extends CI_Model {
+	class Model_pelayanan extends CI_Model {
 
 		public function get_user($id){
 			$sql = "SELECT u.nama as nama_user, w.nama_wilayah, w.no_hp, w.alamat,w.nama_print
@@ -50,6 +50,38 @@
 			return $no_ta;
 		}
 
+		public function get_no_resep($id){
+			$sql_max = "SELECT r.kode_resep,r.id_resep,DATE_FORMAT(r.insert_date,'%Y-%m-%d') as tgl_tran
+					FROM `tx_resep` as r
+					WHERE r.insert_by = $id and is_delete = 0
+					ORDER BY r.id_resep DESC";
+			$data_max = $this->db->query($sql_max);
+			$r_max = $data_max->row();
+			$date = date('Y-m-d');
+			if($data_max->num_rows()>0){
+
+				if($date == $r_max->tgl_tran){
+					$no= (int) substr($r_max->kode_resep, 11,11);
+					$urutan = $no + 1;
+				}else{
+					$urutan = 1;
+				}
+				
+			}else{
+				$urutan = 1;
+			}
+
+			$sql_id = "SELECT id_dokter,kode_dokter,nama_dokter,username,alamat,klinik_rs,no_hp
+						FROM `tm_dokter` where id_dokter = $id";
+			$data_id = $this->db->query($sql_id)->row();
+			$us = sprintf("%02s", "RE");
+			$dok =  $data_id->kode_dokter;
+			$date = sprintf("%06s", date('dmy'));
+			$no_tx = sprintf("%03s", $urutan);
+			$no_ta = $us.$dok.$date.$no_tx;
+			return $no_ta;
+		}
+
 		public function get_kasir_detail($id){
 			
 			$sql = "SELECT k.no_nota,k.id_kasir,
@@ -76,6 +108,31 @@
 
 			if($data->num_rows()>0){
 				return $data->result();
+			}else{
+				return null;
+			}
+		}
+
+		public function get_dokter_detail($id){
+			$sql = "SELECT * FROM `tm_dokter` WHERE is_delete = 0 AND id_dokter = $id";
+			$data = $this->db->query($sql);
+
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			}
+		}
+
+		public function get_resep($id){
+			$sql = "SELECT r.kode_resep,p.nama_pelanggan,r.insert_date
+					FROM `tx_resep` as r
+					LEFT JOIN tm_dokter as d ON r.id_dokter = d.id_dokter
+					LEFT JOIN tm_pelanggan as p ON r.id_pelanggan = p.id_pelanggan
+					WHERE r.is_delete = 0 AND r.id_resep =  $id";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->row();
 			}else{
 				return null;
 			}

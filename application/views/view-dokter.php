@@ -66,9 +66,9 @@
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                             <input type="hidden" name="id_dokter" id="id_dokter">
                             <div class="form-group">
-                                <label>Kode dokter</label>
-                                <input type="text" id="kode_dokter" name="kode_dokter" class="form-control"
-                                    placeholder="Inputkan dokter">
+                                <label>Kode dokter </label> (Max 3 Karakter)
+                                <input type="text" id="kode_dokter" name="kode_dokter" maxlength="3"
+                                    class="form-control" placeholder="Inputkan dokter">
                             </div>
                             <div class="form-group">
                                 <label>Nama dokter</label>
@@ -93,6 +93,11 @@
                                 <label>Klinik / Rumah sakit</label>
                                 <textarea class="form-control" name="klinik_rs" id="klinik_rs" cols="30"
                                     rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Printer</label>
+                                <input type="text" id="nama_print" name="nama_print" class="form-control"
+                                    placeholder="Inputkan Nama dokter">
                             </div>
                             <div class="form-group">
                                 <label>No. HP</label>

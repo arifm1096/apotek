@@ -348,43 +348,29 @@ function selisih() {
 	$("#str_kembalian").val(rupiah(kem));
 }
 
-function add_kasir() {
-	var sub = $("#str_sub_tot").val();
-	var ser = $("#service").val();
-	var emb = $("#embalase").val();
-	var lai = $("#lain").val();
-	var kembalian = $("#kembalian").val();
-	var tot = $("#total").val();
-	var jumlah_uang = $("#jumlah_uang").val();
-	$("#save-button").hide();
-	$("#send-button").show();
+function add_resep() {
+	var id_dokter = $("#id_dokter").val();
+	var id_pelanggan = $("#id_pelanggan").val();
+	var kode_resep = $("#kode_resep").val();
+	$("#id_resep").val("");
 	$.ajax({
-		url: URL + "pelayanan/get_add_kasir",
+		url: URL + "pelayanan/get_add_resep",
 		type: "POST",
 		data: {
-			sub: sub,
-			ser: ser,
-			emb: emb,
-			lai: lai,
-			tot: tot,
-			kembalian: kembalian,
-			jumlah_uang: jumlah_uang,
+			id_dokter: id_dokter,
+			id_pelanggan: id_pelanggan,
+			kode_resep: kode_resep,
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
-
 			if (res.status == 1) {
-				$("#id_kasir").val(res.id);
-				$("#save-button").show();
-				$("#send-button").hide();
+				$("#id_resep").val(res.id);
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",
 					html: res.msg,
 				});
 			} else {
-				$("#save-button").show();
-				$("#send-button").hide();
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
 					icon: "error",
@@ -395,19 +381,19 @@ function add_kasir() {
 	});
 }
 
-function cetak_nota() {
-	var id_kasir = $("#id_kasir").val();
+function nota_resep() {
+	var id_resep = $("#id_resep").val();
 	$.ajax({
-		url: URL + "pelayanan/cetak_struk",
+		url: URL + "pelayanan/cetak_struk_resep",
 		type: "POST",
-		data: { id_kasir: id_kasir },
+		data: { id_resep: id_resep },
 		success: function (data) {
 			console.log(data);
 		},
 	});
 }
 
-function close_kasir() {
+function add_data() {
 	$.ajax({
 		url: URL + "pelayanan/get_selesai",
 		type: "POST",
@@ -415,17 +401,12 @@ function close_kasir() {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status) {
-				$("#id_kasir").val("");
-				$("#str_sub_tot").val("");
-				$("#kembalian").val("");
-				$("#total").val("");
-				$("#modal_bayar_kasir").modal("hide");
-				load_kasir();
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",
 					html: res.msg,
 				});
+				window.location.reload();
 			} else {
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
