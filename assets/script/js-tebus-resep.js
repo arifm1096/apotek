@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	$(".navbar-collapse").collapse("hide");
-	load_kasir();
 	$(".uang").mask("000.000.000", { reverse: true });
+	load_select_tebus();
 });
 
 $("#produk_barcode").on("input", function () {
@@ -88,7 +88,7 @@ $("#add_produk").submit(function (e) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				load_kasir();
+				load_tebus_resep();
 				$("#produk_barcode").val("");
 			} else {
 				Swal.fire({
@@ -142,23 +142,47 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 	});
 }
 
-function load_kasir() {
+function load_select_tebus() {
+	var html_status = "<option value='pil'>-- Pilih Status--</option>";
+	$.ajax({
+		url: URL + "pelayanan/get_status_tebus",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.data.forEach((e) => {
+					html_status +=
+						'<option value="' +
+						e.id_status_resep +
+						'" ' +
+						">" +
+						e.nama_status_resep +
+						"</option>";
+				});
+			}
+			$("#status").html(html_status);
+		},
+	});
+}
+
+function load_tebus_resep(kode_resep) {
 	var html = "";
 	var sub_tot = 0;
 	$.ajax({
-		url: URL + "penjualan/load_data_produk",
+		url: URL + "pelayanan/load_data_resep",
 		type: "POST",
-		data: {},
+		data: { kode_resep: kode_resep },
 		success: function (data) {
 			var res = JSON.parse(data);
 			var no = 1;
 			if (res.status == 1) {
 				sub_tot += res.sub_tot;
 				res.result.forEach((e) => {
-					load_select(e.id_jual, e.id_jenis_harga, e.id_satuan);
+					load_select(e.id_resep_detail, e.id_jenis_harga, e.id_satuan);
 					html +=
 						`<tr id="row_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`">
                                     <td style="width: 10px; text-align: right;">` +
 						no +
@@ -168,7 +192,7 @@ function load_kasir() {
 						`
                                         <button type="button" class="btn btn-danger btn-xs float-right"
                                             onclick="hapus_list(` +
-						e.id_jual +
+						e.id_resep_detail +
 						`);"><i class="fa fa-trash"
                                                 aria-hidden="true"></i></button>
                                     </td>
@@ -176,23 +200,23 @@ function load_kasir() {
                                             name="jumlah_produk" value="` +
 						e.qty +
 						`" id="jumlah_produk_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`" onchange="get_nom(` +
-						e.id_jual +
+						e.id_resep_detail +
 						`,1,this.value)"> </td>
                                     <td>
                                         <select class="form-control" id="satuan_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`"  onchange="get_nom(` +
-						e.id_jual +
+						e.id_resep_detail +
 						`,2,this.value)">
                                         </select>
                                     </td>
                                     <td>
                                         <select class="form-control" id="jenis_harga_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`"  onchange="get_nom(` +
-						e.id_jual +
+						e.id_resep_detail +
 						`,3,this.value)">
                                         </select>
                                     </td>
@@ -200,14 +224,14 @@ function load_kasir() {
                                         <input type="text" class="form-control" name="harga" value="` +
 						rupiah(e.harga_jual) +
 						`" id="harga_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`">
                                     </td>
                                     <td style="width: 130px; ">
                                         <input type="text" class="form-control" name="total" value="` +
 						rupiah(e.total_harga) +
 						`" id="total_` +
-						e.id_jual +
+						e.id_resep_detail +
 						`" readonly>
                                     </td>
                             </tr>`;
@@ -222,6 +246,19 @@ function load_kasir() {
 	});
 }
 
+function cari_kode() {
+	var kode_resep = $("#kode_resep").val();
+	if (kode_resep !== "") {
+		load_tebus_resep(kode_resep);
+	} else {
+		Swal.fire({
+			icon: "warning",
+			text: "Isikan Kode Resep Terlebih Dahulu",
+			title: "Perhatian",
+		});
+	}
+}
+
 function hapus_list(id) {
 	$.ajax({
 		url: URL + "penjualan/hapus_produk_kasir",
@@ -230,7 +267,7 @@ function hapus_list(id) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				load_kasir();
+				load_tebus_resep();
 				total();
 				Swal.fire({
 					icon: "success",
@@ -261,7 +298,7 @@ function clear_list(id) {
 					title: "Berhasil",
 					text: res.msg,
 				});
-				load_kasir();
+				load_tebus_resep();
 				total();
 			} else {
 				Swal.fire({
@@ -290,7 +327,7 @@ function get_nom(id, el, val) {
 				$("#harga_" + id).val(rupiah(res.result.harga_jual, "Rp. "));
 				total_harga();
 			} else {
-				load_kasir();
+				load_tebus_resep();
 				Swal.fire({
 					icon: "error",
 					title: "Perhatian !!!",
@@ -343,8 +380,6 @@ function total_harga() {
 		var for_tot = rupiah(tot);
 	}
 
-	console.log(tot);
-
 	$("#str_tot").html(for_tot);
 	$("#total").val(tot);
 	$("#total_pem").html(for_tot);
@@ -373,43 +408,53 @@ function add_kasir() {
 	var kembalian = $("#kembalian").val();
 	var tot = $("#total").val();
 	var jumlah_uang = $("#jumlah_uang").val();
+	var status = $("#status").val();
 	$("#save-button").hide();
 	$("#send-button").show();
-	$.ajax({
-		url: URL + "penjualan/get_add_kasir",
-		type: "POST",
-		data: {
-			sub: sub,
-			ser: ser,
-			emb: emb,
-			lai: lai,
-			tot: tot,
-			kembalian: kembalian,
-			jumlah_uang: jumlah_uang,
-		},
-		success: function (data) {
-			var res = JSON.parse(data);
+	if (status !== "pil") {
+		$.ajax({
+			url: URL + "pelayanan/get_add_tebus_resep",
+			type: "POST",
+			data: {
+				status: status,
+				sub: sub,
+				ser: ser,
+				emb: emb,
+				lai: lai,
+				tot: tot,
+				kembalian: kembalian,
+				jumlah_uang: jumlah_uang,
+			},
+			success: function (data) {
+				var res = JSON.parse(data);
 
-			if (res.status == 1) {
-				$("#id_kasir").val(res.id);
-				$("#save-button").show();
-				$("#send-button").hide();
-				Swal.fire({
-					title: "<strong><u>Data Tersimpan</u></strong>",
-					icon: "success",
-					html: res.msg,
-				});
-			} else {
-				$("#save-button").show();
-				$("#send-button").hide();
-				Swal.fire({
-					title: "<strong><u>Perhatian !!/u></strong>",
-					icon: "error",
-					html: res.msg,
-				});
-			}
-		},
-	});
+				if (res.status == 1) {
+					$("#id_kasir").val(res.id);
+					$("#save-button").show();
+					$("#send-button").hide();
+					Swal.fire({
+						title: "<strong><u>Data Tersimpan</u></strong>",
+						icon: "success",
+						html: res.msg,
+					});
+				} else {
+					$("#save-button").show();
+					$("#send-button").hide();
+					Swal.fire({
+						title: "<strong><u>Perhatian !!/u></strong>",
+						icon: "error",
+						html: res.msg,
+					});
+				}
+			},
+		});
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian",
+			text: "Pilih Status Terlebih Dahulu !!",
+		});
+	}
 }
 
 function cetak_nota() {
@@ -437,7 +482,7 @@ function close_kasir() {
 				$("#kembalian").val("");
 				$("#total").val("");
 				$("#modal_bayar_kasir").modal("hide");
-				load_kasir();
+				load_tebus_resep();
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",

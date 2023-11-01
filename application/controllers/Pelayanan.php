@@ -602,6 +602,109 @@ class Pelayanan extends CI_Controller {
 		$var['js'] = 'js-tebus-resep';
 		$this->load->view('view-index-kasir',$var);
 	}
+
+	public function load_data_resep(){
+		$id_user = $this->session->userdata('id_user');
+		$kode_resep = $this->input->post('kode_resep');
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+				SUM(j.total_harga) as total_harga
+				FROM `tx_resep_detail` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				LEFT JOIN tx_resep as r on j.id_resep = r.id_resep
+				WHERE r.kode_resep = '$kode_resep'
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1
+				GROUP BY j.id_resep_detail
+				ORDER BY j.id_resep_detail DESC";
+		$data = $this->db->query($sql);
+		$sub_tot = $this->get_tot_tebus_resep($kode_resep);
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result(),'sub_tot'=>$sub_tot));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+		}
+	}
+
+	public function get_tot_tebus_resep($kode_resep){
+		$sql_tot = "SELECT 
+					SUM(j.total_harga) as sub_total_harga
+					FROM `tx_resep_detail` as j
+					LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+					LEFT JOIN tx_resep as r on j.id_resep = r.id_resep
+					WHERE r.kode_resep = '$kode_resep'
+					AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1";
+		$data_tot = $this->db->query($sql_tot)->row();
+
+		if(!empty($data_tot)){
+			return $data_tot->sub_total_harga;
+		}else{
+			return null;
+		}
+	}
+
+	public function get_status_tebus(){
+		$data = $this->db->select('*')
+						 ->from('tm_status_resep')
+						 ->where('id_status_resep = 1 or id_status_resep = 3')
+						 ->get();
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','data'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','data'=>null));
+		}
+	}
+
+	public function get_add_tebus_resep(){
+		$id_user = $this->session->userdata('id_user');
+		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$kode_resep = $this->input->post('kode_resep');
+		$id_rep = $this->db->select('*')
+						   ->from('tx_resep')
+						   ->where('kode_resep',$kode_resep)
+						   ->get()
+						   ->row();
+		$id = $id_rep->id_resep;
+		var_dump($id);
+		echo $this->db->last_query();
+		$data = array(
+						'no_nota' => $noTa,
+						'tgl_transaksi' => $datetime->time,
+						'sub_tot' => str_replace("Rp ","",str_replace(".","",$_POST['sub'])),
+						'service' => str_replace(".","",$_POST['ser']),
+						'embalase' => str_replace(".","",$_POST['emb']),
+						'lain'	=> str_replace(".","",$_POST['lai']),
+						'total' => str_replace(".","",$_POST['tot']),
+						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
+						'kembalian' => $_POST['kembalian'],
+						'id_wilayah'=> $this->session->userdata('gudang'),
+						'id_shif'=> $this->session->userdata('id_shif'),
+						'update_by' => $id_user
+					);
+					
+		$up1 = $this->db->where('id_resep',$id)->update('tx_resep',$data);
+
+		$data_up = array(
+						'no_nota'=>$noTa,
+						'status' => 1
+		);
+
+		if($up1){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',1)
+						   ->where('is_delete',0)
+						   ->where('status',2)
+						   ->where('id_resep',$id)
+						   ->update('tx_resep_detail',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
+	}
+
 	 
 	// Return Penjualan
 }

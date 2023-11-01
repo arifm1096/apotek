@@ -2,17 +2,18 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h5>Resep Dokter</h5>
+                <h5>Tebus Resep Dokter</h5>
                 <div class="row" style="vertical-align: text-bottom;">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Kode Resep</label>
-                            <input type="text" id="kode_resep" name="kode_resep" class="form-control">
+                            <input type="text" id="kode_resep" name="kode_resep" class="form-control"
+                                placeholder="Masukan Kode Resep">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div style="margin-top : 30px;">
-                            <button type="button" class="btn btn-md bg-info" onclick="add_resep();"
+                            <button type="button" class="btn btn-md bg-info" onclick="cari_kode();"
                                 data-toggle="tooltip" data-placement="top" title="Simpan Data"><i class="fa fa-search"
                                     aria-hidden="true"></i>
                                 Cari</button>
@@ -45,10 +46,13 @@
                         </button>
                         <?php };?>
                     </div>
-                    <div class="col-md-4">
-                        <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">
+                        <select name="status" id="status" class="select2 form-control"></select>
+
+                        <!-- <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
                             data-toggle="tooltip" data-placement="top" title="Hapus Semua Data"><i class="fa fa-trash"
-                                aria-hidden="true"></i></button>
+                                aria-hidden="true"></i></button> -->
                         <!-- <button type="button" class="btn btn-default btn-md float-right mr-2" data-toggle="modal"
                             data-target="#modal_penjual_tertolak" data-toggle="tooltip" data-placement="top"
                             title="Penjualan Tertolak"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button> -->

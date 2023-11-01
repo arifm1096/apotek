@@ -270,7 +270,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('pembelian/data_pesanan'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('pelayanan/tebus_resep'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penebusan Resep</p>
                             </a>
