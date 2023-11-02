@@ -408,7 +408,7 @@ class Pelayanan extends CI_Controller {
    		$insert_id = $this->db->insert_id();
 
 		$data_up = array(
-						'id_kasir'=>$insert_id,
+						'kode_resep'=>$insert_id,
 						'no_nota'=>$noTa
 		);
 
@@ -445,7 +445,8 @@ class Pelayanan extends CI_Controller {
    		$insert_id = $this->db->insert_id();
 
 		$data_up = array(
-						'id_resep'=>$insert_id
+						'id_resep'=>$insert_id,
+						'status' => 2
 		);
 
 		if(!empty($insert_id)){
@@ -523,17 +524,158 @@ class Pelayanan extends CI_Controller {
 		
     }
 
-	public function get_update_stok(){
+	public function cetak_struk() {
+        // me-load library escpos
+        $this->load->library('escpos');
+		$id_user = $this->session->userdata('id_user');
+		$kode_resep = $_POST['kode_resep'];
+		$data = $this->Model_penjualan->get_user($id_user);
+		$kasir = $this->Model_pelayanan->get_resep_detail($kode_resep);
+		$jual = $this->Model_pelayanan->get_resep_jual($kode_resep);
+		$nama_print = $data->nama_print;
+		
+     
+		try {
+			$connector = new Escpos\PrintConnectors\WindowsPrintConnector($nama_print);
+			$printer = new Escpos\Printer($connector);
+
+			function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+				 $lebar_kolom_1 = 8;
+				 $lebar_kolom_2 = 6;
+				 $lebar_kolom_3 = 6;
+				 $lebar_kolom_4 = 9;
+
+				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+				$kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+				$kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
+
+				$kolom1Array = explode("\n", $kolom1);
+				$kolom2Array = explode("\n", $kolom2);
+				$kolom3Array = explode("\n", $kolom3);
+				$kolom4Array = explode("\n", $kolom4);
+
+				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
+
+				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+				$hasilBaris = array();
+
+				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ");
+
+					// memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+					$hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+					$hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
+
+					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
+				}
+
+				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+				return implode($hasilBaris, "\n") . "\n";
+			}
+
+			function buatBaris2Kolom($kolom1, $kolom2) {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+				 $lebar_kolom_1 = 15;
+				 $lebar_kolom_2 = 15;
+
+				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+
+				$kolom1Array = explode("\n", $kolom1);
+				$kolom2Array = explode("\n", $kolom2);
+
+				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array));
+
+				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+				$hasilBaris = array();
+
+				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ",STR_PAD_LEFT);
+					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ",STR_PAD_LEFT);
+
+					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2;
+				}
+
+				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+				return implode($hasilBaris, "\n") . "\n";
+			} 
+
+			// Membuat judul
+			$printer->initialize();
+			$printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
+			$printer->text("$data->nama_wilayah\n");
+			// $printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
+			$printer->initialize();
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer->text("Alamat : $data->alamat\n");
+			$printer->text("Telp : $data->no_hp\n");
+			$printer->text("\n");
+
+			// Data transaksi
+			$printer->initialize();
+			$printer->text("Kasir : $data->nama_user\n");
+			$printer->text("Waktu : $kasir->tgl_tran\n");
+			$printer->text("No. Nota : $kasir->no_nota\n");
+
+			// Membuat tabel
+			$printer->initialize(); 
+			$printer->text("--------------------------------\n");
+			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
+			$printer->text("--------------------------------\n");
+			foreach ($jual as $key => $val) {
+				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
+			}
+			
+			$printer->text("--------------------------------\n");
+			
+			$printer->text(buatBaris2Kolom("Service", number_format($kasir->service,0,',','.')));
+			$printer->text(buatBaris2Kolom("Embalase", number_format($kasir->embalase,0,',','.')));
+			$printer->text(buatBaris2Kolom("Lain", number_format($kasir->lain,0,',','.')));
+			$printer->text(buatBaris2Kolom("Total", number_format($kasir->total,0,',','.')));
+			$printer->text(buatBaris2Kolom("Bayar", number_format($kasir->jumlah_uang,0,',','.')));
+			$printer->text(buatBaris2Kolom("Kembali", number_format($kasir->kembalian,0,',','.')));
+			$printer->text("\n");
+
+			$printer->initialize();
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer->text("-- Terima Kasih --\n");
+
+			$printer->feed(1);
+			$printer->cut();
+			$printer->close();
+		} catch (Exception $e) {
+			echo json_encode(array("status"=>"0","msg"=>"Printer Belum TerKoneksi"));
+		}
+		
+		
+    }
+
+	public function get_update_stok($kode_resep){
 		$user = $this->session->userdata('id_user');
 		$sql = "SELECT NOW() as jam";
 		$time = $this->db->query($sql)->row();
 		$ext = 0;
 		$sql = "SELECT j.id_produk,j.id_satuan,u.gudang,j.nama_produk,pd.jumlah_stok,j.jumlah_produk,
 		(pd.jumlah_stok-j.jumlah_produk) as sisa,j.harga_beli
-		FROM  tx_jual as j
+		FROM  tx_resep_detail as j
+		LEFT JOIN tx_resep as r ON j.id_resep = r.id_resep
 		LEFT JOIN tx_produk_stok as pd on pd.id_produk = j.id_produk
 		LEFT JOIN tm_user as u ON j.insert_by = u.id_user
-		WHERE j.is_selesai = 0 AND j.is_delete = 0  and j.insert_by = $user";
+		WHERE j.is_selesai = 1 AND j.is_delete = 0  and pd.is_delete = 0 AND r.kode_resep ='$kode_resep'";
 
 		$data = $this->db->query($sql);
 
@@ -577,8 +719,9 @@ class Pelayanan extends CI_Controller {
 	}
 
 	public function get_selesai(){
+		$kode_resep = $this->input->post('kode_resep');
 		$id_user = $this->session->userdata('id_user');
-		$Stok_up = $this->get_update_stok();
+		$Stok_up = $this->get_update_stok($kode_resep);
 		if($Stok_up == 1){
 			$sql = "UPDATE tx_resep_detail as j
 				SET is_selesai = 1
@@ -597,6 +740,7 @@ class Pelayanan extends CI_Controller {
 		
 	}
 
+
 	public function tebus_resep(){
 		$var['content'] = 'view-tebus-resep';
 		$var['js'] = 'js-tebus-resep';
@@ -612,15 +756,15 @@ class Pelayanan extends CI_Controller {
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				LEFT JOIN tx_resep as r on j.id_resep = r.id_resep
 				WHERE r.kode_resep = '$kode_resep'
-				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 2
 				GROUP BY j.id_resep_detail
 				ORDER BY j.id_resep_detail DESC";
 		$data = $this->db->query($sql);
 		$sub_tot = $this->get_tot_tebus_resep($kode_resep);
-		if(!empty($data)){
+		if($data->num_rows() > 0 ){
 			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result(),'sub_tot'=>$sub_tot));
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+			echo json_encode(array('status'=>0,'msg'=>'Data Kosong Atau Sudah Ditebus.','result'=>null,'sub_tot'=>null));
 		}
 	}
 
@@ -631,7 +775,7 @@ class Pelayanan extends CI_Controller {
 					LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 					LEFT JOIN tx_resep as r on j.id_resep = r.id_resep
 					WHERE r.kode_resep = '$kode_resep'
-					AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1";
+					AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 2";
 		$data_tot = $this->db->query($sql_tot)->row();
 
 		if(!empty($data_tot)){
@@ -664,9 +808,8 @@ class Pelayanan extends CI_Controller {
 						   ->get()
 						   ->row();
 		$id = $id_rep->id_resep;
-		var_dump($id);
-		echo $this->db->last_query();
 		$data = array(
+						'status' =>$_POST['status'],
 						'no_nota' => $noTa,
 						'tgl_transaksi' => $datetime->time,
 						'sub_tot' => str_replace("Rp ","",str_replace(".","",$_POST['sub'])),
@@ -696,7 +839,7 @@ class Pelayanan extends CI_Controller {
 						   ->where('id_resep',$id)
 						   ->update('tx_resep_detail',$data_up);
 			if($up){
-				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P'));
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
 			}
@@ -705,6 +848,98 @@ class Pelayanan extends CI_Controller {
 		}
 	}
 
-	 
-	// Return Penjualan
+
+	// starts Rekamedik Dasar
+	public function remik(){
+		$var['content'] = 'view-remik';
+		$var['js'] = 'js-remik';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_remik(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (nama_pelanggan like '%" . $searchValue . "%'
+								OR kode_remik like '%" . $searchValue . "%'
+								OR alamat like '%" . $searchValue . "%'						
+			) ";
+		}
+
+		$where = " is_delete = 0 " . $searchQuery . "";
+
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_remik` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_remik`
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+
+		// Fetch Records
+		$sql = "SELECT id_remik,nama_pelanggan,alamat,kode_remik 
+		FROM `tx_remik`
+		WHERE $where
+		order by id_remik " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
+	public function save_remik(){
+		$data = $this->input->post();
+		unset($data['tekanan_darah']);
+		unset($data['tekanan_nafas']);
+		unset($data['denyut_nadi']);
+		unset($data['suhu_tubuh']);
+		unset($data['kadar_oksigen']);
+		unset($data['skala_nyeri']);
+
+		$data['tekanan_darah'] = str_replace(',','.',$_POST['tekanan_darah']);
+		$data['tekanan_nafas'] = str_replace(',','.',$_POST['tekanan_nafas']);
+		$data['denyut_nadi'] = str_replace(',','.',$_POST['denyut_nadi']);
+		$data['suhu_tubuh'] = str_replace(',','.',$_POST['suhu_tubuh']);
+		$data['kadar_oksigen'] = str_replace(',','.',$_POST['kadar_oksigen']);
+		$data['skala_nyeri'] = str_replace(',','.',$_POST['skala_nyeri']);
+		$ext = 0;
+		if($data['id_remik']==""){
+			$sql = $this->db->insert('tx_remik',$data);
+			if($sql){
+				$ext += 1;
+			}
+		}else{
+			$sql = $this->db->where('id_remik',$data['id_remik'])->update('tx_remik',$data);
+			if($sql){
+				$ext += 1;
+			}
+		}
+
+		if($ext > 0){
+			echo json_encode(array('status'=>1,'msg'=>'Data Behasil Disimpan'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Disimpan'));
+		}
+	}
+	// End Rekamedik Dasasr
 }

@@ -82,14 +82,14 @@
 			return $no_ta;
 		}
 
-		public function get_kasir_detail($id){
+		public function get_resep_detail($kode_resep){
 			
-			$sql = "SELECT k.no_nota,k.id_kasir,
+			$sql = "SELECT k.no_nota,k.id_resep,
 					DATE_FORMAT(k.tgl_transaksi,'%d-%m-%Y %H:%i:%s') as tgl_tran,
 					u.nama,k.total,k.jumlah_uang,k.kembalian,k.kembalian,k.service,k.embalase,k.lain
-					FROM `tx_kasir` as k
+					FROM `tx_resep` as k
 					LEFT JOIN tm_user as u on k.insert_by = u.id_user
-					WHERE k.is_delete = 0 AND k.id_kasir = $id";
+					WHERE k.is_delete = 0 AND k.kode_resep = '$kode_resep'";
 			$data = $this->db->query($sql);
 
 			if($data->num_rows()>0){
@@ -99,11 +99,12 @@
 			}
 		}
 
-		public function get_produk_jual($id){
+		public function get_resep_jual($kode_resep){
 			$sql = "SELECT j.nama_produk,s.nama_satuan,j.jumlah_produk,j.harga_jual,j.total_harga
-					FROM `tx_jual` as j
+					FROM `tx_resep_detail` as j
 					LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-					WHERE j.is_delete = 0 AND j.id_kasir = $id";
+					LEFT JOIN tx_resep as r ON j.id_resep = r.id_resep
+					WHERE j.is_delete = 0 AND r.kode_resep =  '$kode_resep'";
 			$data = $this->db->query($sql);
 
 			if($data->num_rows()>0){

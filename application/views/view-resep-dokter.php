@@ -45,7 +45,7 @@
                             title="Cetak Nota Resep"><i class="fa fa-print" aria-hidden="true"></i>
                             Nota Resep</button>
                         <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-success"
-                            onclick="add_data();" data-toggle="tooltip" data-placement="top" title="Cetak Nota Resep"><i
+                            onclick="window.location.reload();" data-toggle="tooltip" data-placement="top" title="Cetak Nota Resep"><i
                                 class="fa fa-plus" aria-hidden="true"></i>
                             Data Baru</button>
                     </div>

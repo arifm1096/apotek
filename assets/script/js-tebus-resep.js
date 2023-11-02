@@ -237,6 +237,12 @@ function load_tebus_resep(kode_resep) {
                             </tr>`;
 					no++;
 				});
+			}else{
+				Swal.fire({
+					icon : 'warning',
+					title : 'Perhatian !!',
+					text :res.msg
+				});
 			}
 			$("#sub_tot").val(rupiah(sub_tot));
 			$("#str_sub_tot").val(sub_tot);
@@ -409,6 +415,7 @@ function add_kasir() {
 	var tot = $("#total").val();
 	var jumlah_uang = $("#jumlah_uang").val();
 	var status = $("#status").val();
+	var kode_resep = $("#kode_resep").val();
 	$("#save-button").hide();
 	$("#send-button").show();
 	if (status !== "pil") {
@@ -424,12 +431,12 @@ function add_kasir() {
 				tot: tot,
 				kembalian: kembalian,
 				jumlah_uang: jumlah_uang,
+				kode_resep:kode_resep
 			},
 			success: function (data) {
 				var res = JSON.parse(data);
 
 				if (res.status == 1) {
-					$("#id_kasir").val(res.id);
 					$("#save-button").show();
 					$("#send-button").hide();
 					Swal.fire({
@@ -458,11 +465,11 @@ function add_kasir() {
 }
 
 function cetak_nota() {
-	var id_kasir = $("#id_kasir").val();
+	var kode_resep = $("#kode_resep").val();
 	$.ajax({
-		url: URL + "penjualan/cetak_struk",
+		url: URL + "pelayanan/cetak_struk",
 		type: "POST",
-		data: { id_kasir: id_kasir },
+		data: { kode_resep: kode_resep },
 		success: function (data) {
 			console.log(data);
 		},
@@ -470,33 +477,7 @@ function cetak_nota() {
 }
 
 function close_kasir() {
-	$.ajax({
-		url: URL + "penjualan/get_selesai",
-		type: "POST",
-		data: {},
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status) {
-				$("#id_kasir").val("");
-				$("#str_sub_tot").val("");
-				$("#kembalian").val("");
-				$("#total").val("");
-				$("#modal_bayar_kasir").modal("hide");
-				load_tebus_resep();
-				Swal.fire({
-					title: "<strong><u>Data Tersimpan</u></strong>",
-					icon: "success",
-					html: res.msg,
-				});
-			} else {
-				Swal.fire({
-					title: "<strong><u>Perhatian !!/u></strong>",
-					icon: "error",
-					html: res.msg,
-				});
-			}
-		},
-	});
+	window.location.reload();
 }
 
 function close_bill() {

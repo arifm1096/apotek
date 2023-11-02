@@ -7,7 +7,7 @@ $(document).ready(function () {
 $("#produk_barcode").on("input", function () {
 	var param = $("#produk_barcode").val();
 	$.ajax({
-		url: URL + "pelayanan/get_produk_barcode",
+		url: URL + "penjualan/get_produk_barcode",
 		type: "POST",
 		data: { param: param },
 		success: function (data) {
@@ -25,7 +25,7 @@ $("#produk_barcode").on("input", function () {
 $("#nama_produk_tolak").on("input", function () {
 	var param = $("#nama_produk_tolak").val();
 	$.ajax({
-		url: URL + "pelayanan/get_produk_barcode",
+		url: URL + "penjualan/get_produk_barcode",
 		type: "POST",
 		data: { param: param },
 		success: function (data) {
@@ -44,7 +44,7 @@ $("#produk_tolak").submit(function (e) {
 	e.preventDefault();
 	$("#save-button-tolak").html("Sending...");
 	$.ajax({
-		url: URL + "pelayanan/save_penjulan_tolak",
+		url: URL + "penjualan/save_penjulan_tolak",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -78,7 +78,7 @@ $("#produk_tolak").submit(function (e) {
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
 	$.ajax({
-		url: URL + "pelayanan/get_add_produk",
+		url: URL + "penjualan/get_add_produk",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -107,7 +107,7 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 	var html_harga = "<option value='pil'>-- Pilih Jenis Harga--</option>";
 	var html_satuan = "<option value='pil'>-- Pilih Satuan --</option>";
 	$.ajax({
-		url: URL + "pelayanan/get_satuan",
+		url: URL + "penjualan/get_satuan",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -146,7 +146,7 @@ function load_kasir() {
 	var html = "";
 	var sub_tot = 0;
 	$.ajax({
-		url: URL + "pelayanan/load_data_produk",
+		url: URL + "penjualan/load_data_produk",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -155,10 +155,10 @@ function load_kasir() {
 			if (res.status == 1) {
 				sub_tot += res.sub_tot;
 				res.result.forEach((e) => {
-					load_select(e.id_resep_detail, e.id_jenis_harga, e.id_satuan);
+					load_select(e.id_jual, e.id_jenis_harga, e.id_satuan);
 					html +=
 						`<tr id="row_` +
-						e.id_resep_detail +
+						e.id_jual +
 						`">
                                     <td style="width: 10px; text-align: right;">` +
 						no +
@@ -166,34 +166,51 @@ function load_kasir() {
                                     <td>` +
 						e.nama_produk +
 						`
-                                        
+                                        <button type="button" class="btn btn-danger btn-xs float-right"
+                                            onclick="hapus_list(` +
+						e.id_jual +
+						`);"><i class="fa fa-trash"
+                                                aria-hidden="true"></i></button>
                                     </td>
                                     <td style="width: 100px; "><input type="number" class="form-control"
                                             name="jumlah_produk" value="` +
 						e.qty +
 						`" id="jumlah_produk_` +
-						e.id_resep_detail +
+						e.id_jual +
 						`" onchange="get_nom(` +
-						e.id_resep_detail +
+						e.id_jual +
 						`,1,this.value)"> </td>
                                     <td>
                                         <select class="form-control" id="satuan_` +
-						e.id_resep_detail +
+						e.id_jual +
 						`"  onchange="get_nom(` +
-						e.id_resep_detail +
+						e.id_jual +
 						`,2,this.value)">
                                         </select>
                                     </td>
-									<td>
-									<button type="button" class="btn btn-danger btn-xs float-left"
-                                            onclick="hapus_list(` +
-						e.id_resep_detail +
-						`);"><i class="fa fa-trash"
-                                                aria-hidden="true"></i></button></td>
-											
-                            </tr> <input type="hidden" id="jenis_harga_` +
-						e.id_resep_detail +
-						`"  value="4"t>`;
+                                    <td>
+                                        <select class="form-control" id="jenis_harga_` +
+						e.id_jual +
+						`"  onchange="get_nom(` +
+						e.id_jual +
+						`,3,this.value)">
+                                        </select>
+                                    </td>
+                                    <td style="width: 100px; ">
+                                        <input type="text" class="form-control" name="harga" value="` +
+						rupiah(e.harga_jual) +
+						`" id="harga_` +
+						e.id_jual +
+						`">
+                                    </td>
+                                    <td style="width: 130px; ">
+                                        <input type="text" class="form-control" name="total" value="` +
+						rupiah(e.total_harga) +
+						`" id="total_` +
+						e.id_jual +
+						`" readonly>
+                                    </td>
+                            </tr>`;
 					no++;
 				});
 			}
@@ -207,7 +224,7 @@ function load_kasir() {
 
 function hapus_list(id) {
 	$.ajax({
-		url: URL + "pelayanan/hapus_produk_kasir",
+		url: URL + "penjualan/hapus_produk_kasir",
 		type: "POST",
 		data: { id: id },
 		success: function (data) {
@@ -233,7 +250,7 @@ function hapus_list(id) {
 
 function clear_list(id) {
 	$.ajax({
-		url: URL + "pelayanan/clear_produk_kasir",
+		url: URL + "penjualan/clear_produk_kasir",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -261,7 +278,7 @@ function get_nom(id, el, val) {
 	var jen_har = $("#jenis_harga_" + id).val();
 	var sat = $("#satuan_" + id).val();
 	$.ajax({
-		url: URL + "pelayanan/get_nom_change",
+		url: URL + "penjualan/get_nom_change",
 		type: "POST",
 		data: { id: id, el: el, val: val, jen_har: jen_har, sat: sat },
 		success: function (data) {
@@ -348,29 +365,43 @@ function selisih() {
 	$("#str_kembalian").val(rupiah(kem));
 }
 
-function add_resep() {
-	var id_dokter = $("#id_dokter").val();
-	var id_pelanggan = $("#id_pelanggan").val();
-	var kode_resep = $("#kode_resep").val();
-	$("#id_resep").val("");
+function add_kasir() {
+	var sub = $("#str_sub_tot").val();
+	var ser = $("#service").val();
+	var emb = $("#embalase").val();
+	var lai = $("#lain").val();
+	var kembalian = $("#kembalian").val();
+	var tot = $("#total").val();
+	var jumlah_uang = $("#jumlah_uang").val();
+	$("#save-button").hide();
+	$("#send-button").show();
 	$.ajax({
-		url: URL + "pelayanan/get_add_resep",
+		url: URL + "penjualan/get_add_kasir",
 		type: "POST",
 		data: {
-			id_dokter: id_dokter,
-			id_pelanggan: id_pelanggan,
-			kode_resep: kode_resep,
+			sub: sub,
+			ser: ser,
+			emb: emb,
+			lai: lai,
+			tot: tot,
+			kembalian: kembalian,
+			jumlah_uang: jumlah_uang,
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
+
 			if (res.status == 1) {
-				$("#id_resep").val(res.id);
+				$("#id_kasir").val(res.id);
+				$("#save-button").show();
+				$("#send-button").hide();
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",
 					html: res.msg,
 				});
 			} else {
+				$("#save-button").show();
+				$("#send-button").hide();
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
 					icon: "error",
@@ -381,32 +412,37 @@ function add_resep() {
 	});
 }
 
-function nota_resep() {
-	var id_resep = $("#id_resep").val();
+function cetak_nota() {
+	var id_kasir = $("#id_kasir").val();
 	$.ajax({
-		url: URL + "pelayanan/cetak_struk_resep",
+		url: URL + "penjualan/cetak_struk",
 		type: "POST",
-		data: { id_resep: id_resep },
+		data: { id_kasir: id_kasir },
 		success: function (data) {
 			console.log(data);
 		},
 	});
 }
 
-function add_data() {
+function close_kasir() {
 	$.ajax({
-		url: URL + "pelayanan/get_selesai_resep",
+		url: URL + "penjualan/get_selesai",
 		type: "POST",
 		data: {},
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status) {
+				$("#id_kasir").val("");
+				$("#str_sub_tot").val("");
+				$("#kembalian").val("");
+				$("#total").val("");
+				$("#modal_bayar_kasir").modal("hide");
+				load_kasir();
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",
 					html: res.msg,
 				});
-				window.location.reload();
 			} else {
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
