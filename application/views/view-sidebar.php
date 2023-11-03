@@ -264,6 +264,12 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="<?php echo base_url('pelayanan/remik'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Rekamedik Dasar</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penerimaan Resep Dokter</p>

@@ -82,6 +82,39 @@
 			return $no_ta;
 		}
 
+		public function get_no_remik($id){
+			$id_us = $this->session->userdata('id_user');
+			$sql_max = "SELECT r.kode_remik,r.id_remik,DATE_FORMAT(r.insert_date,'%Y-%m-%d') as tgl_tran
+					FROM `tx_remik` as r
+					WHERE r.insert_by = $id and is_delete = 0
+					ORDER BY r.id_remik DESC";
+			$data_max = $this->db->query($sql_max);
+			$r_max = $data_max->row();
+			$date = date('Y-m-d');
+			if($data_max->num_rows()>0){
+
+				if($date == $r_max->tgl_tran){
+					$no= (int) substr($r_max->kode_remik, 11,11);
+					$urutan = $no + 1;
+				}else{
+					$urutan = 1;
+				}
+				
+			}else{
+				$urutan = 1;
+			}
+
+			$sql_id = "SELECT id_dokter,kode_dokter,nama_dokter,username,alamat,klinik_rs,no_hp
+						FROM `tm_dokter` where id_dokter = $id";
+			$data_id = $this->db->query($sql_id)->row();
+			$us = sprintf("%02s", $id_us);
+			$cod =  "REM";
+			$date = sprintf("%06s", date('dmy'));
+			$no_tx = sprintf("%03s", $urutan);
+			$no_ta = $cod.$us.$date.$no_tx;
+			return $no_ta;
+		}
+
 		public function get_resep_detail($kode_resep){
 			
 			$sql = "SELECT k.no_nota,k.id_resep,

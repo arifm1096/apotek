@@ -909,6 +909,7 @@ class Pelayanan extends CI_Controller {
 
 	public function save_remik(){
 		$data = $this->input->post();
+		$id = $this->session->userdata('id_user');
 		unset($data['tekanan_darah']);
 		unset($data['tekanan_nafas']);
 		unset($data['denyut_nadi']);
@@ -922,7 +923,9 @@ class Pelayanan extends CI_Controller {
 		$data['suhu_tubuh'] = str_replace(',','.',$_POST['suhu_tubuh']);
 		$data['kadar_oksigen'] = str_replace(',','.',$_POST['kadar_oksigen']);
 		$data['skala_nyeri'] = str_replace(',','.',$_POST['skala_nyeri']);
+		$data['kode_remik'] = $this->Model_pelayanan->get_no_remik($id);
 		$ext = 0;
+
 		if($data['id_remik']==""){
 			$sql = $this->db->insert('tx_remik',$data);
 			if($sql){
@@ -939,6 +942,23 @@ class Pelayanan extends CI_Controller {
 			echo json_encode(array('status'=>1,'msg'=>'Data Behasil Disimpan'));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data Gagal Disimpan'));
+		}
+	}
+
+	public function get_id_remik(){
+		$id = $_POST['id'];
+		if($id !==""){
+			$sql = $this->db->select('*')
+						    ->from('*')
+							->where('id_remik',$id)
+							->get();
+			if($sql->num_rows()>0){
+				echo json_encode(array('status'=>1,'msg'=>'Data not Found','result'=>$sql->result()));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data not Found','result'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Id not found','result'=>null));
 		}
 	}
 	// End Rekamedik Dasasr

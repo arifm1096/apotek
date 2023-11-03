@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : Localhost
+ Source Server         : Server 192.168.71.6(Staff)
  Source Server Type    : MySQL
- Source Server Version : 100422
- Source Host           : localhost:3306
+ Source Server Version : 100338
+ Source Host           : 192.168.71.6:3306
  Source Schema         : apotek_db_ext
 
  Target Server Type    : MySQL
- Target Server Version : 100422
+ Target Server Version : 100338
  File Encoding         : 65001
 
- Date: 03/11/2023 06:45:28
+ Date: 03/11/2023 09:03:34
 */
 
 SET NAMES utf8mb4;
@@ -160,10 +160,6 @@ CREATE TABLE `tm_jenis_pesanan`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tm_jenis_pesanan
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tm_jenis_produk
 -- ----------------------------
 DROP TABLE IF EXISTS `tm_jenis_produk`;
@@ -235,10 +231,6 @@ CREATE TABLE `tm_kas`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tm_kas
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tm_pelanggan
 -- ----------------------------
 DROP TABLE IF EXISTS `tm_pelanggan`;
@@ -276,10 +268,6 @@ CREATE TABLE `tm_pembayaran`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tm_pembayaran
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tm_produk_by
 -- ----------------------------
 DROP TABLE IF EXISTS `tm_produk_by`;
@@ -296,10 +284,6 @@ CREATE TABLE `tm_produk_by`  (
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_produk_by`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tm_produk_by
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for tm_rak
@@ -389,10 +373,6 @@ CREATE TABLE `tm_satus_stok_lama`  (
   `nama_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id_status_stok`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tm_satus_stok_lama
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for tm_shif
@@ -493,7 +473,7 @@ CREATE TABLE `tm_user`  (
 -- ----------------------------
 -- Records of tm_user
 -- ----------------------------
-INSERT INTO `tm_user` VALUES (1, 'Admin Gudang', 'admin', 'e65b553ec1ba6b20de79', 1, 2, 'y', NULL, NULL, NULL, '2023-11-01 22:39:18', NULL, NULL, 0);
+INSERT INTO `tm_user` VALUES (1, 'Admin Gudang', 'admin', 'e65b553ec1ba6b20de79', 1, 1, 'y', NULL, NULL, NULL, '2023-06-27 22:26:10', NULL, NULL, 0);
 INSERT INTO `tm_user` VALUES (2, 'Indra', 'kasir', '446a5cf1593ddb78a2bf', 3, 1, 'y', NULL, NULL, NULL, '2023-07-19 17:41:06', 1, '2023-06-14 16:09:05', 0);
 INSERT INTO `tm_user` VALUES (3, 'asdas', 'asdas', '60d6f293ae3b847177c2', 3, 1, 'y', NULL, NULL, NULL, '2023-06-14 14:04:08', NULL, NULL, 0);
 INSERT INTO `tm_user` VALUES (4, 'Widya', 'Widya', '892c539a275479031d5b', 3, 1, 'y', NULL, NULL, NULL, '2023-08-28 18:37:06', NULL, NULL, 0);
@@ -526,7 +506,7 @@ CREATE TABLE `tm_wilayah`  (
 -- Records of tm_wilayah
 -- ----------------------------
 INSERT INTO `tm_wilayah` VALUES (1, 'GDP', 'Apotek Nawasena 24 Jam ', 'Colomadu', '02717855263', 'ZJ-58', 'y', NULL, NULL, NULL, '2023-08-09 14:54:56', NULL, NULL, 0);
-INSERT INTO `tm_wilayah` VALUES (2, 'ANK', 'Apotek Nawasena Karanganyar', 'Karanganyar, Solo', '0271-0998121', 'Blueprint_M80', 'y', NULL, NULL, NULL, '2023-11-01 22:39:06', 1, '2023-08-09 14:55:03', 1);
+INSERT INTO `tm_wilayah` VALUES (2, 'ANK', 'Apotek Nawasena Karanganyar', 'Karanganyar, Solo', '0271-0998121', 'Blueprint_M801', 'y', NULL, NULL, NULL, '2023-08-09 14:55:03', 1, '2023-08-09 14:55:03', 1);
 
 -- ----------------------------
 -- Table structure for tx_beli_pesan
@@ -2143,7 +2123,7 @@ INSERT INTO `tx_jual` VALUES (1525, NULL, NULL, 1708, 'Masker Cantol Onemed', '3
 INSERT INTO `tx_jual` VALUES (1526, 'GDP01150923004', 463, 1709, 'Masker Hijab Onemed', '400', 1500, 4, 5, 5, 1, NULL, 1500, 1, 1, '2023-09-15 15:21:54', NULL, '2023-09-15 15:22:09', NULL, NULL, 0);
 INSERT INTO `tx_jual` VALUES (1527, NULL, NULL, 2286, 'Zinc Shampoo Botol 170 ml', '12000', 14000, 2, 6, 6, 1, NULL, 14000, 0, 1, '2023-09-15 22:21:33', 1, '2023-10-30 10:18:08', 1, '2023-10-30 10:18:08', 1);
 INSERT INTO `tx_jual` VALUES (1528, NULL, NULL, 2292, 'Bodreksin', '300', 460, 3, 1, 1, 10, NULL, 4600, 0, 1, '2023-09-15 22:52:28', 1, '2023-10-30 10:18:08', 1, '2023-10-30 10:18:08', 1);
-INSERT INTO `tx_jual` VALUES (1529, NULL, NULL, 27, 'Suntik', '2000', 2500, 4, 2, 2, 3, NULL, 7500, 0, 1, '2023-10-30 15:34:46', NULL, '2023-10-31 22:10:49', 1, '2023-10-31 22:10:49', 1);
+INSERT INTO `tx_jual` VALUES (1529, NULL, NULL, 27, 'Suntik', '2000', 2500, 4, 2, 2, 3, NULL, 7500, 0, 1, '2023-10-30 15:34:46', NULL, '2023-11-01 09:52:23', 1, '2023-11-01 09:52:23', 1);
 
 -- ----------------------------
 -- Table structure for tx_jual_tolak
@@ -2697,10 +2677,6 @@ CREATE TABLE `tx_konsinyasi`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tx_konsinyasi
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tx_konsinyasi_detail
 -- ----------------------------
 DROP TABLE IF EXISTS `tx_konsinyasi_detail`;
@@ -2725,10 +2701,6 @@ CREATE TABLE `tx_konsinyasi_detail`  (
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_konsinyasi_detail`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tx_konsinyasi_detail
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for tx_log_shif
@@ -2762,10 +2734,6 @@ CREATE TABLE `tx_persediaan`  (
   `id_pesediaan` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id_pesediaan`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tx_persediaan
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for tx_produk
@@ -8553,10 +8521,6 @@ CREATE TABLE `tx_produk_stok_mutasi`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tx_produk_stok_mutasi
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tx_produk_stok_mutasi_detail
 -- ----------------------------
 DROP TABLE IF EXISTS `tx_produk_stok_mutasi_detail`;
@@ -8576,10 +8540,6 @@ CREATE TABLE `tx_produk_stok_mutasi_detail`  (
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_detail_stok_mutasi`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tx_produk_stok_mutasi_detail
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for tx_produk_stok_opname
@@ -8639,24 +8599,20 @@ INSERT INTO `tx_produk_stok_opname_detail` VALUES (2, 1, '2023-08-01', 11, 1, NU
 INSERT INTO `tx_produk_stok_opname_detail` VALUES (3, 0, '2023-09-03', 10, 10, NULL, '', 'y', 1, '2023-09-03 09:58:18', 1, '2023-09-03 09:58:18', NULL, NULL, 0);
 
 -- ----------------------------
--- Table structure for tx_remik
+-- Table structure for tx_remik_dasar
 -- ----------------------------
-DROP TABLE IF EXISTS `tx_remik`;
-CREATE TABLE `tx_remik`  (
+DROP TABLE IF EXISTS `tx_remik_dasar`;
+CREATE TABLE `tx_remik_dasar`  (
   `id_remik` int(11) NOT NULL AUTO_INCREMENT,
-  `kode_remik` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `nama_pelanggan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `tekanan_darah` float NULL DEFAULT NULL,
-  `tekanan_nafas` float NULL DEFAULT NULL,
+  `nafas` float NULL DEFAULT NULL,
   `denyut_nadi` float NULL DEFAULT NULL,
   `suhu_tubuh` float NULL DEFAULT NULL,
-  `kadar_oksigen` float NULL DEFAULT NULL,
-  `skala_nyeri` float NULL DEFAULT NULL,
-  `lokasi_nyeri` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `skala_nyeri` int(11) NULL DEFAULT NULL,
+  `lokasi_nyeri` float NULL DEFAULT NULL,
   `alergi_obat` int(11) NULL DEFAULT NULL,
-  `alergi_makanan` int(11) NULL DEFAULT NULL,
-  `alergi_suhu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `alergi_makan` int(11) NULL DEFAULT NULL,
+  `alergi_suhu` int(11) NULL DEFAULT NULL,
   `insert_by` int(11) NULL DEFAULT NULL,
   `insert_date` datetime(0) NULL DEFAULT NULL,
   `update_by` int(11) NULL DEFAULT NULL,
@@ -8665,13 +8621,7 @@ CREATE TABLE `tx_remik`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_remik`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tx_remik
--- ----------------------------
-INSERT INTO `tx_remik` VALUES (1, NULL, NULL, NULL, 0.1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-11-03 00:20:59', NULL, NULL, 0);
-INSERT INTO `tx_remik` VALUES (2, NULL, 'dsfdsf', 'dsfsdfds', 0.4, 0.2, 0.45, 0.12, 0.45, 9, 'dada', 1, 1, '1', NULL, NULL, NULL, '2023-11-03 01:25:37', NULL, NULL, 0);
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_resep
@@ -8702,15 +8652,14 @@ CREATE TABLE `tx_resep`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_resep`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tx_resep
 -- ----------------------------
 INSERT INTO `tx_resep` VALUES (1, 'BBMRE311023001', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2023-10-31 10:10:32', NULL, '2023-10-31 10:10:32', NULL, NULL, 0);
 INSERT INTO `tx_resep` VALUES (2, 'REBBM311023002', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, '2023-10-31 13:45:49', NULL, '2023-10-31 13:45:49', NULL, NULL, 0);
-INSERT INTO `tx_resep` VALUES (3, 'REBBM311023003', 1, 2, NULL, 'GDP01011123001', '2023-11-01 20:38:58', 5500, 6000, 7000, 5000, 23500, 25000, 1500, 1, 2, 1, '2023-10-31 14:02:04', 1, '2023-11-01 20:38:58', NULL, NULL, 0);
-INSERT INTO `tx_resep` VALUES (4, 'REBBM011123001', 1, 2, NULL, 'GDP01011123001', '2023-11-01 22:12:51', 5200, 1000, 2000, 3000, 11200, 12000, 800, 1, 1, 1, '2023-11-01 20:54:16', 1, '2023-11-01 22:12:51', NULL, NULL, 0);
+INSERT INTO `tx_resep` VALUES (3, 'REBBM311023003', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, '2023-10-31 14:02:04', NULL, '2023-10-31 14:02:04', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tx_resep_detail
@@ -8740,7 +8689,7 @@ CREATE TABLE `tx_resep_detail`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_resep_detail`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1540 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1538 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tx_resep_detail
@@ -8754,8 +8703,6 @@ INSERT INTO `tx_resep_detail` VALUES (1534, 2, 1425, NULL, 'Paramex Flu Batuk PE
 INSERT INTO `tx_resep_detail` VALUES (1535, 3, 48, NULL, 'Bodrex Extra Tablet', '2000', 2500, 4, 2, 2, 1, NULL, 2500, 1, NULL, 1, '2023-10-31 13:59:19', NULL, '2023-10-31 15:27:04', NULL, NULL, 0);
 INSERT INTO `tx_resep_detail` VALUES (1536, 3, 2292, NULL, 'Bodreksin', '300', 500, 4, 1, 1, 1, NULL, 500, 1, NULL, 1, '2023-10-31 13:59:24', NULL, '2023-10-31 15:27:04', NULL, NULL, 0);
 INSERT INTO `tx_resep_detail` VALUES (1537, 3, 51, NULL, 'Bodrex Migra Tablet', '2000', 2500, 4, 0, 0, 1, NULL, 2500, 1, NULL, 1, '2023-10-31 13:59:31', NULL, '2023-10-31 15:27:04', NULL, NULL, 0);
-INSERT INTO `tx_resep_detail` VALUES (1538, 4, 50, 'GDP01011123001', 'Bodrex Flu Batuk Berdahak PE Tablet', '1780', 2200, 4, 2, 2, 1, NULL, 2200, 1, 2, 1, '2023-11-01 20:52:52', NULL, '2023-11-01 22:33:52', NULL, NULL, 0);
-INSERT INTO `tx_resep_detail` VALUES (1539, 4, 387, 'GDP01011123001', 'Komix Herbal 15 ml', '2437', 3000, 4, 7, 7, 1, NULL, 3000, 1, 2, 1, '2023-11-01 20:53:03', NULL, '2023-11-01 22:33:52', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tx_retur
@@ -8783,10 +8730,6 @@ CREATE TABLE `tx_retur`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of tx_retur
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tx_retur_detail
 -- ----------------------------
 DROP TABLE IF EXISTS `tx_retur_detail`;
@@ -8811,9 +8754,5 @@ CREATE TABLE `tx_retur_detail`  (
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_detail_retur`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of tx_retur_detail
--- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
