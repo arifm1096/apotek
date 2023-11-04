@@ -1,6 +1,38 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="card">
+            <div class="card-header">
+                <h5>Racik Obat</h5>
+                <div class="row" style="vertical-align: text-bottom;">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Kode Racikan</label>
+                            <input type="hidden" name="id_racik" id="id_racik">
+                            <input type="text" id="dokter" name="dokter" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Nama Racikan</label>
+                            <input type="text" id="kode_resep" name="kode_resep" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-info"
+                            onclick="add_resep();" data-toggle="tooltip" data-placement="top" title="Simpan Data"><i
+                                class="fa fa-save" aria-hidden="true"></i>
+                            Simpan</button>
+                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-warning"
+                            onclick="nota_resep();" data-toggle="tooltip" data-placement="top"
+                            title="Cetak Nota Resep"><i class="fa fa-print" aria-hidden="true"></i>
+                            Racikan</button>
+                        <!-- <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-success"
+                            onclick="window.location.reload();" data-toggle="tooltip" data-placement="top"
+                            title="Cetak Nota Resep"><i class="fa fa-plus" aria-hidden="true"></i>
+                            Data Baru</button> -->
+                    </div>
+                </div>
+            </div>
             <div class="card-header bg-danger">
                 <div class="row">
                     <div class="col-md-6">
@@ -18,31 +50,19 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col-md-2">
-                        <?php if($this->session->userdata('id_hak_akses') =="3"){?>
-                        <button type="button" class="btn btn-block btn-info btn-md float-left" onclick="close_bill();">
-                            <b style="text-transform: uppercase;"><?php echo $this->session->userdata('nama_shif');?>
-                            </b>
-                        </button>
-                        <?php };?>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
                             data-toggle="tooltip" data-placement="top" title="Hapus Semua Data"><i class="fa fa-trash"
                                 aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-default btn-md float-right mr-2" data-toggle="modal"
-                            data-target="#modal_penjual_tertolak" data-toggle="tooltip" data-placement="top"
-                            title="Penjualan Tertolak"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
-
-
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
+                <h6>List Obat Racikan</h6>
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <table id="tbl_kasir" class="table table-striped" style="font-size: 13px;">
                             <thead>
                                 <tr>
@@ -59,51 +79,6 @@
 
                             </tbody>
                         </table>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-5 col-form-label">Sub Total</label>
-                            <div class="col-sm-7">
-                                <input type="hidden" name="id_kasir" id="id_kasir">
-                                <input type="hidden" name="str_sub_tot" id="str_sub_tot">
-                                <input type="text" class="form-control" name="sub_tot" id="sub_tot" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Service (Rp.)</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
-                                    name="service" id="service">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Embalase (Rp.)</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
-                                    name="embalase" id="embalase">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-5 col-form-label">Biaya Lain (Rp.)</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control uang" value="0" oninput="total_harga();"
-                                    name="lain" id="lain">
-                                <input type="hidden" name="total" id="total">
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="form-group row">
-                            <h1><b>Total : </b></h1>
-                            <h1 id="str_tot"></h1>
-                        </div>
-                        <div class="form-group row">
-                            <button class="btn btn-block btn-success" type="button" onclick="bayar();">
-                                <i class="fas fa-shopping-bag"></i> Bayar Pembelian (B)
-                            </button>
-                            <!-- <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
-                                <i class="fa fa-print"></i> Cetak Struk (F9)
-                            </button> -->
-                        </div>
                     </div>
                 </div>
 

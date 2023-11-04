@@ -30,7 +30,7 @@
                             <th>Kode Remik</th>
                             <th>Nama Pelanggan</th>
                             <th>Alamat</th>
-                            <th style="width: 75px; ">Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,7 +157,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="social-auth-links text-center mb-1">
+                            <div class="social-auth-links text-center mb-1" id="button-save">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <button class="btn btn-block btn-primary" type="submit">

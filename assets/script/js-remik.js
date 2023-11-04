@@ -58,17 +58,17 @@ function load_remik() {
 				render: function (data, type, row) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
-						row.id_dokter +
+						row.id_remik +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button"  class="btn btn-info btn-sm" onclick="detail(\'' +
-						row.id_dokter +
+						row.id_remik +
 						'\')"><i class="fa fa-search"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_dokter +
+						row.id_remik +
 						"','" +
-						row.nama_dokter +
+						row.kode_remik +
 						"','" +
-						row.kode_dokter +
+						row.nama_pelanggan +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -114,36 +114,102 @@ $("#add_remik").submit(function (e) {
 	});
 });
 
-function edit(
-	p_id_dokter,
-	p_kode_dokter,
-	p_nama_dokter,
-	p_klinik,
-	p_username,
-	p_alamat,
-	p_no_hp,
-	p_nama_print
-) {
-	$("#mediumModalLabel").html("Edit Dokter");
-	$("#id_dokter").val(p_id_dokter);
-	$("#kode_dokter").val(p_kode_dokter);
-	$("#alamat").val(p_alamat);
-	$("#klinik_rs").val(p_klinik);
-	$("#no_hp").val(p_no_hp);
-	$("#username").val(p_username);
-	$("#nama_print").val(p_nama_print);
-	$("#nama_dokter").val(p_nama_dokter);
-	$("#modal_input_dokter").modal("show");
+function detail(id) {
+	$.ajax({
+		url: URL + "pelayanan/get_id_remik",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#nama_pelanggan").val(res.result.nama_pelanggan);
+				$("#kode_remik").val(res.result.kode_remik);
+				$("#alamat").val(res.result.alamat);
+				$("#tekanan_darah").val(res.result.tekanan_darah);
+				$("#tekanan_nafas").val(res.result.tekanan_nafas);
+				$("#denyut_nadi").val(res.result.denyut_nadi);
+				$("#suhu_tubuh").val(res.result.suhu_tubuh);
+				$("#kadar_oksigen").val(res.result.kadar_oksigen);
+				$("#skala_nyeri").val(res.result.skala_nyeri);
+				$("#lokasi_nyeri").val(res.result.lokasi_nyeri);
+
+				if (res.result.alergi_obat == 1) {
+					$("#alergi_obat").prop("checked", true);
+				}
+
+				if (res.result.alergi_makanan == 1) {
+					$("#alergi_makanan").prop("checked", true);
+				}
+
+				if (res.result.alergi_suhu == 1) {
+					$("#alergi_suhu").prop("checked", true);
+				}
+				$("#button-save").hide();
+				$("#mediumModalLabel").html("Detail Rekamedik Dasar");
+				$("#modal_input_dokter").modal("show");
+			} else {
+				Swal.fire({
+					icon: "warning",
+					title: "Perhatian",
+					text: res.msg,
+				});
+			}
+		},
+	});
 }
 
-function hapus(id, supplier, ket) {
+function edit(id) {
+	$("#button-save").show();
+	$.ajax({
+		url: URL + "pelayanan/get_id_remik",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#id_remik").val(res.result.id_remik);
+				$("#nama_pelanggan").val(res.result.nama_pelanggan);
+				$("#kode_remik").val(res.result.kode_remik);
+				$("#alamat").val(res.result.alamat);
+				$("#tekanan_darah").val(res.result.tekanan_darah);
+				$("#tekanan_nafas").val(res.result.tekanan_nafas);
+				$("#denyut_nadi").val(res.result.denyut_nadi);
+				$("#suhu_tubuh").val(res.result.suhu_tubuh);
+				$("#kadar_oksigen").val(res.result.kadar_oksigen);
+				$("#skala_nyeri").val(res.result.skala_nyeri);
+				$("#lokasi_nyeri").val(res.result.lokasi_nyeri);
+
+				if (res.result.alergi_obat == 1) {
+					$("#alergi_obat").prop("checked", true);
+				}
+
+				if (res.result.alergi_makanan == 1) {
+					$("#alergi_makanan").prop("checked", true);
+				}
+
+				if (res.result.alergi_suhu == 1) {
+					$("#alergi_suhu").prop("checked", true);
+				}
+				$("#mediumModalLabel").html("Detail Rekamedik Dasar");
+			} else {
+				Swal.fire({
+					icon: "warning",
+					title: "Perhatian",
+					text: res.msg,
+				});
+			}
+		},
+	});
+}
+
+function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:
-			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Hak Akses  : " +
-			supplier +
+			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Kode Remik  : " +
+			kode +
 			"<br> " +
-			"Keterangan: " +
-			ket,
+			"Nama Pelanggan: " +
+			nama_pelanggan,
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
@@ -152,7 +218,7 @@ function hapus(id, supplier, ket) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "master/hapus_dokter",
+				url: URL + "pelayanan/hapus_remik",
 				type: "POST",
 				data: {
 					id: id,

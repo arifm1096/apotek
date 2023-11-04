@@ -849,7 +849,7 @@ class Pelayanan extends CI_Controller {
 	}
 
 
-	// starts Rekamedik Dasar
+// starts Rekamedik Dasar
 	public function remik(){
 		$var['content'] = 'view-remik';
 		$var['js'] = 'js-remik';
@@ -910,6 +910,7 @@ class Pelayanan extends CI_Controller {
 	public function save_remik(){
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
 		unset($data['tekanan_darah']);
 		unset($data['tekanan_nafas']);
 		unset($data['denyut_nadi']);
@@ -927,11 +928,15 @@ class Pelayanan extends CI_Controller {
 		$ext = 0;
 
 		if($data['id_remik']==""){
+			$data['insert_by'] = $id;
+			$data['insert_date'] = $datetime->time;
 			$sql = $this->db->insert('tx_remik',$data);
 			if($sql){
 				$ext += 1;
 			}
 		}else{
+			$data['update_by'] = $id;
+			$data['update_date'] = $datetime->time;
 			$sql = $this->db->where('id_remik',$data['id_remik'])->update('tx_remik',$data);
 			if($sql){
 				$ext += 1;
@@ -949,11 +954,11 @@ class Pelayanan extends CI_Controller {
 		$id = $_POST['id'];
 		if($id !==""){
 			$sql = $this->db->select('*')
-						    ->from('*')
+						    ->from('tx_remik')
 							->where('id_remik',$id)
 							->get();
 			if($sql->num_rows()>0){
-				echo json_encode(array('status'=>1,'msg'=>'Data not Found','result'=>$sql->result()));
+				echo json_encode(array('status'=>1,'msg'=>'Data not Found','result'=>$sql->row()));
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Data not Found','result'=>null));
 			}
@@ -961,5 +966,112 @@ class Pelayanan extends CI_Controller {
 			echo json_encode(array('status'=>0,'msg'=>'Error Id not found','result'=>null));
 		}
 	}
-	// End Rekamedik Dasasr
+
+	public function hapus_remik(){
+		$id = $_POST['id'];
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$sql = $this->db->where('id_remik',$id)->update('tx_remik',
+											array(
+												'is_delete'=>1,
+												'delete_by'=>$this->session->userdata('id_user'),
+												'delete_date'=>$datetime->time
+											)
+										);
+		if($sql){
+			echo json_encode(array('status'=>1,'msg'=>'Success Delete Data'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data Deleting'));
+		}
+	}
+// End Rekamedik Dasasr
+
+// Start Racik Obat
+	Public function racik_obat(){
+		$var['content'] = 'view-racik-obat';
+		$var['js'] = 'js-racik-obat';
+		$this->load->view('view-index',$var);
+	}
+
+	public function get_add_produk_racik(){
+		$produk = $_POST['produk_barcode'];
+		$datetime = $this->db->select('now() as time')->get()->row();
+
+		if(!empty($produk)){
+			$sql_get_data = "SELECT p.id_produk,p.satuan_utama,p.nama_produk,p.harga_beli,ph.harga_jual,ph.id_jenis_harga
+								FROM `tx_produk` as p
+								LEFT JOIN tx_produk_harga as ph ON p.id_produk = ph.id_produk
+								WHERE nama_produk = '$produk' OR barcode = '$produk' 
+								AND ph.id_jenis_harga = 4 AND p.is_delete = 0";
+			$data = $this->db->query($sql_get_data);
+			
+				$prod_data = $data->row();
+				$r_in = array(
+						'id_produk' => $prod_data->id_produk,
+						'nama_produk' => $prod_data->nama_produk,
+						'id_satuan' => $prod_data->satuan_utama,
+						'id_satuan_utama' => $prod_data->satuan_utama,
+						'id_jenis_harga' => $prod_data->id_jenis_harga,
+						'harga_beli' => $prod_data->harga_beli,
+						'harga_jual' => $prod_data->harga_jual,
+						'jumlah_produk' => 1,
+						'total_harga' => $prod_data->harga_jual,
+						'insert_by' => $this->session->userdata('id_user'),
+						'insert_date' => $datetime->time
+				);
+			$id_user = $this->session->userdata('id_user');
+			$sql_jul ="SELECT j.id_racik_obat,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+				SUM(j.total_harga) as total_harga
+				FROM `tx_racik_obat` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				WHERE j.insert_by = $id_user and p.id_produk = $prod_data->id_produk
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_racik_obat";
+			$res_jual = $this->db->query($sql_jul);
+			$data_jual = $res_jual->row();
+			$up_jumlah = 0;
+			$up_total = 0;
+				if($res_jual->num_rows()>0){
+					$up_jumlah += $data_jual->qty + 1;
+					$up_total += $data_jual->total_harga + $prod_data->harga_jual;
+				}
+				
+
+				$r_up = array(
+					'jumlah_produk' => $up_jumlah,
+					'total_harga' => $up_total
+				);
+
+			$ex = 0;
+			$cek = $this->cek_produk($produk);
+			if($cek == 1){
+				if(!empty($data)){
+						if($res_jual->num_rows()>0){
+							$update = $this->db->where('id_racik_obat',$data_jual->id_racik_obat)->update('tx_racik_obat',$r_up);
+							if($update){
+								$ex +=1;
+							}
+						}else{
+							$insert = $this->db->insert('tx_racik_obat',$r_in);
+							if($insert){
+								$ex +=1;
+							}
+						}
+					
+					if($ex > 0){
+						echo json_encode(array('status'=>1,'msg'=>'Success Tambah Data.'));
+					}else{
+						echo json_encode(array('status'=>0,'msg'=>'Error Tambah Data.'));
+					}
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Nama Produk Atau Barcode Tidak Ada DI Master !!'));
+				}
+			}else{
+				echo json_encode( array('status'=>0 , 'msg'=>$cek));
+			}
+			
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Masuk Data !!'));
+		}
+	}
+// End Racik Obat
 }
