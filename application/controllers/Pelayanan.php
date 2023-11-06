@@ -1073,5 +1073,225 @@ class Pelayanan extends CI_Controller {
 			echo json_encode(array('status'=>0,'msg'=>'Masuk Data !!'));
 		}
 	}
+
+	public function get_save_racik(){
+		$id_user = $this->session->userdata('id_user');
+		$in = $this->input->post();
+		$noTa = $this->Model_pelayanan->get_no_racik($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$data = array(
+						'kode_resep'=>$in['kode_resep'],
+						'nama_racikan' =>$in['nama_racikan'],
+						'ket'=>$in['ket'],
+						'aktif'=>$in['aktif'],
+						'insert_by' => $id_user,
+						'insert_date' => $datetime->time
+					);
+					
+		$this->db->insert('tx_resep', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+						'id_resep'=>$insert_id,
+						'status' => 2
+		);
+
+		if(!empty($insert_id)){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',0)
+						   ->where('is_delete',0)
+						   ->update('tx_resep_detail',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
+	}
+
+	public function load_data_racik(){
+		$id_user = $this->session->userdata('id_user');
+		$kode_resep = $this->input->post('kode_resep');
+		$sql = "SELECT j.id_racik_obat,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+				SUM(j.total_harga) as total_harga
+				FROM `tx_racik_obat` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				WHERE p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_racik_obat
+				ORDER BY j.id_racik_obat DESC";
+		$data = $this->db->query($sql);
+		$sub_tot = $this->get_tot_tebus_resep($kode_resep);
+		if($data->num_rows() > 0 ){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result(),'sub_tot'=>$sub_tot));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Kosong Atau Sudah Ditebus.','result'=>null,'sub_tot'=>null));
+		}
+	}
+
+	public function get_nom_racik(){
+		$id_racik_obat = $_POST['id'];
+		$id_user = $this->session->userdata('id_user');
+		$date_time = date('Y-m-d H:i:s');
+		$where = "";
+		$val = $_POST['val'];
+		$nom = 0;
+
+		// satuan
+		// if($_POST['el']== 2){
+			$sat = $_POST['sat'];
+			$sql_cek = "SELECT * FROM `tx_racik_obat` WHERE id_satuan_utama =$sat and id_racik_obat = $id_racik_obat";
+			$cek = $this->db->query($sql_cek);
+			if($cek->num_rows()==0){
+				$where .=" AND d.id_satuan = $sat ";
+			}else{
+				$where .=" AND j.id_satuan_utama = $sat ";
+				$nom +=1;
+			}
+		// }
+		// Jenis Harga
+		// if($_POST['el']== 3){
+			$ejn_har = $_POST['jen_har'];
+			$where .=" AND h.id_jenis_harga = $ejn_har";
+		// }
+		
+		$sql = "SELECT j.id_racik_obat,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
+				j.harga_jual,h.harga_jual as jual_ex,d.jumlah_produk_p,d.jumlah_produk as jum_p,j.id_satuan_utama
+				FROM `tx_racik_obat` as j
+				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+				LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
+				LEFT JOIN tx_produk_detail as d ON p.id_produk = d.id_produk
+				WHERE j.id_racik_obat = $id_racik_obat $where
+				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				GROUP BY j.id_racik_obat";
+		$get_data = $this->db->query($sql);
+		if($get_data->num_rows()>0){
+			$data = $get_data->row();
+			$res_up = array(
+				     'update_by' =>$id_user,
+					 'update_date' => $date_time
+					);
+			$p_kali = 0;
+				$sql_sat = "SELECT j.id_racik_obat,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
+							FROM `tx_racik_obat` as j
+							LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
+							WHERE j.insert_by = $id_user and j.id_racik_obat = $id_racik_obat 
+							AND j.is_delete = 0 AND j.is_selesai = 0";
+				$data_sat = $this->db->query($sql_sat)->row();
+				if($data_sat->jumlah_produk_p==""){
+					$p_kali += 1;
+				}else{
+					$p_kali += (int)$data_sat->jumlah_produk_p;
+				}
+			if($_POST['el']== 1){
+				
+				$tot_qty = (int) $val;
+					$res_up['jumlah_produk'] = $val;
+					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$p_kali;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
+			}
+
+			if($_POST['el']== 2){
+				$sum = 0;
+				$val_fix ="";
+				$jum_1 = (int)$data->jum_p;
+				$jum_2 = (int)$data->jumlah_produk_p;
+
+				if($nom == 1){
+					$sum += 1;
+				}else if($jum_1 < $jum_2){
+					$sum += $jum_1 * $jum_2;
+				}else{
+					$sum += $jum_1 / $jum_2;
+				}
+
+					$tot_qty = (int)$sum * (int)$data->qty;
+					$res_up['id_satuan'] = $val;
+					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$sum;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty;
+			}
+
+			if($_POST['el']== 3){
+				
+				$tot_qty = (int)$data->qty;
+					$res_up['id_jenis_harga'] = $val;
+					$res_up['harga_jual'] = $data->jual_ex * (int)$p_kali;
+					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
+			}
+
+			$up_ex = $this->db->where('id_racik_obat',$id_racik_obat)->update('tx_racik_obat',$res_up);
+			$result = $this->db->select('harga_jual,total_harga')->from('tx_racik_obat')->where('id_racik_obat',$id_racik_obat)->get();
+			$sub_tot = $this->get_sub_total();
+			if($up_ex){
+				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));
+			}else{
+				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+			}
+
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Tidak Ditemukan'));
+		}
+	}
+
+	public function hapus_produk_racik(){
+		$id = $this->input->post('id');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$user = $this->session->userdata('id_user');
+		if(!empty($id)){
+			$del = $this->db->where('id_racik_obat',$id)
+							->update('tx_racik_obat',array(
+								'is_delete'=>1,
+								'delete_by' => $user,
+								'delete_date' => $datetime->time
+							));
+			if($del){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Delete NUll || Error Code : 7232'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
+		}
+	}
+
+	public function get_save_racik_obat(){
+		$id_user = $this->session->userdata('id_user');
+		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$data = array(
+						'no_nota' => $noTa,
+						'tgl_transaksi' => $datetime->time,
+						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
+						'kembalian' => $_POST['kembalian'],
+						'id_wilayah'=> $this->session->userdata('gudang'),
+						'id_shif'=> $this->session->userdata('id_shif'),
+						'insert_by' => $id_user,
+						'insert_date' => $datetime->time
+
+					);
+					
+		$this->db->insert('tx_kasir', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+						'kode_resep'=>$insert_id,
+						'no_nota'=>$noTa
+		);
+
+		if(!empty($insert_id)){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',0)
+						   ->where('is_delete',0)
+						   ->update('tx_jual',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
+	}
 // End Racik Obat
 }

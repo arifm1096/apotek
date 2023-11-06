@@ -1,8 +1,34 @@
 $(document).ready(function () {
 	$(".navbar-collapse").collapse("hide");
-	load_kasir();
+	load_racik();
 	$(".uang").mask("000.000.000", { reverse: true });
+	status_aktif();
 });
+
+function status_aktif(p_status) {
+	var html = "<option value='pil'> Pilih Status </option>";
+	var data = [
+		{
+			id: "y",
+			title: "Aktif",
+		},
+		{
+			id: "n",
+			title: "Tidak Aktif",
+		},
+	];
+	data.forEach((e) => {
+		html +=
+			'<option value="' +
+			e.id +
+			'"' +
+			(e.id === p_status ? 'selected="selected"' : "") +
+			">" +
+			e.title +
+			"</option>";
+	});
+	$("#aktif").html(html);
+}
 
 $("#produk_barcode").on("input", function () {
 	var param = $("#produk_barcode").val();
@@ -40,45 +66,10 @@ $("#nama_produk_tolak").on("input", function () {
 	});
 });
 
-$("#produk_tolak").submit(function (e) {
-	e.preventDefault();
-	$("#save-button-tolak").html("Sending...");
-	$.ajax({
-		url: URL + "penjualan/save_penjulan_tolak",
-		type: "post",
-		data: new FormData(this),
-		processData: false,
-		contentType: false,
-		cache: false,
-		async: false,
-		beforeSend: function () {
-			$("#add_satuan").find("span.error-text").text();
-		},
-		success: function (data) {
-			$("#save-button-tolak").html("Simpan");
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: res.message,
-				});
-				$("#modal_penjual_tertolak").modal("hide");
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: res.message,
-				});
-			}
-		},
-	});
-});
-
 $("#add_produk").submit(function (e) {
 	e.preventDefault();
 	$.ajax({
-		url: URL + "penjualan/get_add_produk",
+		url: URL + "pelayanan/get_add_produk_racik",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -88,7 +79,7 @@ $("#add_produk").submit(function (e) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				load_kasir();
+				load_racik();
 				$("#produk_barcode").val("");
 			} else {
 				Swal.fire({
@@ -142,11 +133,11 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 	});
 }
 
-function load_kasir() {
+function load_racik() {
 	var html = "";
 	var sub_tot = 0;
 	$.ajax({
-		url: URL + "penjualan/load_data_produk",
+		url: URL + "pelayanan/load_data_racik",
 		type: "POST",
 		data: {},
 		success: function (data) {
@@ -155,10 +146,10 @@ function load_kasir() {
 			if (res.status == 1) {
 				sub_tot += res.sub_tot;
 				res.result.forEach((e) => {
-					load_select(e.id_jual, e.id_jenis_harga, e.id_satuan);
+					load_select(e.id_racik_obat, e.id_jenis_harga, e.id_satuan);
 					html +=
 						`<tr id="row_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`">
                                     <td style="width: 10px; text-align: right;">` +
 						no +
@@ -166,50 +157,51 @@ function load_kasir() {
                                     <td>` +
 						e.nama_produk +
 						`
-                                        <button type="button" class="btn btn-danger btn-xs float-right"
-                                            onclick="hapus_list(` +
-						e.id_jual +
-						`);"><i class="fa fa-trash"
-                                                aria-hidden="true"></i></button>
+                                        
                                     </td>
                                     <td style="width: 100px; "><input type="number" class="form-control"
                                             name="jumlah_produk" value="` +
 						e.qty +
 						`" id="jumlah_produk_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`" onchange="get_nom(` +
-						e.id_jual +
+						e.id_racik_obat +
 						`,1,this.value)"> </td>
-                                    <td>
+                                    <td >
                                         <select class="form-control" id="satuan_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`"  onchange="get_nom(` +
-						e.id_jual +
+						e.id_racik_obat +
 						`,2,this.value)">
                                         </select>
                                     </td>
-                                    <td>
+                                    <td style="display: none;">
                                         <select class="form-control" id="jenis_harga_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`"  onchange="get_nom(` +
-						e.id_jual +
+						e.id_racik_obat +
 						`,3,this.value)">
                                         </select>
                                     </td>
-                                    <td style="width: 100px; ">
+                                    <td style="width: 100px; display: none;">
                                         <input type="text" class="form-control" name="harga" value="` +
 						rupiah(e.harga_jual) +
 						`" id="harga_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`">
                                     </td>
-                                    <td style="width: 130px; ">
+                                    <td style="width: 130px; display: none;">
                                         <input type="text" class="form-control" name="total" value="` +
 						rupiah(e.total_harga) +
 						`" id="total_` +
-						e.id_jual +
+						e.id_racik_obat +
 						`" readonly>
                                     </td>
+									<td><button type="button" class="btn btn-danger btn-xs float-right"
+                                            onclick="hapus_list(` +
+						e.id_racik_obat +
+						`);"><i class="fa fa-trash"
+                                                aria-hidden="true"></i></button></td>
                             </tr>`;
 					no++;
 				});
@@ -224,13 +216,13 @@ function load_kasir() {
 
 function hapus_list(id) {
 	$.ajax({
-		url: URL + "penjualan/hapus_produk_kasir",
+		url: URL + "pelayanan/hapus_produk_racik",
 		type: "POST",
 		data: { id: id },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				load_kasir();
+				load_racik();
 				total();
 				Swal.fire({
 					icon: "success",
@@ -261,7 +253,7 @@ function clear_list(id) {
 					title: "Berhasil",
 					text: res.msg,
 				});
-				load_kasir();
+				load_racik();
 				total();
 			} else {
 				Swal.fire({
@@ -278,19 +270,20 @@ function get_nom(id, el, val) {
 	var jen_har = $("#jenis_harga_" + id).val();
 	var sat = $("#satuan_" + id).val();
 	$.ajax({
-		url: URL + "penjualan/get_nom_change",
+		url: URL + "pelayanan/get_nom_racik",
 		type: "POST",
 		data: { id: id, el: el, val: val, jen_har: jen_har, sat: sat },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				$("#sub_tot").val(rupiah(res.sub_tot, "Rp. "));
-				$("#str_sub_tot").val(res.sub_tot);
-				$("#total_" + id).val(rupiah(res.result.total_harga, "Rp. "));
-				$("#harga_" + id).val(rupiah(res.result.harga_jual, "Rp. "));
-				total_harga();
+				load_racik();
+				Swal.fire({
+					icon: "success",
+					title: "Success !!!",
+					text: res.msg,
+				});
 			} else {
-				load_kasir();
+				load_racik();
 				Swal.fire({
 					icon: "error",
 					title: "Perhatian !!!",
@@ -409,82 +402,5 @@ function add_kasir() {
 				});
 			}
 		},
-	});
-}
-
-function cetak_nota() {
-	var id_kasir = $("#id_kasir").val();
-	$.ajax({
-		url: URL + "penjualan/cetak_struk",
-		type: "POST",
-		data: { id_kasir: id_kasir },
-		success: function (data) {
-			console.log(data);
-		},
-	});
-}
-
-function close_kasir() {
-	$.ajax({
-		url: URL + "penjualan/get_selesai",
-		type: "POST",
-		data: {},
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status) {
-				$("#id_kasir").val("");
-				$("#str_sub_tot").val("");
-				$("#kembalian").val("");
-				$("#total").val("");
-				$("#modal_bayar_kasir").modal("hide");
-				load_kasir();
-				Swal.fire({
-					title: "<strong><u>Data Tersimpan</u></strong>",
-					icon: "success",
-					html: res.msg,
-				});
-			} else {
-				Swal.fire({
-					title: "<strong><u>Perhatian !!/u></strong>",
-					icon: "error",
-					html: res.msg,
-				});
-			}
-		},
-	});
-}
-
-function close_bill() {
-	Swal.fire({
-		html: "<b>Apakah Anda Yakin CLOSE BILL ?</b>",
-		icon: "info",
-		showCancelButton: true,
-		confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
-		confirmButtonText: "Ya, Close Bill",
-	}).then((result) => {
-		if (result.value) {
-			$.ajax({
-				url: URL + "master/close_shif",
-				type: "POST",
-				data: {},
-				success: function (res) {
-					var r = JSON.parse(res);
-					if (r.status == 1) {
-						Swal.fire({
-							icon: "success",
-							title: "Success !!",
-							text: r.msg,
-						});
-					} else {
-						Swal.fire({
-							icon: "error",
-							title: "Perhatian...",
-							text: r.msg,
-						});
-					}
-				},
-			});
-		}
 	});
 }

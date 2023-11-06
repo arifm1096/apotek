@@ -6,18 +6,24 @@
                 <div class="row" style="vertical-align: text-bottom;">
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label>Kode Racikan</label>
-                            <input type="hidden" name="id_racik" id="id_racik">
-                            <input type="text" id="dokter" name="dokter" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
                             <label>Nama Racikan</label>
+                            <input type="hidden" name="id_racik" id="id_racik">
                             <input type="text" id="kode_resep" name="kode_resep" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <textarea class="form-control" name="ket" id="ket" cols="30" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Status Aktif</label>
+                            <select name="aktif" id="aktif" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-info"
                             onclick="add_resep();" data-toggle="tooltip" data-placement="top" title="Simpan Data"><i
                                 class="fa fa-save" aria-hidden="true"></i>
@@ -68,11 +74,12 @@
                                 <tr>
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Produk</th>
-                                    <th>Kuantitas </th>
-                                    <th style="width: 125px; ">Satuan</th>
-                                    <th style="width: 195px; ">Opsi Harga</th>
-                                    <th style="width: 150px; ">Harga Jual</th>
-                                    <th style="width: 150px; ">Total</th>
+                                    <th style="width: 175px; ">Kuantitas </th>
+                                    <th style="width: 175px; ">Satuan</th>
+                                    <th style="width: 195px; display: none; ">Opsi Harga</th>
+                                    <th style="width: 150px; display: none; ">Harga Jual</th>
+                                    <th style="width: 150px; display: none;">Total</th>
+                                    <th style="width: 20px;"> Action</th>
                                 </tr>
                             </thead>
                             <tbody id="list_kasir">
