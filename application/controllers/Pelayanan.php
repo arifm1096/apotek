@@ -1257,33 +1257,31 @@ class Pelayanan extends CI_Controller {
 
 	public function get_save_racik_obat(){
 		$id_user = $this->session->userdata('id_user');
-		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$noTa = $this->Model_pelayanan->get_no_racik($id_user);
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$data = array(
-						'no_nota' => $noTa,
-						'tgl_transaksi' => $datetime->time,
-						'jumlah_uang' => str_replace(".","",$_POST['jumlah_uang']),
-						'kembalian' => $_POST['kembalian'],
-						'id_wilayah'=> $this->session->userdata('gudang'),
-						'id_shif'=> $this->session->userdata('id_shif'),
+						'kode_racikan' => $noTa,
+						'nama_racikan' => $_POST['nama_racikan'],
+						'ket' => $_POST['ket'],
+						'aktif' => $_POST['aktif'],
 						'insert_by' => $id_user,
 						'insert_date' => $datetime->time
 
 					);
 					
-		$this->db->insert('tx_kasir', $data);
+		$this->db->insert('tx_racik', $data);
    		$insert_id = $this->db->insert_id();
 
 		$data_up = array(
-						'kode_resep'=>$insert_id,
-						'no_nota'=>$noTa
+						'id_racik'=>$insert_id,
+						'is_selesai'=>1
 		);
 
 		if(!empty($insert_id)){
 			$up = $this->db->where('insert_by',$id_user)
 						   ->where('is_selesai',0)
 						   ->where('is_delete',0)
-						   ->update('tx_jual',$data_up);
+						   ->update('tx_racik_obat',$data_up);
 			if($up){
 				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
 			}else{
@@ -1292,6 +1290,10 @@ class Pelayanan extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
 		}
+	}
+
+	public function list_racikan(){
+		
 	}
 // End Racik Obat
 }

@@ -358,43 +358,31 @@ function selisih() {
 	$("#str_kembalian").val(rupiah(kem));
 }
 
-function add_kasir() {
-	var sub = $("#str_sub_tot").val();
-	var ser = $("#service").val();
-	var emb = $("#embalase").val();
-	var lai = $("#lain").val();
-	var kembalian = $("#kembalian").val();
-	var tot = $("#total").val();
-	var jumlah_uang = $("#jumlah_uang").val();
-	$("#save-button").hide();
-	$("#send-button").show();
+function add_resep() {
+	var id_racik = $("#id_racik").val();
+	var nama_racikan = $("#nama_racikan").val();
+	var ket = $("#ket").val();
+	var aktif = $("#aktif").val();
 	$.ajax({
-		url: URL + "penjualan/get_add_kasir",
+		url: URL + "pelayanan/get_save_racik_obat",
 		type: "POST",
 		data: {
-			sub: sub,
-			ser: ser,
-			emb: emb,
-			lai: lai,
-			tot: tot,
-			kembalian: kembalian,
-			jumlah_uang: jumlah_uang,
+			id_racik: id_racik,
+			nama_racikan: nama_racikan,
+			ket: ket,
+			aktif: aktif,
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
 
 			if (res.status == 1) {
-				$("#id_kasir").val(res.id);
-				$("#save-button").show();
-				$("#send-button").hide();
 				Swal.fire({
 					title: "<strong><u>Data Tersimpan</u></strong>",
 					icon: "success",
 					html: res.msg,
 				});
+				window.location.reload();
 			} else {
-				$("#save-button").show();
-				$("#send-button").hide();
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
 					icon: "error",

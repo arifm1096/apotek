@@ -8,7 +8,7 @@
                         <div class="form-group">
                             <label>Nama Racikan</label>
                             <input type="hidden" name="id_racik" id="id_racik">
-                            <input type="text" id="kode_resep" name="kode_resep" class="form-control">
+                            <input type="text" id="nama_racikan" name="nama_racikan" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -28,10 +28,10 @@
                             onclick="add_resep();" data-toggle="tooltip" data-placement="top" title="Simpan Data"><i
                                 class="fa fa-save" aria-hidden="true"></i>
                             Simpan</button>
-                        <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-warning"
+                        <!-- <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-warning"
                             onclick="nota_resep();" data-toggle="tooltip" data-placement="top"
                             title="Cetak Nota Resep"><i class="fa fa-print" aria-hidden="true"></i>
-                            Racikan</button>
+                            Racikan</button> -->
                         <!-- <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-success"
                             onclick="window.location.reload();" data-toggle="tooltip" data-placement="top"
                             title="Cetak Nota Resep"><i class="fa fa-plus" aria-hidden="true"></i>
