@@ -1293,7 +1293,60 @@ class Pelayanan extends CI_Controller {
 	}
 
 	public function list_racikan(){
-		
+		$var['content'] = 'view-racik-list';
+		$var['js']		= 'js-racik-list';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_racikan(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (nama_racikan like '%" . $searchValue . "%'
+								OR ket like '%" . $searchValue . "%'
+								OR kode_racikan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		$where = " is_delete = 0 " . $searchQuery . "";
+
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_racik` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_racik`
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+
+		// Fetch Records
+		$sql = "SELECT id_racik_obat,kode_racikan,nama_racikan,ket,aktif
+		FROM `tx_racik`
+		WHERE $where
+		order by id_racik_obat " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
 	}
 // End Racik Obat
 }
