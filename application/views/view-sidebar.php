@@ -282,7 +282,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('pembelian/data_retur'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('pelayanan/list_racikan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penggunaan Reacian</p>
                             </a>

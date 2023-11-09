@@ -987,6 +987,7 @@ class Pelayanan extends CI_Controller {
 
 // Start Racik Obat
 	Public function racik_obat(){
+		$var["id_racik"] = "";
 		$var['content'] = 'view-racik-obat';
 		$var['js'] = 'js-racik-obat';
 		$this->load->view('view-index',$var);
@@ -1319,6 +1320,11 @@ class Pelayanan extends CI_Controller {
 
 		$where = " is_delete = 0 " . $searchQuery . "";
 
+		if($_POST['id_racik'] !==""){
+			$id = $_POST['id_racik'];
+			$where .= " AND id_racik = $id";
+		}
+
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
 		FROM `tx_racik` where is_delete = 0";
@@ -1333,10 +1339,10 @@ class Pelayanan extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 
 		// Fetch Records
-		$sql = "SELECT id_racik_obat,kode_racikan,nama_racikan,ket,aktif
+		$sql = "SELECT id_racik,kode_racikan,nama_racikan,ket,aktif
 		FROM `tx_racik`
 		WHERE $where
-		order by id_racik_obat " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		order by id_racik " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
 
 		// Response
@@ -1347,6 +1353,14 @@ class Pelayanan extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function get_detail_racikan(){
+		$id = $this->uri->segment(3);
+		$var['id_racik'] = $id;
+		$var['content'] = 'view-racik-obat';
+		$var['js'] = 'js-racik-obat';
+		$this->load->view('view-index',$var);
 	}
 // End Racik Obat
 }
