@@ -75,9 +75,9 @@ function load_racikan() {
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
 						row.id_racik +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
-						'<button type="button"  class="btn btn-info btn-sm" onclick="detail(\'' +
+						'<button type="button"  class="btn btn-success btn-sm" onclick="detail(\'' +
 						row.id_racik +
-						'\')"><i class="fa fa-search"></i></button> &nbsp' +
+						'\')"><i class="fa fa-shopping-cart"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
 						row.id_racik +
 						"','" +
@@ -173,50 +173,6 @@ function detail(id) {
 	});
 }
 
-function edit(id) {
-	$("#button-save").show();
-	$.ajax({
-		url: URL + "pelayanan/get_id_remik",
-		type: "POST",
-		data: { id: id },
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-				$("#id_remik").val(res.result.id_remik);
-				$("#nama_pelanggan").val(res.result.nama_pelanggan);
-				$("#kode_remik").val(res.result.kode_remik);
-				$("#alamat").val(res.result.alamat);
-				$("#tekanan_darah").val(res.result.tekanan_darah);
-				$("#tekanan_nafas").val(res.result.tekanan_nafas);
-				$("#denyut_nadi").val(res.result.denyut_nadi);
-				$("#suhu_tubuh").val(res.result.suhu_tubuh);
-				$("#kadar_oksigen").val(res.result.kadar_oksigen);
-				$("#skala_nyeri").val(res.result.skala_nyeri);
-				$("#lokasi_nyeri").val(res.result.lokasi_nyeri);
-
-				if (res.result.alergi_obat == 1) {
-					$("#alergi_obat").prop("checked", true);
-				}
-
-				if (res.result.alergi_makanan == 1) {
-					$("#alergi_makanan").prop("checked", true);
-				}
-
-				if (res.result.alergi_suhu == 1) {
-					$("#alergi_suhu").prop("checked", true);
-				}
-				$("#mediumModalLabel").html("Detail Rekamedik Dasar");
-			} else {
-				Swal.fire({
-					icon: "warning",
-					title: "Perhatian",
-					text: res.msg,
-				});
-			}
-		},
-	});
-}
-
 function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:
@@ -267,3 +223,11 @@ $("#modal_input_dokter").on("hide.bs.modal", function () {
 	$("#nama_dokter").val("");
 	status_aktif((id_status = "pil"));
 });
+
+function edit(id) {
+		window.open(
+			URL + "pelayanan/get_detail_racikan?id_racik=" + id,
+			+"_blank"
+		);
+	
+}

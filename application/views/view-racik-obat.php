@@ -7,7 +7,6 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label>Nama Racikan</label>
-                            <input type="hidden" name="id_racik" id="id_racik">
                             <input type="text" id="nama_racikan" name="nama_racikan" class="form-control">
                         </div>
                     </div>
@@ -44,6 +43,7 @@
                     <div class="col-md-6">
                         <form id="add_produk">
                             <div class="input-group">
+                            <input type="hidden" name="id_racik" id="id_racik" value="<?php echo $id_racik; ?>">
                                 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                     value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                 <input type="search" class="form-control" id="produk_barcode" name="produk_barcode"

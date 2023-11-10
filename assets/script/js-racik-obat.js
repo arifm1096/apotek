@@ -134,12 +134,13 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 }
 
 function load_racik() {
+	var id = $('#id_racik').val();
 	var html = "";
 	var sub_tot = 0;
 	$.ajax({
 		url: URL + "pelayanan/load_data_racik",
 		type: "POST",
-		data: {},
+		data: {id:id},
 		success: function (data) {
 			var res = JSON.parse(data);
 			var no = 1;

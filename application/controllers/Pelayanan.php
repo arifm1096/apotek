@@ -995,6 +995,7 @@ class Pelayanan extends CI_Controller {
 
 	public function get_add_produk_racik(){
 		$produk = $_POST['produk_barcode'];
+		$id_racik = $_POST['id_racik'];
 		$datetime = $this->db->select('now() as time')->get()->row();
 
 		if(!empty($produk)){
@@ -1019,6 +1020,10 @@ class Pelayanan extends CI_Controller {
 						'insert_by' => $this->session->userdata('id_user'),
 						'insert_date' => $datetime->time
 				);
+				if($id_racik !==""){
+					$r_in['id_racik'] = $id_racik;
+					$r_in['is_selesai'] = 1;
+				}
 			$id_user = $this->session->userdata('id_user');
 			$sql_jul ="SELECT j.id_racik_obat,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
@@ -1115,11 +1120,18 @@ class Pelayanan extends CI_Controller {
 	public function load_data_racik(){
 		$id_user = $this->session->userdata('id_user');
 		$kode_resep = $this->input->post('kode_resep');
+		$where = "";
+		$id_racik = $this->input->post("id");
+		if($id_racik !==""){
+			$where .= " AND id_racik = $id_racik";
+		}else{
+			$where .= " AND j.is_selesai = 0";
+		}
 		$sql = "SELECT j.id_racik_obat,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
 				FROM `tx_racik_obat` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
-				WHERE p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
+				WHERE p.is_delete = 0 AND j.is_delete = 0 $where
 				GROUP BY j.id_racik_obat
 				ORDER BY j.id_racik_obat DESC";
 		$data = $this->db->query($sql);
@@ -1320,10 +1332,6 @@ class Pelayanan extends CI_Controller {
 
 		$where = " is_delete = 0 " . $searchQuery . "";
 
-		if($_POST['id_racik'] !==""){
-			$id = $_POST['id_racik'];
-			$where .= " AND id_racik = $id";
-		}
 
 		// Total number records without filtering
 		$sql_count = "SELECT count(*) as allcount
@@ -1356,7 +1364,8 @@ class Pelayanan extends CI_Controller {
 	}
 
 	public function get_detail_racikan(){
-		$id = $this->uri->segment(3);
+		// $id = $this->uri->segment(3);
+		$id = $_GET['id_racik'];
 		$var['id_racik'] = $id;
 		$var['content'] = 'view-racik-obat';
 		$var['js'] = 'js-racik-obat';
