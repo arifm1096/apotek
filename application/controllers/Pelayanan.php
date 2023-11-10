@@ -848,6 +848,66 @@ class Pelayanan extends CI_Controller {
 		}
 	}
 
+// Detail Resep Start
+	public function detail_resep(){
+		$var['content'] = 'view-detail-resep';
+		$var['js'] = 'view-detail-resep';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_detail_resep(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue = $_POST['search']['value'];
+
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (nama_racikan like '%" . $searchValue . "%'
+								OR ket like '%" . $searchValue . "%'
+								OR kode_racikan like '%" . $searchValue . "%'					
+			) ";
+		}
+
+		$where = " is_delete = 0 " . $searchQuery . "";
+
+
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_racik` where is_delete = 0";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_racik`
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+
+		// Fetch Records
+		$sql = "SELECT id_racik,kode_racikan,nama_racikan,ket,aktif
+		FROM `tx_racik`
+		WHERE $where
+		order by id_racik " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+// Detail Resep End
+
 
 // starts Rekamedik Dasar
 	public function remik(){
@@ -1093,28 +1153,31 @@ class Pelayanan extends CI_Controller {
 						'insert_by' => $id_user,
 						'insert_date' => $datetime->time
 					);
-					
-		$this->db->insert('tx_resep', $data);
-   		$insert_id = $this->db->insert_id();
 
-		$data_up = array(
-						'id_resep'=>$insert_id,
-						'status' => 2
-		);
+			$this->db->insert('tx_resep', $data);
+			$insert_id = $this->db->insert_id();
 
-		if(!empty($insert_id)){
-			$up = $this->db->where('insert_by',$id_user)
-						   ->where('is_selesai',0)
-						   ->where('is_delete',0)
-						   ->update('tx_resep_detail',$data_up);
-			if($up){
-				echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+			$data_up = array(
+							'id_resep'=>$insert_id,
+							'status' => 2
+			);
+
+			if(!empty($insert_id)){
+				$up = $this->db->where('insert_by',$id_user)
+							->where('is_selesai',0)
+							->where('is_delete',0)
+							->update('tx_resep_detail',$data_up);
+				if($up){
+					echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				}
 			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
 			}
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
-		}
+	
+					
+		
 	}
 
 	public function load_data_racik(){
@@ -1140,6 +1203,23 @@ class Pelayanan extends CI_Controller {
 			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->result(),'sub_tot'=>$sub_tot));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data Kosong Atau Sudah Ditebus.','result'=>null,'sub_tot'=>null));
+		}
+	}
+
+	public function load_nama_racik(){
+		$where = "";
+		$id_racik = $this->input->post("id");
+		
+		if($id_racik !==""){
+			$where .= " id_racik = $id_racik";
+		}
+
+		$sql = "SELECT * FROM `tx_racik` where $where";
+		$data = $this->db->query($sql);
+		if($data->num_rows() > 0 ){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$data->row()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Kosong Atau Sudah Ditebus.','result'=>null));
 		}
 	}
 
@@ -1272,6 +1352,7 @@ class Pelayanan extends CI_Controller {
 		$id_user = $this->session->userdata('id_user');
 		$noTa = $this->Model_pelayanan->get_no_racik($id_user);
 		$datetime = $this->db->select('now() as time')->get()->row();
+		$id_racik = $_POST['id_racik'];
 		$data = array(
 						'kode_racikan' => $noTa,
 						'nama_racikan' => $_POST['nama_racikan'],
@@ -1281,27 +1362,39 @@ class Pelayanan extends CI_Controller {
 						'insert_date' => $datetime->time
 
 					);
-					
-		$this->db->insert('tx_racik', $data);
-   		$insert_id = $this->db->insert_id();
+		if($id_racik == ""){
+			$this->db->insert('tx_racik', $data);
+			$insert_id = $this->db->insert_id();
 
-		$data_up = array(
-						'id_racik'=>$insert_id,
-						'is_selesai'=>1
-		);
+			$data_up = array(
+							'id_racik'=>$insert_id,
+							'is_selesai'=>1
+			);
 
-		if(!empty($insert_id)){
-			$up = $this->db->where('insert_by',$id_user)
-						   ->where('is_selesai',0)
-						   ->where('is_delete',0)
-						   ->update('tx_racik_obat',$data_up);
-			if($up){
-				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+			if(!empty($insert_id)){
+				$up = $this->db->where('insert_by',$id_user)
+							->where('is_selesai',0)
+							->where('is_delete',0)
+							->update('tx_racik_obat',$data_up);
+				if($up){
+					echo json_encode(array('status'=>1,'msg'=>'Data Success DiSImpan !!'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				}
 			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
 			}
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+			unset($data['insert_by']);
+			unset($data['insert_date']);
+			$data['update_by'] = $datetime->time;
+			$up_racik = $this->db->where('id_racik',$id_racik)
+							     ->update('tx_racik',$data);
+			if($up_racik){
+				echo json_encode(array('status'=>1,'msg'=>'Data Success DiSImpan !!'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+			}
 		}
 	}
 
@@ -1371,5 +1464,40 @@ class Pelayanan extends CI_Controller {
 		$var['js'] = 'js-racik-obat';
 		$this->load->view('view-index',$var);
 	}
+
+	public function get_shop_racik(){
+		$id_racik = $this->input->post('id');
+		$id_user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$time = $datetime->time;
+		$cek_kasir = $this->db->get_where('tx_jual',array('is_selesai'=>0,'is_delete'=>0));
+		$where = "";
+
+		if($id_racik !==""){
+			$where .= " AND id_racik = $id_racik";
+		}
+
+		if($id_racik !==""){
+			if($cek_kasir->num_rows() == 0){
+				$sql = "INSERT INTO `tx_jual` ( id_produk,nama_produk,harga_beli,harga_jual,id_jenis_harga,id_satuan_utama,id_satuan,jumlah_produk,total_harga,insert_by,insert_date) 
+						SELECT id_produk,nama_produk,harga_beli,harga_jual,id_jenis_harga,id_satuan_utama,id_satuan,jumlah_produk,total_harga,$id_user as insert_by ,'$time' as insert_date
+						FROM `tx_racik_obat` 
+						WHERE is_delete = 0 AND is_selesai = 1 $where";
+				$ext = $this->db->query($sql);
+
+				if($ext){
+					echo json_encode(array('status'=>1,'msg'=>'Data Berhasil Disimpan..'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Error Simpan Data !!'));
+				}
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Kasir Masih Ada, Kosongkan Transaksi Dahulu !!'));
+			}
+
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error ID not Found'));
+		}
+	}
+	
 // End Racik Obat
 }

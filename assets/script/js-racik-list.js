@@ -75,7 +75,7 @@ function load_racikan() {
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
 						row.id_racik +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
-						'<button type="button"  class="btn btn-success btn-sm" onclick="detail(\'' +
+						'<button type="button"  class="btn btn-success btn-sm" onclick="shop(\'' +
 						row.id_racik +
 						'\')"><i class="fa fa-shopping-cart"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
@@ -129,50 +129,6 @@ $("#add_remik").submit(function (e) {
 	});
 });
 
-function detail(id) {
-	$.ajax({
-		url: URL + "pelayanan/get_id_remik",
-		type: "POST",
-		data: { id: id },
-		success: function (data) {
-			var res = JSON.parse(data);
-			if (res.status == 1) {
-				$("#nama_pelanggan").val(res.result.nama_pelanggan);
-				$("#kode_remik").val(res.result.kode_remik);
-				$("#alamat").val(res.result.alamat);
-				$("#tekanan_darah").val(res.result.tekanan_darah);
-				$("#tekanan_nafas").val(res.result.tekanan_nafas);
-				$("#denyut_nadi").val(res.result.denyut_nadi);
-				$("#suhu_tubuh").val(res.result.suhu_tubuh);
-				$("#kadar_oksigen").val(res.result.kadar_oksigen);
-				$("#skala_nyeri").val(res.result.skala_nyeri);
-				$("#lokasi_nyeri").val(res.result.lokasi_nyeri);
-
-				if (res.result.alergi_obat == 1) {
-					$("#alergi_obat").prop("checked", true);
-				}
-
-				if (res.result.alergi_makanan == 1) {
-					$("#alergi_makanan").prop("checked", true);
-				}
-
-				if (res.result.alergi_suhu == 1) {
-					$("#alergi_suhu").prop("checked", true);
-				}
-				$("#button-save").hide();
-				$("#mediumModalLabel").html("Detail Rekamedik Dasar");
-				$("#modal_input_dokter").modal("show");
-			} else {
-				Swal.fire({
-					icon: "warning",
-					title: "Perhatian",
-					text: res.msg,
-				});
-			}
-		},
-	});
-}
-
 function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:
@@ -215,19 +171,32 @@ function hapus(id, kode, nama_pelanggan) {
 	});
 }
 
-$("#modal_input_dokter").on("hide.bs.modal", function () {
-	$("#mediumModalLabel").html("Add New Data");
-	$("#id_dokter").val("");
-	$("#kode_dokter").val("");
-	$("#alamat").val("");
-	$("#nama_dokter").val("");
-	status_aktif((id_status = "pil"));
-});
-
 function edit(id) {
-		window.open(
-			URL + "pelayanan/get_detail_racikan?id_racik=" + id,
-			+"_blank"
-		);
-	
+	window.open(URL + "pelayanan/get_detail_racikan?id_racik=" + id, +"_blank");
+}
+
+function shop(id) {
+	$.ajax({
+		url: URL + "pelayanan/get_shop_racik",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.msg,
+				});
+				window.open(URL + "penjualan");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: res.msg,
+				});
+			}
+		},
+	});
 }

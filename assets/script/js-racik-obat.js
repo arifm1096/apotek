@@ -3,6 +3,7 @@ $(document).ready(function () {
 	load_racik();
 	$(".uang").mask("000.000.000", { reverse: true });
 	status_aktif();
+	load_nama_racik();
 });
 
 function status_aktif(p_status) {
@@ -134,13 +135,13 @@ function load_select(p_id, p_jenis_harga, p_satuan) {
 }
 
 function load_racik() {
-	var id = $('#id_racik').val();
+	var id = $("#id_racik").val();
 	var html = "";
 	var sub_tot = 0;
 	$.ajax({
 		url: URL + "pelayanan/load_data_racik",
 		type: "POST",
-		data: {id:id},
+		data: { id: id },
 		success: function (data) {
 			var res = JSON.parse(data);
 			var no = 1;
@@ -211,6 +212,31 @@ function load_racik() {
 			$("#str_sub_tot").val(sub_tot);
 			$("#list_kasir").html(html);
 			total_harga();
+		},
+	});
+}
+
+function load_nama_racik() {
+	var id = $("#id_racik").val();
+
+	$.ajax({
+		url: URL + "pelayanan/load_nama_racik",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				$("#nama_racikan").val(res.result.nama_racikan);
+				$("#ket").val(res.result.ket);
+				status_aktif(res.result.aktif);
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !!",
+					text: res.msg,
+				});
+			}
 		},
 	});
 }
@@ -382,7 +408,7 @@ function add_resep() {
 					icon: "success",
 					html: res.msg,
 				});
-				window.location.reload();
+				// window.location.reload();
 			} else {
 				Swal.fire({
 					title: "<strong><u>Perhatian !!/u></strong>",
