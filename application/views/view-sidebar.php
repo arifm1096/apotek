@@ -360,7 +360,13 @@
                         <li class="nav-item">
                             <a href="<?php echo base_url('laporan/laporan_margin'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Laporan Margin</p>
+                                <p> Laporan Margin Penjualan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/laporan_margin_dok'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Laporan Margin Resep Dok.</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -376,7 +382,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('laporan/laporan_beli_rencana'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('laporan/laporan_keuangan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Keuangan</p>
                             </a>

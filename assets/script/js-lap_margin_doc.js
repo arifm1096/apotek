@@ -16,7 +16,7 @@ $(".select2").select2();
 function load_margin(tgl1, tgl2) {
 	$("#tbl_margin").DataTable({
 		ajax: {
-			url: URL + "laporan/load_margin",
+			url: URL + "laporan/load_margin_dok",
 			type: "POST",
 			data: { tgl1: tgl1, tgl2: tgl2 },
 		},
@@ -79,7 +79,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
-			URL + "laporan/export_excel_margin?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			URL + "laporan/export_excel_margin_dok?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

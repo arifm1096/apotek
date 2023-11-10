@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Laporan Data Margin Penjualan</h4>
+                <h4>Laporan Keuangan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -41,7 +41,7 @@
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
                     <div class="col-md-2">
-                        <h4 id="total_pejualan" style="font-weight:bold">Total Margin :</h4>
+                        <!-- <h4 id="total_pejualan" style="font-weight:bold">Total Margin :</h4> -->
                     </div>
                     <div class="col-md-3">
                         <h4 id="total_nominal" style="font-weight:bold"></h4>
@@ -53,32 +53,53 @@
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
-                <table id ="tbl_margin" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Nama Produk</th>
-                            <th>Total Terjual</th>
-                            <th>Harga Beli</th>
-                            <th>Total Harga Beli</th>
-                            <th>Harga Jual</th>
-                            <th>Total Harga Jual</th>
-                            <th>Margin</th>
-                            <!-- <th style="width: 75px; ">Action</th> -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tfoot>
-                        <th colspan="3">Total</th>
-                        <th>
-                            <div id="qty_pejualan"></div>
-                        </th>
-                        <th>
-                            <div id="total_pejualan"></div>
-                        </th>
-                    </tfoot>
+                <table class="table table-bordered">
+                    <tr>
+                        <th colspan="2"> <h5>Modal</h5></th>
+                    </tr>
+                    <tr>
+                        <th>Modal</th>
+                        <th><div id="modal"></div></th>
+                    </tr>
 
+                    <tr>
+                        <th colspan="2"> <h5>Pemasukan</h5></th>
+                    </tr>
+                    <tr>
+                        <th>Margin Penjualan</th>
+                        <th><div id="m_penjualan"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Margin Resep Dokter</th>
+                        <th><div id="m_resep"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Total Margin</th>
+                        <th><div id="tot_margin"></div></th>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2"> <h5>Pengeluaran</h5></th>
+                    </tr>
+                    <tr>
+                        <th>Pembelian Langsung</th>
+                        <th><div id="pem_lang"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Pembelian Rencana</th>
+                        <th><div id="pem_ren"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Total Pembelian</th>
+                        <th><div id="tot_pem"></div></th>
+                    </tr>
+                    <tr>
+                        <th colspan="2"> <h5>Laba</h5></th>
+                    </tr>
+                    <tr>
+                        <th>Total Nominal</th>
+                        <th><div id="laba_rugi"></div></th>
+                    </tr>
                 </table>
             </div>
 
