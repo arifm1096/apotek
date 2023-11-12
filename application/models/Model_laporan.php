@@ -35,16 +35,16 @@
 			$query = "SELECT sum(tx.margin) as tot_margin 
 			FROM
 			(SELECT j.id_jual,p.id_produk,p.sku_kode_produk,p.nama_produk,
-			sum(j.jumlah_produk) as tot_produk_jual,
-			p.harga_beli,
-			sum(j.harga_beli) * sum(j.jumlah_produk) as tot_harga_beli,
-			j.harga_jual,
-			sum(j.harga_jual) * sum(j.jumlah_produk) as tot_harga_jual,
-			(sum(j.harga_jual) * sum(j.jumlah_produk)) - (sum(j.harga_beli) * sum(j.jumlah_produk)) as margin
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.jumlah_produk) * j.harga_beli as margin
 			FROM `tx_jual` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND p.is_delete = 0  AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
-			GROUP BY p.id_produk) as tx";
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			GROUP BY j.id_produk) as tx";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();
@@ -57,17 +57,17 @@
 			$query = "SELECT sum(tx.margin) as tot_margin 
 			FROM
 			(SELECT p.id_produk,p.sku_kode_produk,p.nama_produk,
-			sum(j.jumlah_produk) as tot_produk_jual,
-			p.harga_beli,
-			sum(j.harga_beli) * sum(j.jumlah_produk) as tot_harga_beli,
-			j.harga_jual,
-			sum(j.harga_jual) * sum(j.jumlah_produk) as tot_harga_jual,
-			(sum(j.harga_jual) * sum(j.jumlah_produk)) - (sum(j.harga_beli) * sum(j.jumlah_produk)) as margin
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.jumlah_produk) * j.harga_beli as margin
 			FROM `tx_resep_detail` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND p.is_delete = 0  AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
 			AND j.status = 1 or j.status = 3
-			GROUP BY p.id_produk) as tx";
+			GROUP BY j.id_produk) as tx";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();
@@ -76,12 +76,17 @@
 			}
 		}
 
-		public function get_lap_pem_langsung($tgl_awal,$tgl_akhir){
+		public function get_lap_pen_dok($tgl_awal,$tgl_akhir){
 			$query = "SELECT 
-			sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
-			FROM `tx_produk_stok_detail` as psd
-			LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
-			WHERE psd.is_delete = 0 AND p.is_delete = 0 AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.harga_beli) as margin
+			FROM `tx_resep_detail` as j
+			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();
@@ -90,12 +95,59 @@
 			}
 		}
 
-		public function get_lap_pem_rencana($tgl_awal,$tgl_akhir){
+		public function get_lap_pen_kas($tgl_awal,$tgl_akhir){
 			$query = "SELECT 
-			sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
-			FROM `tx_beli_rencana` as psd
-			LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
-			WHERE psd.is_delete = 0 AND p.is_delete = 0 AND psd.status_terima = 1 AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.harga_beli) as margin
+			FROM `tx_jual` as j
+			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+			$sql = $this->db->query($query);
+			if($sql->num_rows()>0){
+				return $sql->row();
+			}else{
+				return null;
+			}
+		}
+
+		public function get_lap_pem_dok($tgl_awal,$tgl_akhir){
+			$query = "SELECT SUM(tx.tot_harga_beli) AS tot_harga_beli
+			FROM (SELECT p.id_produk,p.sku_kode_produk,p.nama_produk,
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.harga_beli) as margin
+			FROM `tx_resep_detail` as j
+			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			GROUP BY j.id_produk) as tx";
+			$sql = $this->db->query($query);
+			if($sql->num_rows()>0){
+				return $sql->row();
+			}else{
+				return null;
+			}
+		}
+
+		public function get_lap_pem_kas($tgl_awal,$tgl_akhir){
+			$query = "SELECT SUM(tx.tot_harga_beli) AS tot_harga_beli
+			FROM (SELECT j.id_jual,p.id_produk,p.sku_kode_produk,p.nama_produk,
+			sum(j.jumlah_produk) as tot_produk_jual, 
+			j.harga_beli,
+			sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+			j.harga_jual, 
+			sum(j.total_harga) as tot_harga_jual,
+			sum(j.total_harga) - sum(j.harga_beli) as margin
+			FROM `tx_jual` as j
+			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			GROUP BY j.id_produk) as tx";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();

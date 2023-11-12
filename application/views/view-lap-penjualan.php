@@ -30,7 +30,7 @@
                     <div class="col-md-2">
                     </div>
                     <div class="col-md-2">
-                        <!-- <label>Total Penjualan:</label> -->
+                        <label>Total Penjualan:</label>
                     </div>
 
                 </div>
@@ -60,7 +60,7 @@
                                 class="fa fa-window-close" aria-hidden="true"></i></button>
                     </div>
                     <div class="col-md-3">
-                        <!-- <h4 id="total_pejualan" style="font-weight:bold"></h4> -->
+                        <h4 id="total_pejualan" style="font-weight:bold"></h4>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,8 @@
                     <tfoot>
                         <th colspan="3">Total</th>
                         <th><div id="qty_pejualan"></div></th>
-                        <th><div id="total_pejualan"></div></th>
+                        <th></th>
+                        <!-- <th><div id="total_pejualan"></div></th> -->
                     </tfoot>
 
                 </table>

@@ -27,10 +27,15 @@ function load_lap_keu(tgl1, tgl2) {
 					$("#m_penjualan").html(res.res.tot_margin_kas);
 					$("#m_resep").html(res.res.tot_margin_res);
 					$("#tot_margin").html(res.res.tot_margin);
-					$("#pem_lang").html(res.res.tot_pem_langsung);
-					$("#pem_ren").html(res.res.tot_pem_rencana);
+					$("#pen_kas").html(res.res.tot_pen_kas);
+					$("#pen_dok").html(res.res.tot_pen_dok);
+					$("#pem_kas").html(res.res.tot_pem_kas);
+					$("#pem_dok").html(res.res.tot_pem_dok);
+					$("#tot_pen").html(res.res.tot_penjualan);
 					$("#tot_pem").html(res.res.tot_pembelian);
-					$("#laba_rugi").html(res.res.laba_rugi);
+					$("#tot_pen_x").html(res.res.tot_penjualan);
+					$("#tot_pem_x").html(res.res.tot_pembelian);
+					$("#laba_rugi").html(res.res.tot_margin);
 				}else{
 					Swal.fire({
 						icon : 'error',
@@ -65,7 +70,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
-			URL + "laporan/export_excel_margin?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			URL + "laporan/export_data_keu?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

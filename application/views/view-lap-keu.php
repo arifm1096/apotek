@@ -66,7 +66,7 @@
                         <th colspan="2"> <h5>Pemasukan</h5></th>
                     </tr>
                     <tr>
-                        <th>Margin Penjualan</th>
+                        <th>Margin Penjualan Kasir</th>
                         <th><div id="m_penjualan"></div></th>
                     </tr>
                     <tr>
@@ -74,30 +74,56 @@
                         <th><div id="m_resep"></div></th>
                     </tr>
                     <tr>
-                        <th>Total Margin</th>
+                        <th>Jumlah Margin</th>
                         <th><div id="tot_margin"></div></th>
                     </tr>
 
                     <tr>
-                        <th colspan="2"> <h5>Pengeluaran</h5></th>
+                        <th colspan="2"> <h5>Penjualan</h5></th>
                     </tr>
                     <tr>
-                        <th>Pembelian Langsung</th>
-                        <th><div id="pem_lang"></div></th>
+                        <th>Total Penjualan Kasir</th>
+                        <th><div id="pen_kas"></div></th>
                     </tr>
                     <tr>
-                        <th>Pembelian Rencana</th>
-                        <th><div id="pem_ren"></div></th>
+                        <th>Total Penjualan Resep Dokter</th>
+                        <th><div id="pen_dok"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Total Penjualan</th>
+                        <th><div id="tot_pen"></div></th>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2"> <h5>Pembelian</h5></th>
+                    </tr>
+                    <tr>
+                        <th>Total Pembelian Kasir</th>
+                        <th><div id="pem_kas"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Total Pembelian Resep Dokter</th>
+                        <th><div id="pem_dok"></div></th>
                     </tr>
                     <tr>
                         <th>Total Pembelian</th>
                         <th><div id="tot_pem"></div></th>
                     </tr>
+
                     <tr>
                         <th colspan="2"> <h5>Laba</h5></th>
                     </tr>
                     <tr>
-                        <th>Total Nominal</th>
+                        <th>Total Penjualan</th>
+                        <th><div id="tot_pen_x"></div></th>
+                    </tr>
+                    <tr>
+                        <th>Total Pembelian</th>
+                        <th><div id="tot_pem_x"></div></th>
+                    </tr>
+                   
+                    <tr>
+                        <th>Laba Bersih</th>
                         <th><div id="laba_rugi"></div></th>
                     </tr>
                 </table>
