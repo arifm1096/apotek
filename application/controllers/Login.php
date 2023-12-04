@@ -90,8 +90,7 @@ class Login extends CI_Controller
         
     }
 
-    public function proses_logout()
-    {
+    public function proses_logout(){
         $cek = $this->db->get_where('tx_log_shif',array('close'=>0));
 
         if($cek->num_rows() == 0){

@@ -41,7 +41,13 @@ class Penjualan extends CI_Controller {
 
 	public function get_produk_barcode(){
 		$param = $_POST['param'];
-		$sql = "SELECT nama_produk FROM `tx_produk` WHERE is_delete = 0 and nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
+		$sql = "SELECT p.nama_produk 
+		FROM `tx_produk` as p
+		LEFT JOIN tx_produk_stok as ps on p.id_produk = ps.id_produk
+		WHERE p.is_delete = 0 AND ps.jumlah_stok > 0 and p.nama_produk LIKE '%$param%' 
+		OR p.barcode LIKE '%$param%' 
+		ORDER BY p.nama_produk asc";
+		// $sql = "SELECT nama_produk FROM `tx_produk` WHERE is_delete = 0 and nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
 		$data = $this->db->query($sql)->result();
 		$str_produk = [];
 		foreach ($data as $key => $val) {
