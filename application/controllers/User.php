@@ -182,8 +182,9 @@ class User extends CI_Controller{
 		$var['js'] = 'js-wilayah';
 		$this->load->view('view-index',$var);
 	}
+	
 	public function load_wilayah(){
-		// Read Value 
+		// Read Value mjlklklkjhjkh
 		$draw = $_POST['draw'];
 		$row = $_POST['start'];
 		$rowperpage = $_POST['length']; // Rows display per page

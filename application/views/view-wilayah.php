@@ -32,6 +32,7 @@
                             <th>Alamat</th>
                             <th>Nama Printer</th>
                             <th>Status Aktif</th>
+                            <th>Gambar</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>
@@ -91,6 +92,11 @@
                                 <label>Status Aktif</label>
                                 <select class="form-control" id="select_aktif" name="aktif" style="width: 100%;">
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEmail3">Logo</label>
+                                <input type="file" class="form-control dropify" id="logo" name="logo" style
+                                    data-default-file="<?php echo base_url();?>assets/images/images.jpg">
                             </div>
                             <div class="social-auth-links text-center mb-1">
                                 <div class="row">

@@ -7,6 +7,14 @@ $(document).ready(function () {
 //Initialize Select2 Elements
 $(".select2").select2();
 
+$(".dropify").dropify({
+	messages: {
+		default: "Pilih Foto untuk Di Upload",
+		replace: "Silahkan Pilih Foto",
+		remove: "Hapus Foto",
+	},
+});
+
 function status_aktif(p_status) {
 	var html = "<option value='pil'> Pilih Status </option>";
 	var data = [
