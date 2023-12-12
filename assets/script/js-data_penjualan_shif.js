@@ -89,6 +89,8 @@ function load_total_penjualan(text, tgl1, tgl2, shif) {
 			if (res.status == 1) {
 				var nom = rupiah(res.result.total);
 				$("#total_pejualan").html(nom);
+				$("#tot_jual").html(nom);
+				$("#tot_produk").html(res.result.tot_produk);
 			} else {
 				var nom = rupiah(0);
 				$("#total_pejualan").html(nom);

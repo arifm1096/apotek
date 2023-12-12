@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Penjualan extends CI_Controller {
+class Pelayanan extends CI_Controller {
 
 	/**
 	 * Index Page for this controller.
@@ -26,6 +26,7 @@ class Penjualan extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
 		$this->load->model('Model_penjualan');
+		$this->load->model('Model_pelayanan');
 
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
@@ -34,20 +35,24 @@ class Penjualan extends CI_Controller {
 	}
 
 	public function index(){
-		$var['content'] = 'view-kasir';
-		$var['js'] = 'js-kasir';
+		$id = $this->session->userdata('id_user');
+		$var['pelanggan'] = $this->db->select('*')
+									 ->from('tm_pelanggan')
+									 ->where('is_delete',0)
+									 ->where('aktif','y')
+									 ->get()
+									 ->result();
+		$var['id_dokter'] = $id;
+		$var['nama_dokter'] = $this->session->userdata('nama_user');
+		$var['kode_resep'] = $this->Model_pelayanan->get_no_resep($id);
+		$var['content'] = 'view-resep-dokter';
+		$var['js'] = 'js-resep-dokter';
 		$this->load->view('view-index-kasir',$var);
 	}
 
 	public function get_produk_barcode(){
 		$param = $_POST['param'];
-		$sql = "SELECT p.nama_produk 
-		FROM `tx_produk` as p
-		LEFT JOIN tx_produk_stok as ps on p.id_produk = ps.id_produk
-		WHERE p.is_delete = 0 AND ps.jumlah_stok > 0 and p.nama_produk LIKE '%$param%' 
-		OR p.barcode LIKE '%$param%' 
-		ORDER BY p.nama_produk asc";
-		// $sql = "SELECT nama_produk FROM `tx_produk` WHERE is_delete = 0 and nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
+		$sql = "SELECT nama_produk FROM `tx_produk` WHERE is_delete = 0 and nama_produk LIKE '%$param%' OR barcode LIKE '%$param%' ORDER BY nama_produk asc";
 		$data = $this->db->query($sql)->result();
 		$str_produk = [];
 		foreach ($data as $key => $val) {
@@ -101,14 +106,14 @@ class Penjualan extends CI_Controller {
 
 	public function load_data_produk(){
 		$id_user = $this->session->userdata('id_user');
-		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				WHERE j.insert_by = $id_user
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual
-				ORDER BY j.id_jual DESC";
+				GROUP BY j.id_resep_detail
+				ORDER BY j.id_resep_detail DESC";
 		$data = $this->db->query($sql);
 		$sub_tot = $this->get_sub_total();
 		if(!empty($data)){
@@ -137,8 +142,6 @@ class Penjualan extends CI_Controller {
 		}else{
 			return "Data Satuan Belum Di Inputkan";
 		}
-
-
 	}
 
 	public function get_add_produk(){
@@ -168,13 +171,13 @@ class Penjualan extends CI_Controller {
 						'insert_date' => $datetime->time
 				);
 			$id_user = $this->session->userdata('id_user');
-			$sql_jul ="SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
+			$sql_jul ="SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,SUM(jumlah_produk) as qty,j.id_jenis_harga,j.harga_jual,
 				SUM(j.total_harga) as total_harga
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				WHERE j.insert_by = $id_user and p.id_produk = $prod_data->id_produk
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual";
+				GROUP BY j.id_resep_detail";
 			$res_jual = $this->db->query($sql_jul);
 			$data_jual = $res_jual->row();
 			$up_jumlah = 0;
@@ -195,12 +198,12 @@ class Penjualan extends CI_Controller {
 			if($cek == 1){
 				if(!empty($data)){
 						if($res_jual->num_rows()>0){
-							$update = $this->db->where('id_jual',$data_jual->id_jual)->update('tx_jual',$r_up);
+							$update = $this->db->where('id_resep_detail',$data_jual->id_resep_detail)->update('tx_resep_detail',$r_up);
 							if($update){
 								$ex +=1;
 							}
 						}else{
-							$insert = $this->db->insert('tx_jual',$r_in);
+							$insert = $this->db->insert('tx_resep_detail',$r_in);
 							if($insert){
 								$ex +=1;
 							}
@@ -224,7 +227,7 @@ class Penjualan extends CI_Controller {
 	}
 
 	public function get_nom_change(){
-		$id_jual = $_POST['id'];
+		$id_resep_detail = $_POST['id'];
 		$id_user = $this->session->userdata('id_user');
 		$date_time = date('Y-m-d H:i:s');
 		$where = "";
@@ -234,7 +237,7 @@ class Penjualan extends CI_Controller {
 		// satuan
 		// if($_POST['el']== 2){
 			$sat = $_POST['sat'];
-			$sql_cek = "SELECT * FROM `tx_jual` WHERE id_satuan_utama =$sat and id_jual =$id_jual";
+			$sql_cek = "SELECT * FROM `tx_resep_detail` WHERE id_satuan_utama =$sat and id_resep_detail =$id_resep_detail";
 			$cek = $this->db->query($sql_cek);
 			if($cek->num_rows()==0){
 				$where .=" AND d.id_satuan = $sat ";
@@ -249,15 +252,15 @@ class Penjualan extends CI_Controller {
 			$where .=" AND h.id_jenis_harga = $ejn_har";
 		// }
 		
-		$sql = "SELECT j.id_jual,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.nama_produk,j.id_satuan,j.jumlah_produk as qty,j.id_jenis_harga,
 				j.harga_jual,h.harga_jual as jual_ex,d.jumlah_produk_p,d.jumlah_produk as jum_p,j.id_satuan_utama
-				FROM `tx_jual` as j
+				FROM `tx_resep_detail` as j
 				LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
 				LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
 				LEFT JOIN tx_produk_detail as d ON p.id_produk = d.id_produk
-				WHERE j.id_jual = $id_jual $where
+				WHERE j.id_resep_detail = $id_resep_detail $where
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
-				GROUP BY j.id_jual";
+				GROUP BY j.id_resep_detail";
 		$get_data = $this->db->query($sql);
 		if($get_data->num_rows()>0){
 			$data = $get_data->row();
@@ -266,10 +269,10 @@ class Penjualan extends CI_Controller {
 					 'update_date' => $date_time
 					);
 			$p_kali = 0;
-				$sql_sat = "SELECT j.id_jual,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
-							FROM `tx_jual` as j
+				$sql_sat = "SELECT j.id_resep_detail,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
+							FROM `tx_resep_detail` as j
 							LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
-							WHERE j.insert_by = $id_user and j.id_jual = $id_jual 
+							WHERE j.insert_by = $id_user and j.id_resep_detail = $id_resep_detail 
 							AND j.is_delete = 0 AND j.is_selesai = 0";
 				$data_sat = $this->db->query($sql_sat)->row();
 				if($data_sat->jumlah_produk_p==""){
@@ -313,8 +316,8 @@ class Penjualan extends CI_Controller {
 					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
 			}
 
-			$up_ex = $this->db->where('id_jual',$id_jual)->update('tx_jual',$res_up);
-			$result = $this->db->select('harga_jual,total_harga')->from('tx_jual')->where('id_jual',$id_jual)->get();
+			$up_ex = $this->db->where('id_resep_detail',$id_resep_detail)->update('tx_resep_detail',$res_up);
+			$result = $this->db->select('harga_jual,total_harga')->from('tx_resep_detail')->where('id_resep_detail',$id_resep_detail)->get();
 			$sub_tot = $this->get_sub_total();
 			if($up_ex){
 				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));
@@ -332,8 +335,8 @@ class Penjualan extends CI_Controller {
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$user = $this->session->userdata('id_user');
 		if(!empty($id)){
-			$del = $this->db->where('id_jual',$id)
-							->update('tx_jual',array(
+			$del = $this->db->where('id_resep_detail',$id)
+							->update('tx_resep_detail',array(
 								'is_delete'=>1,
 								'delete_by' => $user,
 								'delete_date' => $datetime->time
@@ -377,8 +380,6 @@ class Penjualan extends CI_Controller {
 						AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0";
 		$data_cek = $this->db->query($sql_cek_kasir);
 	}
-
-	
 
 	public function get_add_kasir(){
 		$id_user = $this->session->userdata('id_user');
@@ -424,133 +425,88 @@ class Penjualan extends CI_Controller {
 		}
 	}
 
-	public function cetak_struk() {
+	public function get_add_resep(){
+		$id_user = $this->session->userdata('id_user');
+		$in = $this->input->post();
+		$noTa = $this->Model_penjualan->get_no_nota($id_user);
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$data = array(
+						'kode_resep'=>$in['kode_resep'],
+						'id_dokter' =>$in['id_dokter'],
+						'id_pelanggan'=>$in['id_pelanggan'],
+						'status' => 2,
+						'insert_by' => $id_user,
+						'insert_date' => $datetime->time
+					);
+					
+		$this->db->insert('tx_resep', $data);
+   		$insert_id = $this->db->insert_id();
+
+		$data_up = array(
+						'id_resep'=>$insert_id
+		);
+
+		if(!empty($insert_id)){
+			$up = $this->db->where('insert_by',$id_user)
+						   ->where('is_selesai',0)
+						   ->where('is_delete',0)
+						   ->update('tx_resep_detail',$data_up);
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+		}
+	}
+
+	public function cetak_struk_resep() {
         // me-load library escpos
         $this->load->library('escpos');
 		$id_user = $this->session->userdata('id_user');
 		// $id_kasir = $this->input->post('id_kasir');
-		$id_kasir = $_POST['id_kasir'];
-		$data = $this->Model_penjualan->get_user($id_user);
-		$kasir = $this->Model_penjualan->get_kasir_detail($id_kasir);
-		$jual = $this->Model_penjualan->get_produk_jual($id_kasir);
+		$id_resep = $_POST['id_resep'];
+		$data = $this->Model_pelayanan->get_dokter_detail($id_user);
+		$resep = $this->Model_pelayanan->get_resep($id_resep);
 		$nama_print = $data->nama_print;
 		
-     
 		try {
 			$connector = new Escpos\PrintConnectors\WindowsPrintConnector($nama_print);
 			$printer = new Escpos\Printer($connector);
 
-			function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
-            // Mengatur lebar setiap kolom (dalam satuan karakter)
-				 $lebar_kolom_1 = 8;
-				 $lebar_kolom_2 = 6;
-				 $lebar_kolom_3 = 6;
-				 $lebar_kolom_4 = 9;
-
-				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
-				$kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
-				$kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
-
-				$kolom1Array = explode("\n", $kolom1);
-				$kolom2Array = explode("\n", $kolom2);
-				$kolom3Array = explode("\n", $kolom3);
-				$kolom4Array = explode("\n", $kolom4);
-
-				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
-
-				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-				$hasilBaris = array();
-
-				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
-				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
-
-					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
-					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ");
-
-					// memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
-					$hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
-					$hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
-
-					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
-				}
-
-				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-				return implode($hasilBaris, "\n") . "\n";
-			}
-
-			function buatBaris2Kolom($kolom1, $kolom2) {
-            // Mengatur lebar setiap kolom (dalam satuan karakter)
-				 $lebar_kolom_1 = 15;
-				 $lebar_kolom_2 = 15;
-
-				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
-
-				$kolom1Array = explode("\n", $kolom1);
-				$kolom2Array = explode("\n", $kolom2);
-
-				// Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-				$jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array));
-
-				// Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-				$hasilBaris = array();
-
-				// Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
-				for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
-
-					// memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
-					$hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ",STR_PAD_LEFT);
-					$hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ",STR_PAD_LEFT);
-
-					// Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-					$hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2;
-				}
-
-				// Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-				return implode($hasilBaris, "\n") . "\n";
-			} 
-
-			// Membuat judul
 			$printer->initialize();
 			$printer->selectPrintMode(Escpos\Printer::MODE_DOUBLE_HEIGHT); 
-			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER); 
-			$printer->text("$data->nama_wilayah\n");
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer ->setTextSize(1,1); 
+			$printer->text("$data->nama_dokter\n");
+			$printer->text("$data->klinik_rs\n");
 			// $printer->text("ALamat :$data->alamat | Telp :$data->no_hp\n");
 			$printer->initialize();
 			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
-			$printer->text("Alamat : $data->alamat\n");
+			$printer->text("KLINIK : $data->alamat\n");
 			$printer->text("Telp : $data->no_hp\n");
+			$printer->text("Waktu : $resep->insert_date\n");
 			$printer->text("\n");
 
 			// Data transaksi
 			$printer->initialize();
-			$printer->text("Kasir : $data->nama_user\n");
-			$printer->text("Waktu : $kasir->tgl_tran\n");
-			$printer->text("No. Nota : $kasir->no_nota\n");
-
-			// Membuat tabel
-			$printer->initialize(); 
 			$printer->text("--------------------------------\n");
-			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
-			$printer->text("--------------------------------\n");
-			foreach ($jual as $key => $val) {
-				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
-			}
+			$printer -> setTextSize(1,1);
+			$printer->text("Kode Resep :\n");
+			$printer -> setTextSize(2,2);
+			$printer->text("$resep->kode_resep\n");
+			$printer -> setTextSize(1,1);
+			$printer->text("Pelanggan :\n");
+			$printer -> setTextSize(2,2);
+			$printer->text("$resep->nama_pelanggan\n");
 			
+			$printer->initialize();
 			$printer->text("--------------------------------\n");
-			
-			$printer->text(buatBaris2Kolom("Service", number_format($kasir->service,0,',','.')));
-			$printer->text(buatBaris2Kolom("Embalase", number_format($kasir->embalase,0,',','.')));
-			$printer->text(buatBaris2Kolom("Lain", number_format($kasir->lain,0,',','.')));
-			$printer->text(buatBaris2Kolom("Total", number_format($kasir->total,0,',','.')));
-			$printer->text(buatBaris2Kolom("Bayar", number_format($kasir->jumlah_uang,0,',','.')));
-			$printer->text(buatBaris2Kolom("Kembali", number_format($kasir->kembalian,0,',','.')));
-			$printer->text("\n");
-
+			$printer->initialize();
+			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
+			$printer->text("Penembusan Obat Hanya Bisa Dilakukan DI,\n");
+			$printer->text("-- APOTEK NAWASENA 24 JAM --\n");
 			$printer->initialize();
 			$printer->setJustification(Escpos\Printer::JUSTIFY_CENTER);
 			$printer->text("-- Terima Kasih --\n");
@@ -561,7 +517,6 @@ class Penjualan extends CI_Controller {
 		} catch (Exception $e) {
 			echo json_encode(array("status"=>"0","msg"=>"Printer Belum TerKoneksi"));
 		}
-		
 		
     }
 
@@ -622,7 +577,7 @@ class Penjualan extends CI_Controller {
 		$id_user = $this->session->userdata('id_user');
 		$Stok_up = $this->get_update_stok();
 		if($Stok_up == 1){
-			$sql = "UPDATE tx_jual as j
+			$sql = "UPDATE tx_resep_detail as j
 				SET is_selesai = 1
 				WHERE j.insert_by = $id_user
 				AND j.is_delete = 0 AND j.is_selesai = 0";
@@ -851,457 +806,8 @@ class Penjualan extends CI_Controller {
         header('Content-Disposition: attachment;filename=Data_Penjualan'.$time->wkt.'.xls');
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
-}
-
-// end penjualan
-
-	public function data_penjualan_shif(){
-		$var['content'] = 'view-data_penjualan_shif';
-		$var['js'] = 'js-data_penjualan_shif';
-		$this->load->view('view-index',$var);
 	}
 
-	public function load_sum_pejualan_shif(){
-		$where = "j.is_delete = 0 AND j.is_selesai = 1 ";
-		$searchValue = $_POST['text'];
-		if ($searchValue != '') {
-		$where .= " and (j.nama_produk like '%" . $searchValue . "%'
-		OR j.no_nota like '%" . $searchValue . "%'
-		) ";
-		}
-
-		if($_POST['tgl1'] !='' && $_POST['tgl2'] !='' && $_POST['shif'] !=="pil"){
-			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
-			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
-			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
-			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
-		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y')  BETWEEN '$tgl1' AND '$tgl2'";
-		}
-
-		// if($_POST['shif'] !=="pil"){
-		// 	$shif=$_POST['shif'];
-		// 	$where .="AND k.id_shif = $shif";
-		// }
-
-		$sql = "SELECT sum(j.jumlah_produk) as tot_produk,SUM(j.total_harga) AS total
-			FROM tx_jual as j
-			LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-			where $where";
-		$data = $this->db->query($sql)->row();
-
-		if(!empty($data)){
-			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data Not Find','result'=>null));
-		}
-	}
-
-	public function load_data_penjualan_shif(){
-		// Read Value
-		$draw = $_POST['draw'];
-		$row = $_POST['start'];
-		$rowperpage = $_POST['length']; // Rows display per page
-		$columnIndex = $_POST['order'][0]['column']; // Column index
-		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
-		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-		$searchValue1 = $_POST['search']['value'];
-		$searchValue = $_POST['text'];
-		$jual ='';
-		$rak ='';
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-
-		// Search
-		$searchQuery = "";
-		if ($searchValue != '') {
-			$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
-			OR j.no_nota like '%" . $searchValue . "%'
-			OR s.nama_satuan like '%" . $searchValue . "%'
-			) ";
-		}
-
-		if($_POST['tgl1'] !='' && $_POST['tgl2'] !='' && $_POST['shif'] !=="pil"){
-			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_POST['shif'])->get()->row();
-			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.$data->jam_masuk;
-			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.$data->jam_pulang;
-			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
-		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y')  BETWEEN '$tgl1' AND '$tgl2'";
-		}
-
-		// if($_POST['shif'] !=="pil"){
-		// 	$shif=$_POST['shif'];
-		// 	$where .="AND k.id_shif = $shif";
-		// }
-
-			// else{
-			// $where .= " AND DATE_FORMAT(j.insert_date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')";
-			// }
-
-		$where .= $searchQuery .$jual.$rak;
-
-		// Total number records without filtering
-		$sql_count = "SELECT count(*) as allcount
-		FROM `tx_jual` as j
-		where is_delete = 0";
-		$records = $this->db->query($sql_count)->row_array();
-		$totalRecords = $records['allcount'];
-
-		// Total number records with filter
-		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where";
-		$records = $this->db->query($sql_filter)->row_array();
-		$totalRecordsFilter = $records['allcount'];
-
-		// Fetch Records
-		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where
-		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
-		$data = $this->db->query($sql)->result();
-		// echo $this->db->last_query();
-
-			// Response
-			$output = array(
-				"draw" => intval($draw),
-				"iTotalRecords" => $totalRecords,
-				"iTotalDisplayRecords" => $totalRecordsFilter,
-				"aaData" => $data
-			);
-			echo json_encode($output);
-		}
-
-	
-	public function get_detail_data_jual_shif(){
-		$id = $_POST['id_jual'];
-		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-		j.total_harga,ps.jumlah_stok
-		FROM `tx_jual` as j
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		where j.id_jual = $id";
-		$data = $this->db->query($sql);
-
-		if($data->num_rows()>0){
-			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
-		}
-	}
-
-	public function export_data_penjualan_shif(){
-		$spreadsheet = new Spreadsheet();
-		$sheet = $spreadsheet->getActiveSheet();
-		$sheet->setCellValue('A1', "No");
-		$sheet->setCellValue('B1', "No Nota");
-		$sheet->setCellValue('C1', "Nama Produk");
-		$sheet->setCellValue('D1', "Jumlah");
-		$sheet->setCellValue('E1', "Satuan");
-		$sheet->setCellValue('F1', "Total Penjualan");
-		$sheet->setCellValue('G1', "Sub Total Penjualan");
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-
-		$searchValue = $_GET['text'];
-		if ($searchValue != '') {
-			$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
-			OR j.no_nota like '%" . $searchValue . "%'
-			OR s.nama_satuan like '%" . $searchValue . "%'
-			) ";
-		}
-
-		if($_GET['tgl1'] !='' && $_GET['tgl2'] !='' && $_GET['shif'] !=="pil"){
-			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_GET['shif'])->get()->row();
-			$tgl1 = date("Y-m-d", strtotime($_GET['tgl1'])).' '.$data->jam_masuk;
-			$tgl2 = date("Y-m-d", strtotime($_GET['tgl2'])).' '.$data->jam_pulang;
-			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
-		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y')  BETWEEN '$tgl1' AND '$tgl2'";
-		}
-
-		if($_GET['shif'] !=="pil"){
-			$shif=$_GET['shif'];
-			$where .="AND k.id_shif = $shif";
-		}
-
-
-		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		j.jumlah_produk,s.nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where";
-
-		$data_jual = $this->db->query($sql)->result_array();
-		// echo $this->db->last_query();
-		$no = 1; // Untuk penomoran tabel, di awal set dengan 1
-		$numrow = 3;
-		$total = 0; // Set baris pertama untuk isi tabel adalah baris ke 4
-		foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
-			$sheet->setCellValue('A'.$numrow, $no);
-			$sheet->setCellValue('B'.$numrow, $data['no_nota']);
-			$sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-			$sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
-			$sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-			$sheet->setCellValue('f'.$numrow, $data['total_harga']);
-			$no++; 
-			$numrow++;
-			$total += $data['total_harga']; 
-		}
-		$sheet->setCellValue('G2', $total);
-		$sheet->getStyle('G1')->getFont()->setBold(true);
-		$sheet->getStyle('G2')->getFont()->setBold(true);
-		$writer = new Xlsx($spreadsheet);
-
-		ob_end_clean();
-		header('Content-Type: application/vnd.ms-excel');
-		header('Content-Disposition: attachment;filename=Data_Penjualan_Shif.xls');
-		header('Cache-Control: max-age=0');
-		$writer->save('php://output');
-	}
-
-	public function save_penjulan_tolak(){
-		$data = $this->input->post();
-		$datetime = $this->db->select('now() as time')->get()->row();
-		$data['insert_date'] = $datetime->time;
-		$data['insert_by'] = $this->session->userdata('id_user');
-
-		if($data !==""){
-		$sql = $this->db->insert('tx_jual_tolak',$data);
-
-			if($sql){
-				echo json_encode(array('status'=>1,'msg'=>'Data Success Diinput'));
-			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Data Gagal Diinput'));
-			}
-		}
-	}
-
-
-	// Return Penjualan
-	Public function data_penjualan_retur(){
-		$var['content'] = 'view-data_penjualan_retur';
-		$var['js'] = 'js-data_penjualan_retur';
-		$this->load->view('view-index',$var);
-	}
-
-	public function load_data_penjualan_retur(){
-		// Read Value
-		$draw = $_POST['draw'];
-		$row = $_POST['start'];
-		$rowperpage = $_POST['length']; // Rows display per page
-		$columnIndex = $_POST['order'][0]['column']; // Column index
-		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
-		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-		$searchValue1 = $_POST['search']['value'];
-		$searchValue = $_POST['text'];
-		$jual ='';
-		$rak ='';
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-		$sql = "SELECT DATE_FORMAT(NOW(),'%Y-%m-%d') as tgl_hari_ini,(CURDATE() + INTERVAL -1 DAY) as tgl_kemarin,(CURDATE() + INTERVAL +1 DAY) as tgl_besuk";
-		$tgl = $this->db->query($sql)->row();
-
-		// Search
-		$searchQuery = "";
-		if ($searchValue != '') {
-			$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
-			OR j.no_nota like '%" . $searchValue . "%'
-			OR s.nama_satuan like '%" . $searchValue . "%'
-			) ";
-		}
-
-		$where .= $searchQuery;
-		
-		$user = $this->session->userdata('id_user');
-		$shif = $this->session->userdata('id_shif');
-		$sql_shif ="SELECT DATE_FORMAT(tgl_masuk,'%Y-%m-%d') as tgl_masuk
-					FROM `tx_log_shif`
-					WHERE `close` = 0 and id_user = $user
-					LIMIT 1";
-		$shif_log = $this->db->query($sql_shif)->row();
-		$shif_dt = $this->db->select('DATE_ADD(jam_pulang, INTERVAL 1 HOUR) as jam_pulang,jam_masuk')->from('tm_shif')->where('id_shif',$shif)->get()->row();
-		// echo $this->db->last_query();
-		$str_tgl1 ="";
-		$str_tgl2 ="";
-		$jam1 = "";
-		$jam2 = "";
-		// var_dump($shif);
-		if($shif !== "3"){
-			$jam1 = $shif_dt->jam_masuk;
-			$jam2 = $shif_dt->jam_pulang;
-			$str_tgl1 = $tgl->tgl_hari_ini;
-			$str_tgl2 = $tgl->tgl_hari_ini;
-			echo "1";
-		}else{
-			if($shif_log == $tgl->tgl_hari_ini){
-				$jam1 = $shif_dt->jam_masuk;
-				$jam2 = $shif_dt->jam_pulang;
-				$str_tgl1 = $tgl->tgl_hari_ini;
-				$str_tgl2 = $tgl->tgl_besuk;
-			}else{
-				$jam1 = $shif_dt->jam_masuk;
-				$jam2 = $shif_dt->jam_pulang;
-				$str_tgl1 = $tgl->tgl_kemarin;
-				$str_tgl2 = $tgl->tgl_hari_ini;
-			}
-		}
-
-
-		$tgl1 = $str_tgl1.' '.$jam1;
-		$tgl2 = $str_tgl2.' '.$jam2;			
-		$where .= " AND j.insert_by = $user AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
-
-		// Total number records without filtering
-		$sql_count = "SELECT count(*) as allcount
-		FROM `tx_jual` as j
-		where is_delete = 0";
-		$records = $this->db->query($sql_count)->row_array();
-		$totalRecords = $records['allcount'];
-
-		// Total number records with filter
-		$sql_filter = "SELECT count(*) as allcount
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where";
-		$records = $this->db->query($sql_filter)->row_array();
-		$totalRecordsFilter = $records['allcount'];
-
-		// Fetch Records
-		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where
-		order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
-		$data = $this->db->query($sql)->result();
-		// echo $this->db->last_query();
-			// Response
-			$output = array(
-				"draw" => intval($draw),
-				"iTotalRecords" => $totalRecords,
-				"iTotalDisplayRecords" => $totalRecordsFilter,
-				"aaData" => $data
-			);
-			echo json_encode($output);
-	}
-
-	
-	public function get_detail_data_jual_retur(){
-		$id = $_POST['id_jual'];
-		$sql = "SELECT j.id_produk,j.no_nota,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-		j.total_harga,ps.jumlah_stok,ph.harga_jual,ps.id_stok,ps.id_gudang,j.id_satuan
-		FROM `tx_jual` as j
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-		LEFT JOIN tx_produk_harga as ph ON j.id_produk = ph.id_produk AND j.id_jenis_harga = ph.id_jenis_harga
-		where j.id_jual = $id";
-		$data = $this->db->query($sql);
-
-		if($data->num_rows()>0){
-			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->row()));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Data Stok Produk Belum Di Inputkan','result'=>null));
-		}
-	}
-
-	public function save_retur(){
-		$id_jual = $_POST['id_jual'];
-		$id_stok = $_POST['id_stok'];
-		$jumlah = $_POST['jumlah_produk'];
-		$jumlah_p = $_POST['jumlah_produk_p'];
-		$id = $this->session->userdata('id_user');
-		$datetime = $this->db->select('now() as time')->get()->row();
-		if($id_jual !==""){
-			$data_up_j = array();
-			$jum = (int)$_POST['jumlah_produk_p'] - (int)$jumlah ;
-			$harga_tot = $jum * $_POST['harga_jual'];
-			$data_up_jual1 = array(
-									'jumlah_produk'=>$jum,
-									'update_by' =>$id,
-									'update_date'=>$datetime->time,
-									'total_harga'=> $harga_tot
-								); 
-			$data_up_jual2 = array(
-								'jumlah_produk'=>$jum,
-								'update_by' =>$id,
-								'update_date'=>$datetime->time,
-								'is_selesai'=>0,
-								'total_harga'=> $harga_tot
-							); 
-			if($jum > 0 ){
-				$data_up_j = $data_up_jual1;
-			}else{
-				$data_up_j = $data_up_jual2;
-			}
-
-			$up_jual = $this->db->where('id_jual',$id_jual)->update('tx_jual',$data_up_j);
-
-			if($up_jual){
-				$sql_st = "SELECT * FROM `tx_produk_stok` WHERE id_stok = $id_stok";
-				$data_st = $this->db->query($sql_st)->row();
-				$jumlah_st = (int)$jumlah + (int)$data_st->jumlah_stok;
-				$data_up_st = array(
-					'jumlah_stok'=>$jumlah_st,
-					'update_by' =>$id,
-					'update_date'=>$datetime->time
-				); 
-				$up_stok = $this->db->where('id_stok',$id_stok )->update('tx_produk_stok',$data_up_st);
-				if($up_stok){
-					$data_stok_detail = array(
-						'jumlah_stok'=>$jum,
-						'update_by' =>$id,
-						'insert_date'=>$datetime->time,
-						'id_status_stok'=>7,
-						'id_satuan' => $_POST['id_satuan'],
-						'id_gudang' => $_POST['id_gudang'],
-						'id_produk' => $_POST['id_produk']
-					); 
-
-					$insert = $this->db->insert('tx_produk_stok_detail',$data_stok_detail);
-					if($insert){
-						echo json_encode(array('status'=> 1,'msg'=>'Success Retur Produk'));
-					}else{
-						echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3475'));
-					}
-
-				}else{
-					echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3476'));
-				}
-			}else{
-				echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3477'));
-			}
-		}else{
-			echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3478'));
-		}
-	}
-	
 	 
 	// Return Penjualan
 }
