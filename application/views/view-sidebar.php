@@ -2,8 +2,22 @@
     <!-- style="background:#dc3545" -->
     <!-- Brand Logo -->
     <a href="<?php echo base_url();?>" class="brand-link" style="border-bottom: 1px solid #efefef;">
-        <img src="<?php echo base_url();?>assets/images/logo/logo.png" alt="apotek logo"
-            class="brand-image img-circle elevation-5" style="opacity: .8">
+        <?php 
+            	$id_user = $this->session->userdata('id_user');
+                $sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+                        FROM tm_user as u 
+                        LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+                        WHERE u.id_user = $id_user";
+                $kop = $this->db->query($sql)->row();
+        ?>
+        <?php if($kop->logo == ""){ ?>
+        <img src="<?php echo base_url();?>assets/images/images.jpg" class="brand-image img-circle elevation-5">
+        <?php }else{ ?>
+        <img src="<?php echo base_url();?>assets/images/logo/<?php echo $kop->logo;?>"
+            class="brand-image img-circle elevation-5">
+        <?php } ?>
+        <!-- <img src="<?php echo base_url();?>assets/images/logo/logo.png" alt="apotek logo"
+            class="brand-image img-circle elevation-5" style="opacity: .8"> -->
         <span class="brand-text font-weight-light">
             Nawasena
         </span>
@@ -14,6 +28,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 mb-3 d-flex" style="border-bottom: 1px solid #efefef;">
             <div class="image">
+
                 <img src="<?php echo base_url();?>assets/dist/img/user.jpg" class="img-circle elevation-2"
                     alt="User Image">
             </div>

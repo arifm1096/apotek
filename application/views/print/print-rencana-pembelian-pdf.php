@@ -57,7 +57,11 @@
            <table class="tabel_head">
                <tr>
                    <td>
-                       <img src="<?php echo base_url();?>assets/images/logo/logo.png" width="110" height="80">
+                       <?php if($kop->logo == ""){ ?>
+                       <img src="<?php echo base_url();?>assets/images/images.jpg" width="110" height="80">
+                       <?php }else{ ?>
+                       <img src="assets/images/logo/<?php echo $kop->logo;?>" width="110" height="80">
+                       <?php } ?>
                    </td>
                    <td>
                        <p class="judul"><?php echo $kop->nama_wilayah;?></p>
@@ -110,8 +114,12 @@
        </table>
 
        <table>
-        <tr><td>Nama Apoteker</td></tr>
-        <tr><td><?php echo $this->session->userdata('nama_user');?></td></tr>
+           <tr>
+               <td>Nama Apoteker</td>
+           </tr>
+           <tr>
+               <td><?php echo $this->session->userdata('nama_user');?></td>
+           </tr>
        </table>
 
    </page>

@@ -66,6 +66,27 @@ function load_wilayah() {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
+					if (row.logo == null) {
+						return (
+							'<img src="' +
+							URL +
+							'/assets/images/images.jpg" width = "70px" height ="80px" alt="">'
+						);
+					} else {
+						return (
+							'<img src="' +
+							URL +
+							"/assets/images/logo/" +
+							row.logo +
+							'" width = "70px" height ="80px" alt="">'
+						);
+					}
+				},
+			},
+			{
+				data: null,
+				orderable: false,
+				render: function (data, type, row) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
 						row.id_wilayah +

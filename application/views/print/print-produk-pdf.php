@@ -1,7 +1,7 @@
    <style>
 .tabel {
     border-collapse: collapse;
-    font-size: 11px;
+    font-size: 10px;
     margin: auto;
     padding-top: 200px;
 }
@@ -57,7 +57,11 @@
            <table class="tabel_head">
                <tr>
                    <td>
-                       <img src="<?php echo base_url();?>assets/images/logo/logo.png" width="110" height="80">
+                       <?php if($kop->logo == ""){ ?>
+                       <img src="<?php echo base_url();?>assets/images/images.jpg" width="110" height="80">
+                       <?php }else{ ?>
+                       <img src="assets/images/logo/<?php echo $kop->logo;?>" width="110" height="80">
+                       <?php } ?>
                    </td>
                    <td>
                        <p class="judul"><?php echo $kop->nama_wilayah;?></p>
@@ -90,9 +94,9 @@
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td><?php echo wordwrap($val->sku_kode_produk,15,"<br>\n");?></td>
-               <td><?php echo wordwrap($val->nama_produk,25,"<br>\n");?> </td>
-               <td><?php echo $val->produk_by;?> </td>
+               <td><?php echo wordwrap($val->sku_kode_produk,10,"<br>\n");?></td>
+               <td><?php echo wordwrap($val->nama_produk,20,"<br>\n");?> </td>
+               <td><?php echo wordwrap($val->produk_by,10,"<br>\n");?> </td>
                <td><?php echo $val->nama_rak;?></td>
                <td><?php echo $val->jumlah_minimal;?></td>
                <td><?php echo $val->nama_satuan;?></td>

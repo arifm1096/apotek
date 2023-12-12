@@ -217,7 +217,7 @@ class User extends CI_Controller{
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT id_wilayah,nama_wilayah,alamat,aktif,no_hp,nama_print,(CASE WHEN (aktif ='y') THEN 'Aktif' 
+		$sql = "SELECT id_wilayah,nama_wilayah,alamat,aktif,no_hp,nama_print,logo,(CASE WHEN (aktif ='y') THEN 'Aktif' 
 		WHEN	(aktif = 'n') THEN 'Tidak Aktif'
 		END) as is_aktif
 		FROM `tm_wilayah`
@@ -237,6 +237,25 @@ class User extends CI_Controller{
 	public function save_wilayah(){
 		$data = $this->input->post();
 		$cek = $this->db->get_where('tm_wilayah',array('nama_wilayah'=>$_POST['nama_wilayah'],'is_delete'=>0));
+
+		if($_FILES["logo"]["name"] !=""){
+			$allowed_ext = array("jpg","png","jpeg","JPG","PNG","JPEG"); 
+			$get_ext = explode('.', $_FILES["logo"]["name"]);
+			$ext = end($get_ext);
+				if(in_array($ext, $allowed_ext)){
+						$nm = str_replace(".","",$_FILES["logo"]["name"]);
+						$name =  $nm. '.' . $ext; 
+						$path = "./assets/images/logo/". $name;
+						move_uploaded_file($_FILES["logo"]["tmp_name"], $path);
+						$data['logo'] = $name;
+					
+				} else {
+					echo json_encode(array('status' => '0','message'=>'Format image tidak sesuai'));
+				}
+		}else{
+			unset($data['logo']);
+		}
+		
 
 		if(empty($data['id_wilayah'])){
 			if($cek->num_rows() == 0){
@@ -259,6 +278,7 @@ class User extends CI_Controller{
 		}
 		
 	}
+	
 	public function hapus_wilayah(){
 		$id = $_POST['id'];
 		$delete_by = $this->session->userdata('id_user');
