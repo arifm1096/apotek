@@ -1080,6 +1080,64 @@ class Penjualan extends CI_Controller {
 		$writer->save('php://output');
 	}
 
+	public function print_data_penjualan_shif(){
+		$searchValue = $_GET['text'];
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+		if ($searchValue != '') {
+			$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
+			OR j.no_nota like '%" . $searchValue . "%'
+			OR s.nama_satuan like '%" . $searchValue . "%'
+			) ";
+		}
+
+		if($_GET['tgl1'] !='' && $_GET['tgl2'] !='' && $_GET['shif'] !=="pil"){
+			$data = $this->db->select('*')->from('tm_shif')->where('id_shif',$_GET['shif'])->get()->row();
+			$tgl1 = date("Y-m-d", strtotime($_GET['tgl1'])).' '.$data->jam_masuk;
+			$tgl2 = date("Y-m-d", strtotime($_GET['tgl2'])).' '.$data->jam_pulang;
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+		// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y')  BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		if($_GET['shif'] !=="pil"){
+			$shif=$_GET['shif'];
+			$where .="AND k.id_shif = $shif";
+		}
+
+
+		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		j.jumlah_produk,s.nama_satuan,
+		j.total_harga,ps.jumlah_stok,j.no_nota,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan
+		FROM `tx_jual` as j
+		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where";
+
+		$var['data'] = $this->db->query($sql)->result_array();
+
+		$sql = "SELECT sum(j.jumlah_produk) as tot_produk,SUM(j.total_harga) AS total
+			FROM tx_jual as j
+			LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+			where $where";
+		$var['tot'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-penjualan-shif',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+	
+	}
+
 	public function save_penjulan_tolak(){
 		$data = $this->input->post();
 		$datetime = $this->db->select('now() as time')->get()->row();

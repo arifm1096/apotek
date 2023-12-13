@@ -185,3 +185,22 @@ function export_excel() {
 		"_blank"
 	);
 }
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	var shif = $("#shif").val();
+	window.open(
+		URL +
+			"penjualan/print_data_penjualan_shif?tgl1=" +
+			tgl1 +
+			"&tgl2=" +
+			tgl2 +
+			"&text=" +
+			text +
+			"&shif=" +
+			shif,
+		"_blank"
+	);
+}
