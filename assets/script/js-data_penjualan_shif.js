@@ -204,3 +204,49 @@ function export_pdf() {
 		"_blank"
 	);
 }
+
+function add_penjualan() {
+	load_select();
+	$("#modal_data_penjualan").modal("show");
+}
+
+function load_select(id_produk, id_satuan) {
+	var produk = "<option value='pil'> Pilih Produk </option>";
+	var satuan = "<option value='pil'> Pilih Satuan </option>";
+
+	$.ajax({
+		url: URL + "penjualan/get_data_master",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				res.produk.forEach((e) => {
+					produk +=
+						'<option value="' +
+						e.id_produk +
+						'"' +
+						(e.id_produk === id_produk ? 'selected="selected"' : "") +
+						">" +
+						e.nama_produk +
+						"</option>";
+				});
+
+				res.satuan.forEach((e) => {
+					satuan +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === id_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
+						"</option>";
+				});
+			}
+
+			$("#id_produk").html(produk);
+			$("#id_satuan").html(satuan);
+		},
+	});
+}

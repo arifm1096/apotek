@@ -7,6 +7,10 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
+                    <button type="button" class="btn btn-info btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="add_penjualan();">
+                        <i class="fa fa-plus"></i> Tambah Penjualan
+                    </button>
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
                         <i class="fa fa-file-excel"></i> Export Excel
@@ -98,8 +102,12 @@
                     <tfoot>
                         <tr>
                             <td colspan="3">Total</td>
-                            <th><div id="tot_produk"></div></th>
-                            <th><div id="tot_jual"></div></th>
+                            <th>
+                                <div id="tot_produk"></div>
+                            </th>
+                            <th>
+                                <div id="tot_jual"></div>
+                            </th>
                         </tr>
                     </tfoot>
 
@@ -116,7 +124,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Tambah Stok</h4>
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Tambah Penjualan</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -124,68 +132,53 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>
-                            <div id="nama_produk_stok"></div>
-                        </h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6><b>
-                                        Gudang : <div id="nama_gudang_stok"></div>
-                                    </b></h6>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>
-                                    <b>
-                                        Satuan Utama :<div id="satuan_stok"></div>
-                                    </b>
-                                </h6>
-                            </div>
-                        </div>
-
-
-                        <hr>
-                        <form id="data_penjualan">
-
-
+                        <form id="add_data_penjualan">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Kuantitas</label>
-                                        <input type="hidden" id="id_produk_stok">
-                                        <input type="hidden" id="id_stok">
-                                        <input type="text" id="jumlah_stok" name="jumlah_stok" class="form-control"
-                                            placeholder="Inputkan Nama Produk" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Tgl. Expired</label>
-                                        <input type="text" id="exp_date" name="exp_date" class="form-control tgl_piker"
-                                            placeholder="Inputkan Nama Produk" required>
+                                        <label>Produk</label>
+                                        <select name="id_produk" id="id_produk" class="form-control select2" required>
+                                        </select>
+                                        <input type="hidden" name="nama_produk" id="nama_produk">
+                                        <input type="hidden" name="id_satuan_utama" id="id_satuan_utama">
                                     </div>
                                     <div class="form-group">
                                         <label>Satuan</label>
-                                        <select name="id_satuan_stok" id="id_satuan_stok" class="form-control select2"
-                                            required>
+                                        <select name="id_satuan" id="id_satuan" class="form-control select2" required>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Supplier</label>
-                                        <select name="id_supplier_stok" id="id_supplier_stok"
-                                            class="form-control select2" required>
-                                        </select>
+                                        <label>Jumlah Produk / Qty</label>
+                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label>Harga Beli Per Satuan</label>
+                                        <label>Tanggal Penjualan</label>
+                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Jual Persatuan</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Total Penjualan</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="total_harga" id="total_harga" class="form-control"
+                                                readonly>
                                         </div>
                                     </div>
                                 </div>
 
                             </div>
-                            <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
+                            <p>*<b>Satuan & Qty</b>, mempengaruhi harga jual</p>
                             <div class="row">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-9">

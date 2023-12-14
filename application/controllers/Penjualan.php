@@ -1268,7 +1268,6 @@ class Penjualan extends CI_Controller {
 			echo json_encode($output);
 	}
 
-	
 	public function get_detail_data_jual_retur(){
 		$id = $_POST['id_jual'];
 		$sql = "SELECT j.id_produk,j.no_nota,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
@@ -1358,8 +1357,23 @@ class Penjualan extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=> 0,'msg'=>'Error Code : 3478'));
 		}
-	}
-	
-	 
+	} 
 	// Return Penjualan
+
+	// tambah penjualan back date start
+		public function get_data_master(){
+			$sql_produk = "SELECT id_produk,nama_produk,sku_kode_produk,satuan_utama FROM `tx_produk` WHERE is_delete = 0";
+			$data_produk = $this->db->query($sql_produk)->result();
+
+			$sql_satuan = "SELECT id_satuan,nama_satuan,kd_statuan FROM `tm_satuan` WHERE is_delete = 0";
+			$data_satuan = $this->db->query($sql_satuan)->result();
+
+			if(!empty($data_produk) || !empty($data_satuan)){
+				echo json_encode(array('status'=>1,'msg'=>'data is find','produk'=> $data_produk,'satuan'=> $data_satuan));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'data kosong','produk'=> null,'satuan'=> null));
+			}
+		}
+
+	// tambah penjualan back date end
 }
