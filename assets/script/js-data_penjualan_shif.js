@@ -13,8 +13,7 @@ $(".tgl_piker").datepicker({
 	showButtonPanel: true,
 });
 
-
-$('#tanggal').datetimepicker({ icons: { time: 'fa fa-clock' } });
+$("#tanggal").datetimepicker({ icons: { time: "fa fa-clock" } });
 //Initialize Select2 Elements
 $(".select2").select2();
 
@@ -254,27 +253,83 @@ function load_select(id_produk, id_satuan) {
 	});
 }
 
-function get_nominal(){
-	$("#nama_produk").val();
-	$("#id_satuan_utama").val();
-	$("#harga_jual").val();
+function get_nominal() {
+	$("#nama_produk").val("");
+	$("#id_satuan_utama").val("");
+	$("#harga_jual").val("");
+	var id_produk = $("#id_produk").val();
+	var id_satuan = $("#id_satuan").val();
 	$.ajax({
 		url: URL + "penjualan/get_harga",
 		type: "POST",
-		data: {},
+		data: { id_produk: id_produk, id_satuan: id_satuan },
 		success: function (data) {
 			var res = JSON.parse(data);
-			if(res.status == 1){
+			if (res.status == 1) {
 				$("#nama_produk").val(res.result.nama_produk);
 				$("#id_satuan_utama").val(res.result.satuan_utama);
-				$("#harga_jual").val(res.result.harga_jual);
-			}else{
+				$("#id_jenis_harga").val(res.result.id_jenis_harga);
+				$("#harga_beli").val(res.result.harga_beli);
+				$("#harga_jual").val(res.nominal);
+			} else {
+				if (res.status == 0) {
+					Swal.fire({
+						icon: "error",
+						title: "Perahatian..!!",
+						text: res.msg,
+					});
+				}
+			}
+		},
+	});
+}
+
+function hit_total() {
+	var harga = $("#harga_jual").val();
+	var qty = $("#jumlah_produk").val();
+	$("#total_harga").val("");
+	$.ajax({
+		url: URL + "penjualan/get_tot_jual",
+		type: "POST",
+		data: { harga: harga, qty: qty },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#total_harga").val(res.result);
+			}
+		},
+	});
+}
+
+$("#add_data_penjualan").submit(function (e) {
+	e.preventDefault();
+	$("#save_button").html("Sending...");
+	$.ajax({
+		url: URL + "penjualan/save_penjualan_back",
+		type: "post",
+		data: new FormData(this),
+		processData: false,
+		contentType: false,
+		cache: false,
+		async: false,
+		beforeSend: function () {
+			$("#add_dokter").find("span.error-text").text();
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
 				Swal.fire({
-					icon : 'error',
-					title : 'Perahatian..!!',
-					text : res.msg
+					icon: "success",
+					title: "Success",
+					text: res.msg,
+				});
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: res.msg,
 				});
 			}
-		}
-	})
-}
+		},
+	});
+});

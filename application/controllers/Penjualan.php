@@ -1378,26 +1378,37 @@ class Penjualan extends CI_Controller {
 		public function get_harga(){
 			$id_produk = $_POST['id_produk'];
 			$id_satuan = $_POST['id_satuan'];
-			$sql = "SELECT p.nama_produk,id_produk,p.harga_beli,h.harga_jual
+			$sql = "SELECT p.nama_produk,p.id_produk,p.harga_beli,h.harga_jual,p.satuan_utama,h.id_jenis_harga,p.harga_beli
 					FROM `tx_produk` as p
 					LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
 					WHERE h.id_jenis_harga = 4 AND p.id_produk = $id_produk AND p.satuan_utama = $id_satuan";
 			$data = $this->db->query($sql)->row();
-			$data['harga_jual'] = number_format($data->harga_jual,0,',','.');
+			// echo $this->db->last_query();
 
-			if(!empty($data)){
-				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
-			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Data Not Found','result'=>null));
+			if($data !== NULL){
+				$nom = number_format($data->harga_jual,0,',','.');
 			}
+
+			if($id_produk !=="" && $id_satuan !==""){
+				if(!empty($data)){
+					echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data,'nominal'=>$nom));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Data Not Found','result'=>null));
+				}
+			}else{
+				echo json_encode(array('status'=>2,'msg'=>'Parameter No Complate','result'=>null));
+			}
+			
 		}
 
 		public function get_tot_jual(){
-			$harga = (int)$_POST['harga_jual'];
-			$qty = (int) $_POST['jumlah_produk'];
+			$hrg = str_replace('.','',$_POST['harga']);
+			$harga = (int)$hrg;
+			$qty = (int) $_POST['qty'];
 			$nominal = $harga * $qty;
 			$data = number_format($nominal,0,',','.');
-			if($harga !== 0 and $qty !==0 ){
+
+			if($qty !==0 ){
 				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Data Not Found','result'=>null));
@@ -1405,20 +1416,62 @@ class Penjualan extends CI_Controller {
 		}
 
 
-		public function save_penjualan(){
+		public function save_penjualan_back(){
 			$data = $this->input->post();
-			
-			$datetime = $this->db->select('now() as time')->get()->row();
-			$data['insert_date'] = $datetime->time;
-			$data['insert_by'] = $this->session->userdata('id_user');
-			$sql_in = $this->db->insert('tm_jual',$data);
+			$ext = 0;
+			$user = $this->session->userdata('id_user');
+			// $datetime = $this->db->select('now() as time')->get()->row();
+			$data['insert_by'] = $user;
+
+			unset($data['harga_jual']);
+			unset($data['total_harga']);
+			unset($data['tanggal']);
+			$data['harga_jual'] = str_replace('.','',$_POST['harga_jual']);
+			$data['total_harga'] = str_replace('.','',$_POST['total_harga']);
+			$tgl = $_POST['tanggal'];
+			$data['insert_date'] = $tgl;
+			$sql_in = $this->db->insert('tx_jual',$data);
 
 				if($sql_in){
-					
+					$ext += 1;
+					$nom_qty = 0;
+					$qty_p = (int)$_POST['jumlah_produk'];
+					$id_produk = $_POST['id_produk'];
+					$sql_p = "SELECT ps.id_stok,ps.id_produk,p.nama_produk,ps.jumlah_stok
+								FROM `tx_produk_stok` as ps
+								LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+								LEFT JOIN tm_user as u ON ps.id_gudang = u.gudang
+								WHERE ps.id_produk = $id_produk AND u.id_user = $user
+								GROUP BY p.id_produk";
+					$data_p = $this->db->query($sql_p)->row();
+					$qty_s = (int)$data_p->jumlah_stok;
+					$qty_sisa = $qty_s - $qty_p;
+					$up_stok = $this->db->where('id_stok',$data_p->id_stok)
+										->update('tx_produk_stok',array('jumlah_stok'=>$qty_sisa));
+					if($up_stok){
+						$ext += 1;
+					}
+
+					$sql_in_stok = "INSERT INTO tx_produk_stok_detail (id_stok,id_produk,jumlah_stok,id_satuan,id_gudang,id_status_stok,harga_beli,insert_by,insert_date)
+									SELECT 0 as id_stok,ps.id_produk, $qty_p as jumlah_stok,p.satuan_utama as id_satuan,u.gudang as id_gudang, 3 as id_status_stok,p.harga_beli, u.id_user as insert_by, $tgl as insert_date
+									FROM `tx_produk_stok` as ps
+									LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+									LEFT JOIN tm_user as u ON ps.id_gudang = u.gudang
+									WHERE ps.id_produk = $id_produk AND u.id_user = $user
+									GROUP BY p.id_produk";
+					$ext_in_his = $this->db->query($sql_in_stok);
+
+					if($ext_in_his){
+						$ext += 1;
+					}
+
 				}
+
+
+				
 			if(!empty($data)){
-				if(!empty($data)){
-				echo json_encode(array('status'=>1,'msg'=>'Data Success Input'));
+				if($ext > 2){
+					echo json_encode(array('status'=>1,'msg'=>'Data Success Input'));
 				}else{
 					echo json_encode(array('status'=>0,'msg'=>'Data Failed Input'));
 				}

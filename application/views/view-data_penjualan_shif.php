@@ -137,73 +137,80 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Produk</label>
-                                        <select name="id_produk" id="id_produk" class="form-control select2" required>
+                                        <select name="id_produk" id="id_produk" class="form-control select2"
+                                            onchange="get_nominal()" required>
                                         </select>
+                                        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                            value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                                         <input type="hidden" name="nama_produk" id="nama_produk">
                                         <input type="hidden" name="id_satuan_utama" id="id_satuan_utama">
+                                        <input type="hidden" name="harga_beli" id="harga_beli">
+                                        <input type="hidden" name="id_jenis_harga" id="id_jenis_harga">
                                     </div>
                                     <div class="form-group">
                                         <label>Satuan</label>
-                                        <select name="id_satuan" id="id_satuan" class="form-control select2" required>
+                                        <select name="id_satuan" id="id_satuan" class="form-control select2"
+                                            onchange="get_nominal()" required>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Jumlah Produk / Qty</label>
-                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control" placeholder="Inputkan OTY">
+                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control"
+                                            onchange="hit_total()" placeholder="Inputkan OTY">
                                     </div>
                                     <div class="form-group">
                                         <label>Tanggal Penjualan</label>
                                         <div class="row">
                                             <div class="col-md-8">
-                                                <input type="text" name="tanggal" id="tanggal" class="form-control" placeholder="Inputkan Tanggal">
+                                                <input type="text" name="tanggal" id="tanggal" class="form-control"
+                                                    placeholder="Inputkan Tanggal">
                                             </div>
-                                        </div>
-                                        
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Harga Jual Persatuan</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">Rp.</span>
-                                            </div>
-                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control"
-                                                readonly>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Total Penjualan</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">Rp.</span>
-                                            </div>
-                                            <input type="text" name="total_harga" id="total_harga" class="form-control"
-                                                readonly>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label>Harga Jual Persatuan</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Rp.</span>
+                                        </div>
+                                        <input type="text" name="harga_jual" id="harga_jual" class="form-control"
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Penjualan</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Rp.</span>
+                                        </div>
+                                        <input type="text" name="total_harga" id="total_harga" class="form-control"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
 
-                            </div>
-                            <p>*<b>Satuan & Qty</b>, mempengaruhi harga jual</p>
-                            <div class="row">
-                                <div class="col-md-2"></div>
-                                <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button"
-                                        onclick="save_data_penjualan()">
-                                        <i class="fa fa-save fa-lg"></i> &nbsp;
-                                        <span id="save-button-produk">Simpan Data</span>
-                                        <span id="send-button-produk" style="display:none;">Sending…</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
-                    <!-- /.login-card-body -->
+                    <!-- <p>*<b>Satuan & Qty</b>, mempengaruhi harga jual</p> -->
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-9">
+                            <button class="btn btn-block btn-info" type="submit">
+                                <i class="fa fa-save fa-lg"></i> &nbsp;
+                                <span id="save-button">Simpan Data</span>
+                                <span id="send-button" style="display:none;">Sending…</span>
+                            </button>
+                        </div>
+                    </div>
+                    </form>
                 </div>
-
+                <!-- /.login-card-body -->
             </div>
+
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
+    <!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
 </div>
 <!-- modal add end -->

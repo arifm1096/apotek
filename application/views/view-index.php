@@ -241,8 +241,7 @@
     <!-- Sparkline -->
     <script src="<?php echo base_url();?>assets/plugins/sparklines/sparkline.js"></script>
     <!-- JQVMap -->
-    <!-- <script src="<?php echo base_url();?>assets/plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="<?php echo base_url();?>assets/plugins/jqvmap/maps/jquery.vmap.usa.js"></script> -->
+    <script src="<?php echo base_url();?>assets/plugins/inputmask/jquery.inputmask.min.js"></script>
     <!-- jQuery Knob Chart -->
     <script src="<?php echo base_url();?>assets/plugins/jquery-knob/jquery.knob.min.js"></script>
     <!-- daterangepicker -->
