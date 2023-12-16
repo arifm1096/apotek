@@ -54,7 +54,7 @@
                     </a>
                 </li>
                 <?php if ($this->session->userdata('hak_akses')=="ADMIN"){ ?>
-                <li class="nav-item has-treeview">
+                <!-- <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>
                         <p>
@@ -77,7 +77,7 @@
                             Dashboard Stok
                         </p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>

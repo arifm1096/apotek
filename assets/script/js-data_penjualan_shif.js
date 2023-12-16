@@ -12,6 +12,9 @@ $(".tgl_piker").datepicker({
 	format: "dd-mm-yyyy",
 	showButtonPanel: true,
 });
+
+
+$('#tanggal').datetimepicker({ icons: { time: 'fa fa-clock' } });
 //Initialize Select2 Elements
 $(".select2").select2();
 
@@ -249,4 +252,29 @@ function load_select(id_produk, id_satuan) {
 			$("#id_satuan").html(satuan);
 		},
 	});
+}
+
+function get_nominal(){
+	$("#nama_produk").val();
+	$("#id_satuan_utama").val();
+	$("#harga_jual").val();
+	$.ajax({
+		url: URL + "penjualan/get_harga",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if(res.status == 1){
+				$("#nama_produk").val(res.result.nama_produk);
+				$("#id_satuan_utama").val(res.result.satuan_utama);
+				$("#harga_jual").val(res.result.harga_jual);
+			}else{
+				Swal.fire({
+					icon : 'error',
+					title : 'Perahatian..!!',
+					text : res.msg
+				});
+			}
+		}
+	})
 }

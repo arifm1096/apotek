@@ -149,11 +149,16 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Jumlah Produk / Qty</label>
-                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control">
+                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control" placeholder="Inputkan OTY">
                                     </div>
                                     <div class="form-group">
                                         <label>Tanggal Penjualan</label>
-                                        <input type="text" name="jumlah_produk" id="jumlah_produk" class="form-control">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <input type="text" name="tanggal" id="tanggal" class="form-control" placeholder="Inputkan Tanggal">
+                                            </div>
+                                        </div>
+                                        
                                     </div>
                                     <div class="form-group">
                                         <label>Harga Jual Persatuan</label>

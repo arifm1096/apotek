@@ -184,7 +184,6 @@ class Penjualan extends CI_Controller {
 					$up_total += $data_jual->total_harga + $prod_data->harga_jual;
 				}
 				
-
 				$r_up = array(
 					'jumlah_produk' => $up_jumlah,
 					'total_harga' => $up_total
@@ -1372,6 +1371,59 @@ class Penjualan extends CI_Controller {
 				echo json_encode(array('status'=>1,'msg'=>'data is find','produk'=> $data_produk,'satuan'=> $data_satuan));
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'data kosong','produk'=> null,'satuan'=> null));
+			}
+		}
+
+
+		public function get_harga(){
+			$id_produk = $_POST['id_produk'];
+			$id_satuan = $_POST['id_satuan'];
+			$sql = "SELECT p.nama_produk,id_produk,p.harga_beli,h.harga_jual
+					FROM `tx_produk` as p
+					LEFT JOIN tx_produk_harga as h ON p.id_produk = h.id_produk
+					WHERE h.id_jenis_harga = 4 AND p.id_produk = $id_produk AND p.satuan_utama = $id_satuan";
+			$data = $this->db->query($sql)->row();
+			$data['harga_jual'] = number_format($data->harga_jual,0,',','.');
+
+			if(!empty($data)){
+				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Not Found','result'=>null));
+			}
+		}
+
+		public function get_tot_jual(){
+			$harga = (int)$_POST['harga_jual'];
+			$qty = (int) $_POST['jumlah_produk'];
+			$nominal = $harga * $qty;
+			$data = number_format($nominal,0,',','.');
+			if($harga !== 0 and $qty !==0 ){
+				echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Not Found','result'=>null));
+			}
+		}
+
+
+		public function save_penjualan(){
+			$data = $this->input->post();
+			
+			$datetime = $this->db->select('now() as time')->get()->row();
+			$data['insert_date'] = $datetime->time;
+			$data['insert_by'] = $this->session->userdata('id_user');
+			$sql_in = $this->db->insert('tm_jual',$data);
+
+				if($sql_in){
+					
+				}
+			if(!empty($data)){
+				if(!empty($data)){
+				echo json_encode(array('status'=>1,'msg'=>'Data Success Input'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Data Failed Input'));
+				}
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data not found'));
 			}
 		}
 
