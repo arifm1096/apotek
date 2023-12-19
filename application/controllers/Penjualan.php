@@ -1428,6 +1428,7 @@ class Penjualan extends CI_Controller {
 			unset($data['tanggal']);
 			$data['harga_jual'] = str_replace('.','',$_POST['harga_jual']);
 			$data['total_harga'] = str_replace('.','',$_POST['total_harga']);
+			$data['is_selesai'] = 1;
 			$tgl = $_POST['tanggal'];
 			$data['insert_date'] = $tgl;
 			$sql_in = $this->db->insert('tx_jual',$data);

@@ -136,7 +136,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('master/data_shif'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('master/data_akun'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Akun Keuangan</p>
                             </a>
@@ -369,7 +369,7 @@
                         <li class="nav-item">
                             <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Laporan Penjualan Tertolak</p>
+                                <p> Laporan Penjualan <br> Tertolak</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -381,13 +381,13 @@
                         <li class="nav-item">
                             <a href="<?php echo base_url('laporan/laporan_margin'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Laporan Margin Penjualan</p>
+                                <p> Laporan Margin <br> Penjualan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?php echo base_url('laporan/laporan_margin_dok'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p> Laporan Margin Resep Dok.</p>
+                                <p> Laporan Margin <br>Resep Dok.</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -400,6 +400,12 @@
                             <a href="<?php echo base_url('laporan/laporan_beli_rencana'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Pembelian <br>Rencana</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('laporan/data_trans_keu'); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Transaksi Keuangan</p>
                             </a>
                         </li>
                         <li class="nav-item">

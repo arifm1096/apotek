@@ -1289,7 +1289,7 @@ class Laporan extends CI_Controller {
 	}
 
 
-		// Laporan Penjualan
+		// Laporan Penjualan Tertolak
 		public function data_penjualan_tertolak(){
 			$var['content'] = 'view-lap-penjualan';
 			$var['js'] = 'js-lap_penjualan';
@@ -1469,6 +1469,110 @@ class Laporan extends CI_Controller {
 			$writer->save('php://output');
 		}
 	
-		// Laporan Penjualan End
+		// Laporan Penjualan Tertolak End 
+
+		// Transaksi Keuangan
+			public function data_trans_keu(){
+				$var['content'] = 'view-trans-keu';
+				$var['js'] = 'js-trans-keu';
+				$this->load->view('view-index',$var);
+			}
+
+			public function load_trans_keu(){
+				// Read Value 
+				$draw = $_POST['draw'];
+				$row = $_POST['start'];
+				$rowperpage = $_POST['length']; // Rows display per page
+				$columnIndex = $_POST['order'][0]['column']; // Column index
+				$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+				$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+				$searchValue = $_POST['search']['value'];
+
+				// Search
+				$searchQuery = "";
+				if ($searchValue != '') {
+					$searchQuery .= " and (a.nama_trans_keu like '%" . $searchValue . "%'
+											or js.nama_transaksi like '%" . $searchValue . "%'	
+
+					) ";
+				}
+
+				$where = " t.is_delete = 0 " . $searchQuery . "";
+
+				// Total number records without filtering
+				$sql_count = "SELECT count(*) as allcount
+				FROM `tm_trans_keu` where is_delete = 0";
+				$records = $this->db->query($sql_count)->row_array();
+				$totalRecords = $records['allcount'];
+
+				// Total number records with filter
+				$sql_filter = "SELECT count(*) as allcount
+				FROM `tm_trans_keu`
+				WHERE $where";
+				$records = $this->db->query($sql_filter)->row_array();
+				$totalRecordsFilter = $records['allcount'];
+
+				// Fetch Records
+				$sql = "SELECT t.id_trans_keu,t.nominal,t.tgl_trans,t.id_akun,a.nama_akun,js.nama_transaksi
+				FROM `tx_trans_keu` AS t
+				LEFT JOIN tm_akun AS a ON t.id_akun = a.id_akun
+				LEFT JOIN tm_jenis_transaksi_akun AS js ON a.jenis_transaksi = js.id_jenis_transaksi
+				WHERE $where
+				order by id_trans_keu " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+				$data = $this->db->query($sql)->result();
+
+				// Response
+				$output = array(
+					"draw" => intval($draw),
+					"iTotalRecords" => $totalRecords,
+					"iTotalDisplayRecords" => $totalRecordsFilter,
+					"aaData" => $data
+				); 
+				echo json_encode($output);
+			}
+
+			public function save_trans_keu(){
+				$data = $this->input->post();
+				unset($data['nominal']);
+				$data['nominal'] = str_replace( $_POST['nominal'] ,'.','');
+
+				if(empty($data['id_trans_keu'])){
+						$sql = $this->db->insert('tm_trans_keu',$data);
+							if($sql){
+								echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
+							}else{
+								echo json_encode(array('status'=>0,'msg'=>'Error 3423 || Gagal Menyimpan'));
+							}
+					
+				}else{
+					$sql = $this->db->where('id_trans_keu',$data['id_trans_keu'])->update('tm_trans_keu',$data);
+						if($sql){
+							echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
+						}else{
+							echo json_encode(array('status'=>0,'msg'=>'Error 3422 || Gagal Menyimpan'));
+						}
+				}
+				
+			}
+
+			public function hapus_trans_keu(){
+				$id = $_POST['id'];
+				$delete_by = $this->session->userdata('id_user');
+				$time = date('Y-m-d H:i:s');
+				$update = $this->db->where('id_trans_keu',$id)
+									->update('tm_trans_keu',array(
+															'is_delete' => 1,
+															'delete_by' => $delete_by,
+															'delete_date' => $time
+															)
+											);
+											// echo $this->db->last_query();
+				if($update){
+					echo json_encode(array('status'=>1,'msg'=>'Hapus Data Success'));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Hapus Data Falied'));
+				}
+			}
+		// Transaksi Keuangan
 
 }

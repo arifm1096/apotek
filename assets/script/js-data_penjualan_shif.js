@@ -318,6 +318,7 @@ $("#add_data_penjualan").submit(function (e) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
+				clear_form();
 				$("#modal_data_penjualan").modal("hide");
 				Swal.fire({
 					icon: "success",
@@ -334,3 +335,14 @@ $("#add_data_penjualan").submit(function (e) {
 		},
 	});
 });
+
+function clear_form() {
+	$("#harga_jual").val("");
+	$("#jumlah_produk").val("");
+	$("#nama_produk").val("");
+	$("#id_satuan_utama").val("");
+	$("#id_jenis_harga").val("");
+	$("#harga_beli").val("");
+	$("#tanggal").val("");
+	$("#jumlah_produk").val("");
+}
