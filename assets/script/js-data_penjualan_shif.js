@@ -328,7 +328,7 @@ $("#add_data_penjualan").submit(function (e) {
 			} else {
 				Swal.fire({
 					icon: "error",
-					title: "Error",
+					title: "Perhatian !!!",
 					text: res.msg,
 				});
 			}

@@ -1431,13 +1431,8 @@ class Penjualan extends CI_Controller {
 			$data['is_selesai'] = 1;
 			$tgl = $_POST['tanggal'];
 			$data['insert_date'] = $tgl;
-			$sql_in = $this->db->insert('tx_jual',$data);
 
-				if($sql_in){
-					$ext += 1;
-					$nom_qty = 0;
-					$qty_p = (int)$_POST['jumlah_produk'];
-					$id_produk = $_POST['id_produk'];
+			$id_produk = $_POST['id_produk'];
 					$sql_p = "SELECT ps.id_stok,ps.id_produk,p.nama_produk,ps.jumlah_stok
 								FROM `tx_produk_stok` as ps
 								LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
@@ -1445,38 +1440,54 @@ class Penjualan extends CI_Controller {
 								WHERE ps.id_produk = $id_produk AND u.id_user = $user
 								GROUP BY p.id_produk";
 					$data_p = $this->db->query($sql_p)->row();
+					$qty_p = (int)$_POST['jumlah_produk'];
 					$qty_s = (int)$data_p->jumlah_stok;
-					$qty_sisa = $qty_s - $qty_p;
-					$up_stok = $this->db->where('id_stok',$data_p->id_stok)
-										->update('tx_produk_stok',array('jumlah_stok'=>$qty_sisa));
-					if($up_stok){
-						$ext += 1;
+
+				if( $qty_s >= $qty_p){
+					$sql_in = $this->db->insert('tx_jual',$data);
+
+						if($sql_in){
+							$ext += 1;
+							$nom_qty = 0;
+							$qty_p = (int)$_POST['jumlah_produk'];
+							
+							$qty_s = (int)$data_p->jumlah_stok;
+							$qty_sisa = $qty_s - $qty_p;
+							$up_stok = $this->db->where('id_stok',$data_p->id_stok)
+												->update('tx_produk_stok',array('jumlah_stok'=>$qty_sisa));
+							if($up_stok){
+								$ext += 1;
+							}
+
+							$sql_in_stok = "INSERT INTO tx_produk_stok_detail (id_stok,id_produk,jumlah_stok,id_satuan,id_gudang,id_status_stok,harga_beli,insert_by,insert_date)
+											SELECT 0 as id_stok,ps.id_produk, $qty_p as jumlah_stok,p.satuan_utama as id_satuan,u.gudang as id_gudang, 3 as id_status_stok,p.harga_beli, u.id_user as insert_by, '$tgl' as insert_date
+											FROM `tx_produk_stok` as ps
+											LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+											LEFT JOIN tm_user as u ON ps.id_gudang = u.gudang
+											WHERE ps.id_produk = $id_produk AND u.id_user = $user
+											GROUP BY p.id_produk";
+							$ext_in_his = $this->db->query($sql_in_stok);
+
+							if($ext_in_his){
+								$ext += 1;
+							}
+
+						}
+						
+					if(!empty($data)){
+						if($ext > 2){
+							echo json_encode(array('status'=>1,'msg'=>'Data Success Input'));
+						}else{
+							echo json_encode(array('status'=>0,'msg'=>'Data Failed Input'));
+						}
+					}else{
+						echo json_encode(array('status'=>0,'msg'=>'Data not found'));
 					}
-
-					$sql_in_stok = "INSERT INTO tx_produk_stok_detail (id_stok,id_produk,jumlah_stok,id_satuan,id_gudang,id_status_stok,harga_beli,insert_by,insert_date)
-									SELECT 0 as id_stok,ps.id_produk, $qty_p as jumlah_stok,p.satuan_utama as id_satuan,u.gudang as id_gudang, 3 as id_status_stok,p.harga_beli, u.id_user as insert_by, '$tgl' as insert_date
-									FROM `tx_produk_stok` as ps
-									LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
-									LEFT JOIN tm_user as u ON ps.id_gudang = u.gudang
-									WHERE ps.id_produk = $id_produk AND u.id_user = $user
-									GROUP BY p.id_produk";
-					$ext_in_his = $this->db->query($sql_in_stok);
-
-					if($ext_in_his){
-						$ext += 1;
-					}
-
-				}
-				
-			if(!empty($data)){
-				if($ext > 2){
-					echo json_encode(array('status'=>1,'msg'=>'Data Success Input'));
 				}else{
-					echo json_encode(array('status'=>0,'msg'=>'Data Failed Input'));
+					echo json_encode(array('status'=>0,'msg'=>'Stok Produk Tinggal '.$qty_s.' / Satuan'));
 				}
-			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Data not found'));
-			}
+
+				
 		}
 	// tambah penjualan back date end
 
