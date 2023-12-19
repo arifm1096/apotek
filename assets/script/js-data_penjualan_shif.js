@@ -318,6 +318,7 @@ $("#add_data_penjualan").submit(function (e) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
+				$("#modal_data_penjualan").modal("hide");
 				Swal.fire({
 					icon: "success",
 					title: "Success",

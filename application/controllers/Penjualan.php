@@ -779,78 +779,78 @@ class Penjualan extends CI_Controller {
 	}
 
 	public function export_data_penjualan(){
-		$spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-     
-        $sheet->setCellValue('A1', "No");
-        $sheet->setCellValue('B1', "No Nota");
-        $sheet->setCellValue('C1', "Nama Produk");
-        $sheet->setCellValue('D1', "Jumlah");
-        $sheet->setCellValue('E1', "Satuan");
-		$sheet->setCellValue('F1', "Total Penjualan");
-		$sheet->setCellValue('G1', "Sub Total Penjualan");
+			$spreadsheet = new Spreadsheet();
+			$sheet = $spreadsheet->getActiveSheet();
+		
+			$sheet->setCellValue('A1', "No");
+			$sheet->setCellValue('B1', "No Nota");
+			$sheet->setCellValue('C1', "Nama Produk");
+			$sheet->setCellValue('D1', "Jumlah");
+			$sheet->setCellValue('E1', "Satuan");
+			$sheet->setCellValue('F1', "Total Penjualan");
+			$sheet->setCellValue('G1', "Sub Total Penjualan");
 
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+			$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
-		$searchValue = $_GET['text'];
-		if ($searchValue != '') {
-			$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
-			 					OR j.no_nota like '%" . $searchValue . "%'
-								 OR s.nama_satuan like '%" . $searchValue . "%'				
-			) ";
-		}
+			$searchValue = $_GET['text'];
+			if ($searchValue != '') {
+				$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
+									OR j.no_nota like '%" . $searchValue . "%'
+									OR s.nama_satuan like '%" . $searchValue . "%'				
+				) ";
+			}
 
-		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
-		}
+			if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+				$tgl1 = $_GET['tgl1'];
+				$tgl2 = $_GET['tgl2'];
+				$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			}else{
+				$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			}
 
-		// if($_GET['shif'] !=="pil"){
-		// 	 $shif=$_GET['shif'];
-		// 	$where .="AND k.id_shif = $shif";
-		// }
+			// if($_GET['shif'] !=="pil"){
+			// 	 $shif=$_GET['shif'];
+			// 	$where .="AND k.id_shif = $shif";
+			// }
 
 
-		$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-		j.jumlah_produk,s.nama_satuan,
-		j.total_harga,ps.jumlah_stok,j.no_nota
-		FROM `tx_jual` as j
-		LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
-		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-		WHERE $where";
+			$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+			j.jumlah_produk,s.nama_satuan,
+			j.total_harga,ps.jumlah_stok,j.no_nota
+			FROM `tx_jual` as j
+			LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
+			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+			WHERE $where";
 
-		$data_jual = $this->db->query($sql)->result_array();
-		echo $this->db->last_query();
-        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
-        $numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
-		$total = 0;
-        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
-          $sheet->setCellValue('A'.$numrow, $no);
-          $sheet->setCellValue('B'.$numrow, $data['no_nota']);
-          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
-          $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-		  $sheet->setCellValue('f'.$numrow, $data['total_harga']);
-          $no++; // Tambah 1 setiap kali looping
-          $numrow++;
-		  $total += (int)$data['total_harga'];// Tambah 1 setiap kali looping
-        }
-		$sheet->setCellValue('G2', $total);
-		$sheet->getStyle('G1')->getFont()->setBold(true);
-		$sheet->getStyle('G2')->getFont()->setBold(true);
-        $writer = new Xlsx($spreadsheet);
-		$time = $this->db->select('now() as wkt')->get()->row();
-        
-        ob_end_clean();
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Data_Penjualan'.$time->wkt.'.xls');
-		header('Cache-Control: max-age=0');
-		$writer->save('php://output');
-}
+			$data_jual = $this->db->query($sql)->result_array();
+			echo $this->db->last_query();
+			$no = 1; // Untuk penomoran tabel, di awal set dengan 1
+			$numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
+			$total = 0;
+			foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+			$sheet->setCellValue('A'.$numrow, $no);
+			$sheet->setCellValue('B'.$numrow, $data['no_nota']);
+			$sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+			$sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
+			$sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
+			$sheet->setCellValue('f'.$numrow, $data['total_harga']);
+			$no++; // Tambah 1 setiap kali looping
+			$numrow++;
+			$total += (int)$data['total_harga'];// Tambah 1 setiap kali looping
+			}
+			$sheet->setCellValue('G2', $total);
+			$sheet->getStyle('G1')->getFont()->setBold(true);
+			$sheet->getStyle('G2')->getFont()->setBold(true);
+			$writer = new Xlsx($spreadsheet);
+			$time = $this->db->select('now() as wkt')->get()->row();
+			
+			ob_end_clean();
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename=Data_Penjualan'.$time->wkt.'.xls');
+			header('Cache-Control: max-age=0');
+			$writer->save('php://output');
+	}
 
 // end penjualan
 
@@ -1453,7 +1453,7 @@ class Penjualan extends CI_Controller {
 					}
 
 					$sql_in_stok = "INSERT INTO tx_produk_stok_detail (id_stok,id_produk,jumlah_stok,id_satuan,id_gudang,id_status_stok,harga_beli,insert_by,insert_date)
-									SELECT 0 as id_stok,ps.id_produk, $qty_p as jumlah_stok,p.satuan_utama as id_satuan,u.gudang as id_gudang, 3 as id_status_stok,p.harga_beli, u.id_user as insert_by, $tgl as insert_date
+									SELECT 0 as id_stok,ps.id_produk, $qty_p as jumlah_stok,p.satuan_utama as id_satuan,u.gudang as id_gudang, 3 as id_status_stok,p.harga_beli, u.id_user as insert_by, '$tgl' as insert_date
 									FROM `tx_produk_stok` as ps
 									LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
 									LEFT JOIN tm_user as u ON ps.id_gudang = u.gudang
@@ -1466,8 +1466,6 @@ class Penjualan extends CI_Controller {
 					}
 
 				}
-
-
 				
 			if(!empty($data)){
 				if($ext > 2){
@@ -1479,6 +1477,7 @@ class Penjualan extends CI_Controller {
 				echo json_encode(array('status'=>0,'msg'=>'Data not found'));
 			}
 		}
-
 	// tambah penjualan back date end
+
+	
 }
