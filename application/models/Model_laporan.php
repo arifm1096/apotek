@@ -168,6 +168,36 @@
 			}
 		}
 
+		public function get_akun_masuk($tgl_awal,$tgl_akhir){
+			$sql = "SELECT a.nama_akun,SUM(k.nominal) as nominal
+			FROM `tx_trans_keu` as k
+			LEFT JOIN tm_akun as a ON k.id_akun = a.id_akun
+			WHERE k.is_delete = 0 and (a.jenis_transaksi = 1 OR a.jenis_transaksi = 3)  AND DATE_FORMAT(k.tgl_trans,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			GROUP BY a.id_akun";
+
+			$sql = $this->db->query($sql);
+			if($sql->num_rows()>0){
+				return $sql->result();
+			}else{
+				return null;
+			}
+		}
+
+		public function get_akun_keluar($tgl_awal,$tgl_akhir){
+			$sql = "SELECT a.nama_akun,SUM(k.nominal) as nominal
+			FROM `tx_trans_keu` as k
+			LEFT JOIN tm_akun as a ON k.id_akun = a.id_akun
+			WHERE k.is_delete = 0 and (a.jenis_transaksi = 2 OR a.jenis_transaksi = 3)  AND DATE_FORMAT(k.tgl_trans,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			GROUP BY a.id_akun";
+
+			$sql = $this->db->query($sql);
+			if($sql->num_rows()>0){
+				return $sql->result();
+			}else{
+				return null;
+			}
+		}
+
 
 	}
 

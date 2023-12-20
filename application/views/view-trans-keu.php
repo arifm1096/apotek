@@ -4,7 +4,7 @@
         <div class="row mb-2">
             <div class="col-sm-6">
 
-                <h4>Data Akun</h4>
+                <h4>Data Transaksi Keuangan</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -36,7 +36,7 @@
             <div class="card-header bg-danger">
                 <div class="row">
                     <div class="col-md-4">
-                        <label>Cari Produk:</label>
+                        <label>Cari Akun:</label>
 
                     </div>
 
@@ -45,9 +45,9 @@
                     </div>
                     <div class="col-md-2">
                     </div>
-                    <div class="col-md-2">
+                    <!-- <div class="col-md-2">
                         <label>Total Nominal : </label>
-                    </div>
+                    </div> -->
 
                 </div>
                 <div class="row">
@@ -143,7 +143,7 @@
                                     placeholder="Inputkan Nominal">
                             </div>
                             <div class="form-group">
-                                <label>Status Aktif</label>
+                                <label>Keterangan</label>
                                 <textarea class="form-control" name="ket" id="ket" cols="30" rows="3"></textarea>
                             </div>
                             <div class="social-auth-links text-center mb-1">

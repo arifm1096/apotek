@@ -717,9 +717,10 @@ class Persediaan extends CI_Controller {
 		$id = $_POST['id_stok'];
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
 				pd.exp_date,p.id_produk,pd.id_stok,pd.jumlah_stok as stok_sistem,sp.stok_fisik,
-				sp.catatan,sp.penyesuaian,p.sku_kode_produk,sp.id_stok_opname
+				sp.catatan,sp.penyesuaian,p.sku_kode_produk,sp.id_stok_opname,s.nama_satuan
 				FROM `tx_produk_stok` as pd
 				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
 				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
 				LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
 				LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
@@ -850,6 +851,8 @@ class Persediaan extends CI_Controller {
 		WHERE $where
 		order by sd.id_stok_opname_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
+
+		// echo $this->db->last_query();
 	
 		// Response
 		$output = array(

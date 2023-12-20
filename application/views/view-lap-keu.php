@@ -53,80 +53,11 @@
             <!-- /.card-header -->
 
             <div class="card-body table-responsive">
-                <table class="table table-bordered">
-                    <tr>
-                        <th colspan="2"> <h5>Modal</h5></th>
-                    </tr>
-                    <tr>
-                        <th>Modal</th>
-                        <th><div id="modal"></div></th>
-                    </tr>
-
-                    <tr>
-                        <th colspan="2"> <h5>Pemasukan</h5></th>
-                    </tr>
-                    <tr>
-                        <th>Margin Penjualan Kasir</th>
-                        <th><div id="m_penjualan"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Margin Resep Dokter</th>
-                        <th><div id="m_resep"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Jumlah Margin</th>
-                        <th><div id="tot_margin"></div></th>
-                    </tr>
-
-                    <tr>
-                        <th colspan="2"> <h5>Penjualan</h5></th>
-                    </tr>
-                    <tr>
-                        <th>Total Penjualan Kasir</th>
-                        <th><div id="pen_kas"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Total Penjualan Resep Dokter</th>
-                        <th><div id="pen_dok"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Total Penjualan</th>
-                        <th><div id="tot_pen"></div></th>
-                    </tr>
-
-                    <tr>
-                        <th colspan="2"> <h5>Pembelian</h5></th>
-                    </tr>
-                    <tr>
-                        <th>Total Pembelian Kasir</th>
-                        <th><div id="pem_kas"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Total Pembelian Resep Dokter</th>
-                        <th><div id="pem_dok"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Total Pembelian</th>
-                        <th><div id="tot_pem"></div></th>
-                    </tr>
-
-                    <tr>
-                        <th colspan="2"> <h5>Laba</h5></th>
-                    </tr>
-                    <tr>
-                        <th>Total Penjualan</th>
-                        <th><div id="tot_pen_x"></div></th>
-                    </tr>
-                    <tr>
-                        <th>Total Pembelian</th>
-                        <th><div id="tot_pem_x"></div></th>
-                    </tr>
-                   
-                    <tr>
-                        <th>Laba Bersih</th>
-                        <th><div id="laba_rugi"></div></th>
-                    </tr>
-                </table>
+                <div id="loading">
+                    <h2>Loading..</h2> 
+                    <img width="80px" height="80px" src="<?php echo base_url('assets/images/loading.gif')?>" alt="loading">
+                </div>
+                <div id="list_data"></div>
             </div>
 
             <!-- /.card-body -->

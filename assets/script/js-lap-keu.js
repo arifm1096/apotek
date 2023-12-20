@@ -14,35 +14,36 @@ $(".tgl_piker").datepicker({
 $(".select2").select2();
 
 function load_lap_keu(tgl1, tgl2) {
-
+	$("#loading").show();
 		$.ajax({
 			url: URL + "laporan/load_laporan_keu",
 			type: "POST",
 			data: { tgl1: tgl1, tgl2: tgl2 },
 			success : function(data){
-				var res = JSON.parse(data);
+				$('#loading').hide();
+				$('#list_data').html(data);
 
-				if(res.status == 1){
-					$("#modal").html(res.res.tot_modal);
-					$("#m_penjualan").html(res.res.tot_margin_kas);
-					$("#m_resep").html(res.res.tot_margin_res);
-					$("#tot_margin").html(res.res.tot_margin);
-					$("#pen_kas").html(res.res.tot_pen_kas);
-					$("#pen_dok").html(res.res.tot_pen_dok);
-					$("#pem_kas").html(res.res.tot_pem_kas);
-					$("#pem_dok").html(res.res.tot_pem_dok);
-					$("#tot_pen").html(res.res.tot_penjualan);
-					$("#tot_pem").html(res.res.tot_pembelian);
-					$("#tot_pen_x").html(res.res.tot_penjualan);
-					$("#tot_pem_x").html(res.res.tot_pembelian);
-					$("#laba_rugi").html(res.res.tot_margin);
-				}else{
-					Swal.fire({
-						icon : 'error',
-						title : 'Perhatian !!',
-						text : res.msg,
-					});
-				}
+				// if(res.status == 1){
+				// 	$("#modal").html(res.res.tot_modal);
+				// 	$("#m_penjualan").html(res.res.tot_margin_kas);
+				// 	$("#m_resep").html(res.res.tot_margin_res);
+				// 	$("#tot_margin").html(res.res.tot_margin);
+				// 	$("#pen_kas").html(res.res.tot_pen_kas);
+				// 	$("#pen_dok").html(res.res.tot_pen_dok);
+				// 	$("#pem_kas").html(res.res.tot_pem_kas);
+				// 	$("#pem_dok").html(res.res.tot_pem_dok);
+				// 	$("#tot_pen").html(res.res.tot_penjualan);
+				// 	$("#tot_pem").html(res.res.tot_pembelian);
+				// 	$("#tot_pen_x").html(res.res.tot_penjualan);
+				// 	$("#tot_pem_x").html(res.res.tot_pembelian);
+				// 	$("#laba_rugi").html(res.res.tot_margin);
+				// }else{
+				// 	Swal.fire({
+				// 		icon : 'error',
+				// 		title : 'Perhatian !!',
+				// 		text : res.msg,
+				// 	});
+				// }
 			}
 		});
 			

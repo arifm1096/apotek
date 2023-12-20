@@ -1158,7 +1158,8 @@ class Laporan extends CI_Controller {
 		$tgl_awal = $_POST['tgl1'];
 		$tgl_akhir = $_POST['tgl2'];
 		
-
+		// $tgl_awal = "";
+		// $tgl_akhir = "";
 		// var_dump($tgl_awal.' - '. $tgl_akhir);
 
 		$modal = $this->Model_laporan->get_lap_modal();
@@ -1168,8 +1169,18 @@ class Laporan extends CI_Controller {
 		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl_awal,$tgl_akhir);
 		$pem_kas = $this->Model_laporan->get_lap_pem_kas($tgl_awal,$tgl_akhir);
 		$pem_dok = $this->Model_laporan->get_lap_pem_dok($tgl_awal,$tgl_akhir);
+		$var['akun_masuk'] = $this->Model_laporan->get_akun_masuk($tgl_awal,$tgl_akhir);
+		$var['akun_keluar'] = $this->Model_laporan->get_akun_keluar($tgl_awal,$tgl_akhir);
 
-		// echo $this->db->last_query();
+		$var['total_akun_masuk'] = 0;
+		$var['total_akun_keluar'] = 0;
+		foreach ($var['akun_masuk'] as $key => $value) {
+			$var['total_akun_masuk'] += $value->nominal;
+		}
+
+		foreach ($var['akun_keluar'] as $key => $value) {
+			$var['total_akun_keluar'] += $value->nominal;
+		}
 
 		$var['tot_modal'] = number_format($modal->total_modal,0,',','.');
 		$var['tot_margin_kas'] = number_format($margin_kas->tot_margin,0,',','.');
@@ -1188,14 +1199,16 @@ class Laporan extends CI_Controller {
 		$tot_pm = (int) $pem_dok->tot_harga_beli + (int) $pem_kas->tot_harga_beli;
 		$var['tot_pembelian'] = number_format($tot_pm,0,',','.');
 		// total_laba
-		$laba_rugi = $tot_m ;
+		$laba_rugi = $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
 		$var['laba_rugi'] = number_format($laba_rugi,0,',','.');
 
-		if($tgl_awal !== "" && $tgl_akhir !==""){
-			echo json_encode(array('status'=>1,'msg'=>'Masukan Periode Tanggal Terlebih dahulu.!!','res'=>$var));
-		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Masukan Periode Tanggal Terlebih dahulu.!!','res'=>null));
-		}
+		// if($tgl_awal !== "" && $tgl_akhir !==""){
+		// 	echo json_encode(array('status'=>1,'msg'=>'Masukan Periode Tanggal Terlebih dahulu.!!','res'=>$var));
+		// }else{
+		// 	echo json_encode(array('status'=>0,'msg'=>'Masukan Periode Tanggal Terlebih dahulu.!!','res'=>null));
+		// }
+
+		$this->load->view('v-laporan-keuangan',$var);
 
 	}
 

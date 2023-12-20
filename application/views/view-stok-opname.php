@@ -100,9 +100,12 @@
                         </h5>
                         <div class="row">
                             <div class="col-md-12 text-center">
-                                <h4><b>
-                                        Stok Opname : <div id="nama_obat"></div>
-                                    </b></h4>
+                                <h4><b>Stok Opname :</b></h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h4><b>Produk :<div id="nama_obat"></div> Satuan :<div id="nama_satuan"></div></b></h4>
                             </div>
                         </div>
                         <hr>
