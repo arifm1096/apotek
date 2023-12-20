@@ -16,9 +16,19 @@
         <div class="row">
             <div class="col-md-2">
                 <button type="button" class="btn btn-info btn-sm" style="align-items: right;" data-toggle="modal"
-                    data-target="#modal_input_akun" data-backdrop="static" data-keyboard="false">
+                    data-target="#modal_input_trans_keu" data-backdrop="static" data-keyboard="false">
                     <i class="fa fa-plus"></i> Add Data
                 </button>
+            </div>
+            <div class="col-md-10">
+                <ol class="breadcrumb float-sm-right">
+                    <button type="button" class="btn btn-sm btn-success">
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-sm btn-warning" style="margin-left: 5px;">
+                        <i class="fa fa-file-pdf"></i> Export PDF
+                    </button>
+                </ol>
             </div>
         </div><br>
         <!-- head end -->
@@ -73,15 +83,16 @@
             <!-- /.card-header -->
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-8">
-                        <table id="tbl_akun" class="table table-bordered table-striped">
+                    <div class="col-md-12">
+                        <table id="tbl_trans_keu" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th style="width: 10px; text-align: center;">No.</th>
-                                    <th>Kode Akun</th>
+                                    <th style="width: 100px;">Kode Akun</th>
                                     <th>Nama Akun</th>
-                                    <th>Jenis Transaksi</th>
-                                    <th>Status Aktif</th>
+                                    <th style="width: 100px;">Jenis Transaksi</th>
+                                    <th>Nominal</th>
+                                    <th>Keterangan</th>
                                     <th style="width: 75px; ">Action</th>
                                 </tr>
                             </thead>
@@ -98,7 +109,7 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_input_akun">
+<div class="modal fade" id="modal_input_trans_keu">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-info">
@@ -110,27 +121,26 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Data Akun</h5>
+                        <h5>Data Transaksi Keuangan</h5>
                         <hr>
-
-                        <form id="add_akun">
+                        <form id="add_trans_keu">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_trasn_keu" id="id_trasn_keu">
+                            <input type="hidden" name="id_trans_keu" id="id_trans_keu">
+                            <div class="form-group">
+                                <label>Tanggal</label>
+                                <input type="text" id="tgl_trans" name="tgl_trans" class="form-control tgl_piker"
+                                    placeholder="Inputkan Tanggal">
+                            </div>
                             <div class="form-group">
                                 <label>Akun Transaksi</label>
-                                <select class="form-control" id="id_akun" name="id_akun" style="width: 100%;" required>
+                                <select class="form-control select2" id="id_akun" name="id_akun" style="width: 100%;">
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Nominal</label>
                                 <input type="text" id="nominal" name="nominal" class="form-control uang"
-                                    placeholder="Inputkan Nama Akun" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Tanggal</label>
-                                <input type="text" id="tgl_trans" name="tgl_trans" class="form-control tgl_piker"
-                                    placeholder="Inputkan Nama Akun" required>
+                                    placeholder="Inputkan Nominal">
                             </div>
                             <div class="form-group">
                                 <label>Status Aktif</label>

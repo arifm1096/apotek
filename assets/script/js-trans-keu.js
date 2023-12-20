@@ -1,6 +1,5 @@
 $(document).ready(function () {
-	select_akun();
-	load_akun();
+	select_trans_keu();
 	$("#loading").hide();
 });
 
@@ -10,7 +9,7 @@ $(".tgl_piker").datepicker({
 	format: "dd-mm-yyyy",
 	showButtonPanel: true,
 });
-$(".uang").mask("000.000.000", { reverse: true });
+$(".uang").mask("000.000.000.000.000", { reverse: true });
 //Initialize Select2 Elements
 $(".select2").select2();
 //Date picker
@@ -18,7 +17,7 @@ $("#reservationdate").datetimepicker({
 	format: "L",
 });
 
-function select_akun(p_akun) {
+function select_trans_keu(p_akun) {
 	var html1 = "<option value='pil'> Pilih Akun </option>";
 
 	$.ajax({
@@ -47,19 +46,20 @@ function select_akun(p_akun) {
 	});
 }
 
-function load_akun() {
-	$("#tbl_akun").DataTable({
+function load_trans_keu(text, tgl_awal, tgl_akhir) {
+	$("#tbl_trans_keu").DataTable({
 		ajax: {
-			url: URL + "master/load_akun",
+			url: URL + "laporan/load_trans_keu",
 			type: "POST",
-			data: {},
+			data: { text: text, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir },
 		},
 		processing: true,
 		serverSide: true,
+		searching: false,
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_akun",
+				data: "id_trans_keu",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
@@ -68,27 +68,28 @@ function load_akun() {
 			{ data: "kd_akun" },
 			{ data: "nama_akun" },
 			{ data: "nama_transaksi" },
-			{ data: "is_aktif" },
+			{ data: "nominal", render: $.fn.dataTable.render.number(".", ".", 0) },
+			{ data: "ket" },
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
 					return (
 						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
+						row.id_trans_keu +
+						"','" +
 						row.id_akun +
 						"','" +
-						row.kd_akun +
+						row.tgl_trans +
 						"','" +
-						row.nama_akun +
+						row.nominal +
 						"','" +
-						row.jenis_transaksi +
-						"','" +
-						row.aktif +
+						row.ket +
 						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_akun +
+						row.id_trans_keu +
 						"','" +
-						row.nama_akun +
+						row.nama_trans_keu +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -97,11 +98,22 @@ function load_akun() {
 	});
 }
 
-$("#add_akun").submit(function (e) {
+function filter_data() {
+	var text = $("#filter_text").val();
+	var tgl_awal = $("#tanggal1").val();
+	var tgl_akhir = $("#tanggal2").val();
+
+	if (tgl_awal !== "" && tgl_akhir !== "") {
+		$("#tbl_trans_keu").DataTable().clear().destroy();
+		load_trans_keu(text, tgl_awal, tgl_akhir);
+	}
+}
+
+$("#add_trans_keu").submit(function (e) {
 	e.preventDefault();
 	$("#save_button").html("Sending...");
 	$.ajax({
-		url: URL + "master/save_akun",
+		url: URL + "laporan/save_trans_keu",
 		type: "post",
 		data: new FormData(this),
 		processData: false,
@@ -109,7 +121,7 @@ $("#add_akun").submit(function (e) {
 		cache: false,
 		async: false,
 		beforeSend: function () {
-			$("#add_akun").find("span.error-text").text();
+			$("#add_trans_keu").find("span.error-text").text();
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
@@ -120,9 +132,7 @@ $("#add_akun").submit(function (e) {
 					text: res.message,
 				});
 
-				$("#tbl_akun").DataTable().clear().destroy();
-				load_akun();
-				$("#modal_input_akun").modal("hide");
+				$("#modal_input_trans_keu").modal("hide");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -134,14 +144,14 @@ $("#add_akun").submit(function (e) {
 	});
 });
 
-function edit(p_id_akun, p_kd_akun, p_nama, p_jenis_transaki, p_aktif) {
-	status_aktif(p_aktif);
+function edit(p_id_trans_keu, p_id_akun, p_tgl_trans, p_nominal, p_ket) {
+	select_trans_keu(p_id_akun);
 	$("#mediumModalLabel").html("Edit Rak");
-	$("#id_akun").val(p_id_akun);
-	$("#kd_akun").val(p_kd_akun);
-	$("#nama_akun").val(p_nama);
-	status_aktif(p_aktif, p_jenis_transaki);
-	$("#modal_input_akun").modal("show");
+	$("#id_trans_keu").val(p_id_trans_keu);
+	$("#tgl_trans").val(p_tgl_trans);
+	$("#nominal").val(p_nominal);
+	$("#ket").val(p_ket);
+	$("#modal_input_trans_keu").modal("show");
 }
 
 function hapus(id, rak) {
@@ -155,7 +165,7 @@ function hapus(id, rak) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "master/hapus_akun",
+				url: URL + "laporan/hapus_trans_keu",
 				type: "POST",
 				data: {
 					id: id,
@@ -166,8 +176,8 @@ function hapus(id, rak) {
 						//success show success modal
 
 						Swal.fire("Terhapus!", "Data Telah Dihapus", "success");
-						$("#tbl_akun").DataTable().clear().destroy();
-						load_akun();
+						$("#tbl_trans_keu").DataTable().clear().destroy();
+						load_trans_keu();
 					} else {
 						Swal.fire({
 							icon: "error",
@@ -181,11 +191,10 @@ function hapus(id, rak) {
 	});
 }
 
-$("#modal_input_akun").on("hide.bs.modal", function () {
+$("#modal_input_trans_keu").on("hide.bs.modal", function () {
 	$("#mediumModalLabel").html("Add New Data");
-	$("#id_akun").val("");
-	$("#nama_akun").val("");
+	$("#id_trans_keu").val("");
+	$("#nama_trans_keu").val("");
 	$("#jam_pulang").val("");
 	$("#jam_masuk").val("");
-	status_aktif((id_status = "pil"));
 });

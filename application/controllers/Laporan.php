@@ -1486,7 +1486,8 @@ class Laporan extends CI_Controller {
 				$columnIndex = $_POST['order'][0]['column']; // Column index
 				$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 				$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-				$searchValue = $_POST['search']['value'];
+				$searchValue1 = $_POST['search']['value'];
+				$searchValue = $_POST['text'];
 
 				// Search
 				$searchQuery = "";
@@ -1499,27 +1500,34 @@ class Laporan extends CI_Controller {
 
 				$where = " t.is_delete = 0 " . $searchQuery . "";
 
+				if($_POST['tgl_awal'] !=="" || $_POST['tgl_akhir'] !==""){
+					$tgl_awal = $_POST['tgl_awal'];
+					$tgl_akhir = $_POST['tgl_akhir'];
+					$where .=" AND DATE_FORMAT(tgl_trans,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir' ";
+				}
+
 				// Total number records without filtering
 				$sql_count = "SELECT count(*) as allcount
-				FROM `tm_trans_keu` where is_delete = 0";
+				FROM `tx_trans_keu` where is_delete = 0";
 				$records = $this->db->query($sql_count)->row_array();
 				$totalRecords = $records['allcount'];
 
 				// Total number records with filter
 				$sql_filter = "SELECT count(*) as allcount
-				FROM `tm_trans_keu`
+				FROM `tx_trans_keu` AS t
 				WHERE $where";
 				$records = $this->db->query($sql_filter)->row_array();
 				$totalRecordsFilter = $records['allcount'];
 
 				// Fetch Records
-				$sql = "SELECT t.id_trans_keu,t.nominal,t.tgl_trans,t.id_akun,a.nama_akun,js.nama_transaksi
+				$sql = "SELECT t.id_trans_keu,t.nominal,DATE_FORMAT(t.tgl_trans,'%d-%m-%Y') as tgl_trans,t.id_akun,a.nama_akun,a.kd_akun,js.nama_transaksi,t.ket
 				FROM `tx_trans_keu` AS t
 				LEFT JOIN tm_akun AS a ON t.id_akun = a.id_akun
 				LEFT JOIN tm_jenis_transaksi_akun AS js ON a.jenis_transaksi = js.id_jenis_transaksi
 				WHERE $where
 				order by id_trans_keu " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 				$data = $this->db->query($sql)->result();
+				// echo $this->db->last_query();
 
 				// Response
 				$output = array(
@@ -1534,10 +1542,13 @@ class Laporan extends CI_Controller {
 			public function save_trans_keu(){
 				$data = $this->input->post();
 				unset($data['nominal']);
-				$data['nominal'] = str_replace( $_POST['nominal'] ,'.','');
+				unset($data['tgl_trans']);
+				$data['nominal'] = str_replace('.','', $_POST['nominal'] );
+				$data['tgl_trans'] = date('Y-m-d', strtotime($_POST['tgl_trans']));
 
-				if(empty($data['id_trans_keu'])){
-						$sql = $this->db->insert('tm_trans_keu',$data);
+				if($data['id_trans_keu'] == ""){
+					unset($data['id_trans_keu']);
+						$sql = $this->db->insert('tx_trans_keu',$data);
 							if($sql){
 								echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
 							}else{
@@ -1545,7 +1556,7 @@ class Laporan extends CI_Controller {
 							}
 					
 				}else{
-					$sql = $this->db->where('id_trans_keu',$data['id_trans_keu'])->update('tm_trans_keu',$data);
+					$sql = $this->db->where('id_trans_keu',$data['id_trans_keu'])->update('tx_trans_keu',$data);
 						if($sql){
 							echo json_encode(array('status'=>1,'msg' =>'Sukses Data Tersimpan'));
 						}else{
