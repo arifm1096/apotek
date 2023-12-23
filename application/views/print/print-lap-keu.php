@@ -1,7 +1,7 @@
    <style>
 .tabel {
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 15px;
     margin: auto;
     padding-top: 200px;
 }
@@ -71,47 +71,139 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP DATA PENJUALAN PERSHIF</p>
+           <p class="judul_content"> LAPORAN KEUANGAN</p>
+           <p class="tex" style=" text-align: center; font-weight: bold;">Periode :
+               <?php echo $tgl_awal.' s/d '.$tgl_akhir;?></p>
        </page_header>
 
        <!-- End HEader -->
        <!-- Table Content -->
-       <table border="1px" class="tabel">
-           <thead>
-               <tr>
-                   <th>No</th>
-                   <th>Nota</th>
-                   <th>Nama Produk</th>
-                   <th>Jumlah</th>
-                   <th>Total Penjualan</th>
-               </tr>
-           </thead>
+       <br><br>
+       <table border="1px" class="tabel" id="tbl_lap_keu">
+           <tr>
+               <th colspan="2">Modal</th>
+           </tr>
+           <tr>
+               <th style="width:500px">Modal</th>
+               <th><?php echo $tot_modal;?></th>
+           </tr>
+
+           <!-- Pemasukan -->
+           <tr>
+               <th colspan="2">Pemasukan</th>
+           </tr>
+           <tr>
+               <td>Margin Penjualan Kasir</td>
+               <td><?php echo $tot_margin_kas;?></td>
+           </tr>
+           <tr>
+               <td>Margin Resep Dokter</td>
+               <td><?php echo $tot_margin_res;?></td>
+           </tr>
+           <tr>
+               <th>Jumlah Margin</th>
+               <th><?php echo $tot_margin;?></th>
+           </tr>
+           <!-- Akun Pemasukan -->
+           <tr>
+               <th colspan="2">Pemasukan Akun Keuangan</th>
+           </tr>
+
 
            <?php 
-                $no = 1;
-                if(!empty($data)){
-                    foreach ($data as $key => $val) {
-          ?>
+         if(!empty($akun_masuk)){
+            foreach ($akun_masuk as $key => $val) {
+         ?>
            <tr>
-               <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td style="width:150px"><?php echo $val->no_nota;?></td>
-               <td style="width:250px"><?php echo wordwrap($val->nama_produk,40,"<br>\n");?></td>
-               <td><?php echo $val->jumlah_nama_satuan;?></td>
-               <td align="right"><?php echo number_format($val->total_harga,0,',','.');?></td>
-
+               <td><?php echo $val->nama_akun;?></td>
+               <td><?php echo number_format($val->nominal,0,',','.');?></td>
            </tr>
-           <?php     }
-                }
-          ?>
-
+           <?php    }
+            }?>
            <tr>
-               <td colspan="3">Total</td>
-
-               <td><?php echo $tot->tot_produk; ?></td>
-
-               <td><?php echo number_format($tot->total,0,',','.');?></td>
+               <th>Jumlah Pemasukan Akun</th>
+               <th><?php echo number_format($total_akun_masuk,0,',','.'); ?></th>
            </tr>
 
+           <!-- Penjualan -->
+
+           <tr>
+               <th colspan="2">Penjualan</th>
+           </tr>
+           <tr>
+               <td>Total Penjualan Kasir</td>
+               <td><?php echo $tot_pen_kas;?></td>
+           </tr>
+           <tr>
+               <td>Total Penjualan Resep Dokter</td>
+               <td><?php echo $tot_pen_dok;?></td>
+           </tr>
+           <tr>
+               <th>Total Penjualan</th>
+               <th><?php echo $tot_penjualan;?></th>
+           </tr>
+
+           <!-- pembaelian-->
+
+           <tr>
+               <th colspan="2">Pembelian</th>
+           </tr>
+           <tr>
+               <td>Total Pembelian Kasir</td>
+               <td><?php echo $tot_pem_kas;?></td>
+           </tr>
+           <tr>
+               <td>Total Pembelian Resep Dokter</td>
+               <td><?php echo $tot_pem_dok;?></td>
+           </tr>
+           <tr>
+               <th>Total Pembelian</th>
+               <th><?php echo $tot_pembelian;?></th>
+           </tr>
+
+           <!-- Pengeluaran Akun -->
+
+           <tr>
+               <th colspan="2">Pengeluaran Akun Keuangan</th>
+           </tr>
+           <?php 
+         if(!empty($akun_keluar)){
+            foreach ($akun_keluar as $key => $val) {
+         ?>
+           <tr>
+               <td><?php echo $val->nama_akun;?></td>
+               <td><?php echo number_format($val->nominal,0,',','.');?></td>
+           </tr>
+           <?php    }
+            }?>
+           <tr>
+               <th>Total Pengeluaran</th>
+               <th><?php echo number_format($total_akun_keluar,0,',','.'); ?></th>
+           </tr>
+
+           <tr>
+               <th colspan="2">Laba</th>
+           </tr>
+           <tr>
+               <th>Total Penjualan</th>
+               <th><?php echo $tot_penjualan;?></th>
+           </tr>
+           <tr>
+               <th>Total Pemasukan</th>
+               <th><?php echo number_format($total_akun_masuk,0,',','.'); ?></th>
+           </tr>
+           <tr>
+               <th>Total Pembelian</th>
+               <th><?php echo $tot_pembelian; ?></th>
+           </tr>
+           <tr>
+               <th>Total Pengeluaran</th>
+               <th><?php echo number_format($total_akun_keluar,0,',','.'); ?></th>
+           </tr>
+           <tr>
+               <th>Laba Bersih</th>
+               <th><?php echo $laba_rugi;?></th>
+           </tr>
        </table>
 
    </page>

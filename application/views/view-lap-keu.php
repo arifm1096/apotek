@@ -9,7 +9,12 @@
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_excel();">
+                        <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>
 
@@ -54,8 +59,9 @@
 
             <div class="card-body table-responsive">
                 <div id="loading">
-                    <h2>Loading..</h2> 
-                    <img width="80px" height="80px" src="<?php echo base_url('assets/images/loading.gif')?>" alt="loading">
+                    <h2>Loading..</h2>
+                    <img width="80px" height="80px" src="<?php echo base_url('assets/images/loading.gif')?>"
+                        alt="loading">
                 </div>
                 <div id="list_data"></div>
             </div>
