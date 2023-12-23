@@ -1117,13 +1117,20 @@ class Penjualan extends CI_Controller {
 		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
 		WHERE $where";
 
-		$var['data'] = $this->db->query($sql)->result_array();
+		$var['data'] = $this->db->query($sql)->result();
 
 		$sql = "SELECT sum(j.jumlah_produk) as tot_produk,SUM(j.total_harga) AS total
 			FROM tx_jual as j
 			LEFT JOIN tx_kasir as k ON j.id_kasir = k.id_kasir
 			where $where";
 		$var['tot'] = $this->db->query($sql)->row();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
 
 		ob_start();
 		$this->load->view('print/print-penjualan-shif',$var);
