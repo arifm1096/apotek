@@ -257,70 +257,90 @@ class Penjualan extends CI_Controller {
 				WHERE j.id_jual = $id_jual $where
 				AND p.is_delete = 0 AND j.is_delete = 0 AND j.is_selesai = 0
 				GROUP BY j.id_jual";
+
 		$get_data = $this->db->query($sql);
 		if($get_data->num_rows()>0){
-			$data = $get_data->row();
-			$res_up = array(
-				     'update_by' =>$id_user,
-					 'update_date' => $date_time
-					);
-			$p_kali = 0;
-				$sql_sat = "SELECT j.id_jual,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
-							FROM `tx_jual` as j
-							LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
-							WHERE j.insert_by = $id_user and j.id_jual = $id_jual 
-							AND j.is_delete = 0 AND j.is_selesai = 0";
-				$data_sat = $this->db->query($sql_sat)->row();
-				if($data_sat->jumlah_produk_p==""){
-					$p_kali += 1;
+
+			$sql_cek_qty = "SELECT p.nama_produk,s.jumlah_stok
+						FROM `tx_jual` as j
+						LEFT JOIN tx_produk as p on j.id_produk = p.id_produk
+						LEFT JOIN tx_produk_stok as s on p.id_produk = s.id_produk
+						WHERE  j.id_jual = $id_jual";
+			$data_qty = $this->db->query($sql_cek_qty)->row();
+
+			$qty = (int)$data_qty->jumlah_stok;
+			$qty_post = (int)$val;
+			// var_dump($qty_post);
+			if($qty_post > 0){
+				if($qty >= $qty_post){
+					$data = $get_data->row();
+					$res_up = array(
+							'update_by' =>$id_user,
+							'update_date' => $date_time
+							);
+					$p_kali = 0;
+						$sql_sat = "SELECT j.id_jual,j.nama_produk,j.jumlah_produk,j.harga_jual,h.jumlah_produk_p
+									FROM `tx_jual` as j
+									LEFT JOIN tx_produk_detail as h on j.id_produk = h.id_produk AND j.id_satuan = h.id_satuan
+									WHERE j.insert_by = $id_user and j.id_jual = $id_jual 
+									AND j.is_delete = 0 AND j.is_selesai = 0";
+						$data_sat = $this->db->query($sql_sat)->row();
+						if($data_sat->jumlah_produk_p==""){
+							$p_kali += 1;
+						}else{
+							$p_kali += (int)$data_sat->jumlah_produk_p;
+						}
+					if($_POST['el']== 1){
+						
+						$tot_qty = (int) $val;
+							$res_up['jumlah_produk'] = $val;
+							$res_up['harga_jual'] = (int)$data->jual_ex * (int)$p_kali;
+							$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
+					}
+	
+					if($_POST['el']== 2){
+						$sum = 0;
+						$val_fix ="";
+						$jum_1 = (int)$data->jum_p;
+						$jum_2 = (int)$data->jumlah_produk_p;
+	
+						if($nom == 1){
+							$sum += 1;
+						}else if($jum_1 < $jum_2){
+							$sum += $jum_1 * $jum_2;
+						}else{
+							$sum += $jum_1 / $jum_2;
+						}
+	
+							$tot_qty = (int)$sum * (int)$data->qty;
+							$res_up['id_satuan'] = $val;
+							$res_up['harga_jual'] = (int)$data->jual_ex * (int)$sum;
+							$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty;
+					}
+	
+					if($_POST['el']== 3){
+						
+						$tot_qty = (int)$data->qty;
+							$res_up['id_jenis_harga'] = $val;
+							$res_up['harga_jual'] = $data->jual_ex * (int)$p_kali;
+							$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
+					}
+	
+					$up_ex = $this->db->where('id_jual',$id_jual)->update('tx_jual',$res_up);
+					$result = $this->db->select('harga_jual,total_harga')->from('tx_jual')->where('id_jual',$id_jual)->get();
+					$sub_tot = $this->get_sub_total();
+					if($up_ex){
+						echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));
+					}else{
+						echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+					}
 				}else{
-					$p_kali += (int)$data_sat->jumlah_produk_p;
+					echo json_encode(array('status'=>0,'msg'=>'Jumlah Kuantitas Melebihi Stok Tesedia'));
 				}
-			if($_POST['el']== 1){
-				
-				$tot_qty = (int) $val;
-					$res_up['jumlah_produk'] = $val;
-					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$p_kali;
-					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
-			}
-
-			if($_POST['el']== 2){
-				$sum = 0;
-				$val_fix ="";
-				$jum_1 = (int)$data->jum_p;
-				$jum_2 = (int)$data->jumlah_produk_p;
-
-				if($nom == 1){
-					$sum += 1;
-				}else if($jum_1 < $jum_2){
-					$sum += $jum_1 * $jum_2;
-				}else{
-					$sum += $jum_1 / $jum_2;
-				}
-
-					$tot_qty = (int)$sum * (int)$data->qty;
-					$res_up['id_satuan'] = $val;
-					$res_up['harga_jual'] = (int)$data->jual_ex * (int)$sum;
-					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty;
-			}
-
-			if($_POST['el']== 3){
-				
-				$tot_qty = (int)$data->qty;
-					$res_up['id_jenis_harga'] = $val;
-					$res_up['harga_jual'] = $data->jual_ex * (int)$p_kali;
-					$res_up['total_harga'] = (int)$data->jual_ex * (int)$tot_qty * (int)$p_kali;
-			}
-
-			$up_ex = $this->db->where('id_jual',$id_jual)->update('tx_jual',$res_up);
-			$result = $this->db->select('harga_jual,total_harga')->from('tx_jual')->where('id_jual',$id_jual)->get();
-			$sub_tot = $this->get_sub_total();
-			if($up_ex){
-				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>$result->row(),'sub_tot'=>$sub_tot));
 			}else{
-				echo json_encode(array('status'=>1,'msg'=>'Data is Find','result'=>null,'sub_tot'=>null));
+				echo json_encode(array('status'=>0,'msg'=>'Jumlah Kuantitas Di Inputkan Salah'));
 			}
-
+			
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data Tidak Ditemukan'));
 		}
@@ -1158,6 +1178,19 @@ class Penjualan extends CI_Controller {
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Data Gagal Diinput'));
 			}
+		}
+	}
+
+	public function get_data_tertolak(){
+		$sql = "SELECT id_produk,nama_produk
+				FROM `tx_produk`
+				WHERE is_delete = 0";
+		$data = $this->db->query($sql);
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','result'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Is Not Found','result'=>null));
 		}
 	}
 

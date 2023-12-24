@@ -65,7 +65,7 @@ const rupiah = (number) => {
 
 function load_total_penjualan(text, tgl1, tgl2) {
 	$.ajax({
-		url: URL + "laporan/load_sum_pejualan",
+		url: URL + "laporan/load_sum_pejualan_tertolak",
 		type: "POST",
 		data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		success: function (data) {
@@ -89,7 +89,7 @@ function load_total_penjualan(text, tgl1, tgl2) {
 function load_penjualan(text, tgl1, tgl2) {
 	$("#tbl_penjualan").DataTable({
 		ajax: {
-			url: URL + "laporan/load_data_penjualan",
+			url: URL + "laporan/load_data_penjualan_tertolak",
 			type: "POST",
 			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		},
@@ -99,21 +99,24 @@ function load_penjualan(text, tgl1, tgl2) {
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_produk",
+				data: "id_jual_tolak",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{ data: "no_nota" },
 			{ data: "nama_produk" },
-			{ data: "jumlah_nama_satuan" },
+			{ data: "satuan" },
+			{ data: "jumlah" },
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					return rupiah(row.total_harga);
+					return rupiah(row.harga_jual);
 				},
 			},
+			{ data: "satuan" },
+			{ data: "catatan" },
+			
 			// {
 			// 	data: null,
 			// 	orderable: false,
@@ -158,7 +161,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	window.open(
 		URL +
-			"laporan/export_data_penjualan?tgl1=" +
+			"laporan/export_data_penjualan_tertolak?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

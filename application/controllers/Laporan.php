@@ -211,6 +211,54 @@ class Laporan extends CI_Controller {
         $writer->save('php://output');
 	}
 
+	public function export_data_penjualan_pdf(){
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+		$tgl1p ="";
+		$tgl2p ="";
+
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1p .= $_GET['tgl1'];
+			$tgl2p .= $_GET['tgl2'];
+		}else{
+			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$tgl1p .=date('d-m-Y');
+			$tgl2p .=date('d-m-Y');
+		}
+
+		$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
+		CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
+		j.total_harga,ps.jumlah_stok,j.no_nota
+		FROM `tx_jual` as j
+		LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
+		LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+		WHERE $where
+		order by id_jual ";
+
+		$var['data'] = $this->db->query($sql)->result();
+		$var['tgl_awal'] = $tgl1p;
+		$var['tgl_akhir'] = $tgl2p;
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-lap-penjualan',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+	}
+
 	// Laporan Penjualan End
 
 	// Laporan Stok
@@ -1102,6 +1150,83 @@ class Laporan extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function export_excel_beli_langsung(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
+		$sheet->setCellValue('A2', "Total Modal");
+        $sheet->setCellValue('A3', "No");
+        $sheet->setCellValue('B3', "SKU");
+        $sheet->setCellValue('C3', "Nama Produk");
+        $sheet->setCellValue('D3', "Total Terjual");
+		$sheet->setCellValue('E3', "Harga Beli");
+		$sheet->setCellValue('F3', "Total Harga Beli");
+		$sheet->setCellValue('G3', "Harga Jual");
+		$sheet->setCellValue('H3', "Total Harga Jual");
+		$sheet->setCellValue('I3', "Margin");
+
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 1 or j.status = 3";
+		
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_stok) as stok,
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_stok_detail ";
+		$data_res = $this->db->query($sql)->result_array();
+
+		$sql_tot = "SELECT sum(tx.margin) as tot_margin 
+		FROM
+		(SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
+		sum(j.jumlah_produk) as tot_produk_jual, 
+		j.harga_beli,
+		sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+		j.harga_jual, 
+		sum(j.total_harga) as tot_harga_jual,
+		sum(j.total_harga) - sum(j.harga_beli) as margin
+		FROM `tx_resep_detail` as j
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk) as tx";
+
+		$data_tot = $this->db->query($sql_tot)->row();
+
+		$sheet->setCellValue('B2', $data_tot->tot_margin);
+		
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 4;
+        foreach($data_res as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+		  $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['tot_produk_jual']);
+          $sheet->setCellValue('E'.$numrow, $data['harga_beli']);
+		  $sheet->setCellValue('F'.$numrow, $data['tot_harga_beli']);
+		  $sheet->setCellValue('G'.$numrow, $data['harga_jual']);
+		  $sheet->setCellValue('H'.$numrow, $data['tot_harga_jual']);
+		  $sheet->setCellValue('I'.$numrow, $data['margin']);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $tgl = date('Y-m-d_H-i');
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Laporan_Margin_'.$tgl.'.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+	}
+
 	public function laporan_beli_rencana(){
 		$var['content'] = 'view-lap-rencana';
 		$var['js'] = 'js-lap_rencana';
@@ -1465,17 +1590,23 @@ class Laporan extends CI_Controller {
 
 		// Laporan Penjualan Tertolak
 		public function data_penjualan_tertolak(){
-			$var['content'] = 'view-lap-penjualan';
-			$var['js'] = 'js-lap_penjualan';
+			$var['content'] = 'view-lap-penjualan-tertolak';
+			$var['js'] = 'js-lap_penjualan_tolak';
 			$this->load->view('view-index',$var);
 		}
 	
 		public function load_sum_pejualan_tertolak(){
 			$where = "is_delete = 0 AND is_selesai = 1 ";
 			$searchValue = $_POST['text'];
+			$where = " is_delete = 0 ";
+		
+			// Search
+			$searchQuery = "";
 			if ($searchValue != '') {
-				$where .= " and (nama_produk like '%" . $searchValue . "%'
-									 OR no_nota like '%" . $searchValue . "%'			
+				$searchQuery .= " and (nama_produk like '%" . $searchValue . "%'
+									 OR satuan like '%" . $searchValue . "%'
+									 OR catatan like '%" . $searchValue . "%'
+									 OR harga_jual like '%" . $searchValue . "%'			
 				) ";
 			}
 	
@@ -1486,8 +1617,10 @@ class Laporan extends CI_Controller {
 			}else{
 				$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 			}
+		
+			$where .=  $searchQuery;
 	
-			$sql = "SELECT SUM(total_harga) AS total,SUM(jumlah_produk) AS qty_pro FROM tx_jual where $where";
+			$sql = "SELECT SUM(harga_jual) AS total,SUM(jumlah) AS qty_pro FROM `tx_jual_tolak`  where $where";
 			$data = $this->db->query($sql)->row();
 	
 			if(!empty($data)){
@@ -1509,52 +1642,47 @@ class Laporan extends CI_Controller {
 			$searchValue = $_POST['text'];
 			$jual ='';
 			$rak ='';
-			$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
+			$where = " is_delete = 0 ";
 		
 			// Search
 			$searchQuery = "";
 			if ($searchValue != '') {
-				$searchQuery .= " and (j.nama_produk like '%" . $searchValue . "%'
-									 OR j.no_nota like '%" . $searchValue . "%'
-									 OR s.nama_satuan like '%" . $searchValue . "%'				
+				$searchQuery .= " and (nama_produk like '%" . $searchValue . "%'
+									 OR satuan like '%" . $searchValue . "%'
+									 OR catatan like '%" . $searchValue . "%'
+									 OR harga_jual like '%" . $searchValue . "%'			
 				) ";
 			}
 	
 			if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
 				$tgl1 = date('Y-m-d',strtotime($_POST['tgl1'])).' 00:00:00';
 				$tgl2 = date('Y-m-d',strtotime($_POST['tgl2'])).' 23:59:00';
-				$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+				$where .= " AND insert_date BETWEEN '$tgl1' AND '$tgl2'";
 			}else{
-				$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+				$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 			}
 		
-			$where .=  $searchQuery .$jual.$rak;
+			$where .=  $searchQuery;
 		
 			// Total number records without filtering
 			$sql_count = "SELECT count(*) as allcount
-			FROM `tx_jual` as j
+			FROM `tx_jual_tolak` as j
 			where is_delete = 0";
 			$records = $this->db->query($sql_count)->row_array();
 			$totalRecords = $records['allcount'];
 		
 			// Total number records with filter
 			$sql_filter = "SELECT count(*) as allcount
-			FROM `tx_jual` as j
-			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+			FROM `tx_jual_tolak` 
 			WHERE $where";
 			$records = $this->db->query($sql_filter)->row_array();
 			$totalRecordsFilter = $records['allcount'];
 		
 			// Fetch Records
-			$sql = "SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-			CONCAT(j.jumlah_produk,' ',s.nama_satuan) as jumlah_nama_satuan,
-			j.total_harga,ps.jumlah_stok,j.no_nota
-			FROM `tx_jual` as j
-			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
+			$sql = "SELECT nama_produk,satuan,jumlah,harga_jual,status_produk,catatan
+			FROM `tx_jual_tolak` 
 			WHERE $where
-			order by id_jual " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+			order by id_jual_tolak " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 			$data = $this->db->query($sql)->result();
 				// echo $this->db->last_query();
 			// Response
@@ -1597,13 +1725,10 @@ class Laporan extends CI_Controller {
 			}
 	
 	
-			$sql ="SELECT j.id_produk,j.id_jual,j.nama_produk,j.jumlah_produk,s.nama_satuan,
-			j.jumlah_produk,s.nama_satuan,
-			j.total_harga,ps.jumlah_stok,j.no_nota
-			FROM `tx_jual` as j
-			LEFT JOIN tm_satuan as s ON j.id_satuan = s.id_satuan
-			LEFT JOIN tx_produk_stok as ps ON j.id_produk = ps.id_produk
-			WHERE $where";
+			$sql = "SELECT nama_produk,satuan,jumlah,harga_jual,status_produk,catatan
+			FROM `tx_jual_tolak` 
+			WHERE $where
+			order by id_jual_tolak ";
 	
 			$data_jual = $this->db->query($sql)->result_array();
 	
@@ -1617,11 +1742,11 @@ class Laporan extends CI_Controller {
 			$fot = 4; // Set baris pertama untuk isi tabel adalah baris ke 4
 			foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
 			  $sheet->setCellValue('A'.$numrow, $no);
-			  $sheet->setCellValue('B'.$numrow, $data['no_nota']);
-			  $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-			  $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
-			  $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-			  $sheet->setCellValue('F'.$numrow, $data['total_harga']);
+			  $sheet->setCellValue('B'.$numrow, $data['nama_produk']);
+			  $sheet->setCellValue('C'.$numrow, $data['satuan']);
+			  $sheet->setCellValue('D'.$numrow, $data['jumlah']);
+			  $sheet->setCellValue('E'.$numrow, $data['harga_jual']);
+			  $sheet->setCellValue('F'.$numrow, $data['catatan']);
 			  
 			  $no++; // Tambah 1 setiap kali looping
 			  $numrow++; // Tambah 1 setiap kali looping

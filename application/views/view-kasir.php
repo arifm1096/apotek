@@ -30,8 +30,12 @@
                         <button type="button" class="btn btn-default btn-md float-right " onclick="clear_list();"
                             data-toggle="tooltip" data-placement="top" title="Hapus Semua Data"><i class="fa fa-trash"
                                 aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-default btn-md float-right mr-2" data-toggle="modal"
+
+                        <!-- <button type="button" class="btn btn-default btn-md float-right mr-2" data-toggle="modal"
                             data-target="#modal_penjual_tertolak" data-toggle="tooltip" data-placement="top"
+                            title="Penjualan Tertolak"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button> -->
+
+                        <button type="button" class="btn btn-default btn-md float-right mr-2" onclick="add_penjulan_tertolak();" data-toggle="tooltip" data-placement="top"
                             title="Penjualan Tertolak"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button>
                     </div>
                 </div>
@@ -235,11 +239,14 @@
                                         </label>
                                     </div>
                                 </div>
+                                <br><br>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Nama Produk</label>
                                         <input type="search" class="form-control" id="nama_produk_tolak"
                                             name="nama_produk" placeholder="Inputkan Nama Produk">
+
+                                        <!-- <select name="id_produk" class="form-control select2" id="id_produk"></select> -->
                                     </div>
                                 </div>
                                 <div class="col-md-12">

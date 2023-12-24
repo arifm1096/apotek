@@ -71,11 +71,14 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP DATA PENJUALAN PERSHIF</p>
+           <p class="judul_content"> REKAP DATA PENJUALAN</p>
+           <p class="tex" style=" text-align: center; font-weight: bold;">Periode :
+               <?php echo $tgl_awal.' s/d '.$tgl_akhir;?></p>
        </page_header>
 
        <!-- End HEader -->
        <!-- Table Content -->
+       <br><br>
        <table border="1px" class="tabel">
            <thead>
                <tr>
@@ -89,8 +92,12 @@
 
            <?php 
                 $no = 1;
+                $tot_qty = [];
+                $tot_nom = [];
                 if(!empty($data)){
                     foreach ($data as $key => $val) {
+                        array_push($tot_qty,$val->jumlah_produk);
+                        array_push($tot_nom,$val->total_harga);
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
@@ -107,9 +114,9 @@
            <tr>
                <td colspan="3">Total</td>
 
-               <td><?php echo $tot->tot_produk; ?></td>
+               <td><?php echo array_sum($tot_qty); ?></td>
 
-               <td><?php echo number_format($tot->total,0,',','.');?></td>
+               <td align="right"><?php echo number_format(array_sum($tot_nom),0,',','.');?></td>
            </tr>
 
        </table>

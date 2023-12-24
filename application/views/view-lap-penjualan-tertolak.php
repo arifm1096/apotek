@@ -3,7 +3,7 @@
         <!-- head -->
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Laporan Penjualan</h4>
+                <h4>Laporan Penjualan Tertolak</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -77,10 +77,12 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>No Nota</th>
                             <th>Nama Produk</th>
+                            <th>Satuan</th>
                             <th>Jumlah</th>
-                            <th>Total Penjualan</th>
+                            <th>Harga Jual</th>
+                            <th>Status Produk</th>
+                            <th>Catatan</th>
                             <!-- <th style="width: 75px; ">Action</th> -->
                         </tr>
                     </thead>

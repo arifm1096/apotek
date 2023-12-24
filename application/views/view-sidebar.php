@@ -369,7 +369,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('produk/'); ?>" class="nav-link">
+                            <a href="<?php echo base_url('laporan/data_penjualan_tertolak'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Laporan Penjualan <br> Tertolak</p>
                             </a>

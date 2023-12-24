@@ -488,3 +488,34 @@ function close_bill() {
 		}
 	});
 }
+
+function load_produk_tertolak(p_produk){
+	var html_produk = "<option value='pil'>-- Pilih Produk--</option>";
+	$.ajax({
+		url: URL + "penjualan/get_data_tertolak",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.result.forEach((e) => {
+					html_produk +=
+						'<option value="' +
+						e.id_produk +
+						'"' +
+						(e.id_produk === p_produk ? 'selected="selected"' : "") +
+						">" +
+						e.nama_produk +
+						"</option>";
+				});
+			}
+
+			$("#id_produk").html(html_produk);
+		},
+	});
+}
+
+function add_penjulan_tertolak(){
+	// load_produk_tertolak();
+	$("#modal_penjual_tertolak").modal('show');
+}
