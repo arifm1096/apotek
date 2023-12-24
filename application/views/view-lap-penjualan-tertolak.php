@@ -81,7 +81,6 @@
                             <th>Satuan</th>
                             <th>Jumlah</th>
                             <th>Harga Jual</th>
-                            <th>Status Produk</th>
                             <th>Catatan</th>
                             <!-- <th style="width: 75px; ">Action</th> -->
                         </tr>

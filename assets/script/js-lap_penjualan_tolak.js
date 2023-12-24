@@ -114,7 +114,6 @@ function load_penjualan(text, tgl1, tgl2) {
 					return rupiah(row.harga_jual);
 				},
 			},
-			{ data: "satuan" },
 			{ data: "catatan" },
 			
 			// {
@@ -177,7 +176,7 @@ function export_pdf() {
 	var tgl2 = $("#tanggal2").val();
 	window.open(
 		URL +
-			"laporan/export_data_penjualan_pdf?tgl1=" +
+			"laporan/export_data_penjualan_tertolak_pdf?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

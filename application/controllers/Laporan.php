@@ -1696,34 +1696,40 @@ class Laporan extends CI_Controller {
 		}
 	
 		public function export_data_penjualan_tertolak(){
-			$spreadsheet = new Spreadsheet();
-			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
-			$sheet->setCellValue('A2', "No");
-			$sheet->setCellValue('B2', "No Nota");
-			$sheet->setCellValue('C2', "Nama Produk");
-			$sheet->setCellValue('D2', "Jumlah");
-			$sheet->setCellValue('E2', "Satuan");
-			$sheet->setCellValue('F2', "Total Penjualan");
-	
-			$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
-	
+
 			$searchValue = $_GET['text'];
+			$where = " is_delete = 0 ";
+		
+			// Search
+			$searchQuery = "";
 			if ($searchValue != '') {
-				$where .= " AND (j.nama_produk like '%" . $searchValue . "%'
-									 OR j.no_nota like '%" . $searchValue . "%'
-									 OR s.nama_satuan like '%" . $searchValue . "%'				
+				$searchQuery .= " and (nama_produk like '%" . $searchValue . "%'
+									 OR satuan like '%" . $searchValue . "%'
+									 OR catatan like '%" . $searchValue . "%'
+									 OR harga_jual like '%" . $searchValue . "%'			
 				) ";
 			}
 	
 			if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
 				$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
 				$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
-				$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+				$where .= " AND insert_date BETWEEN '$tgl1' AND '$tgl2'";
 			}else{
-				$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+				$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 			}
-	
+		
+			$where .=  $searchQuery;
+
+			$spreadsheet = new Spreadsheet();
+			$sheet = $spreadsheet->getActiveSheet();
+			$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
+			$sheet->setCellValue('A2', "No");
+			$sheet->setCellValue('B2', "Nama Produk");
+			$sheet->setCellValue('C2', "Satuan");
+			$sheet->setCellValue('D2', "Jumlah");
+			$sheet->setCellValue('E2', "Harga Jual");
+			// $sheet->setCellValue('F2', "Status Produk");
+			$sheet->setCellValue('F2', "Catatan");
 	
 			$sql = "SELECT nama_produk,satuan,jumlah,harga_jual,status_produk,catatan
 			FROM `tx_jual_tolak` 
@@ -1732,7 +1738,7 @@ class Laporan extends CI_Controller {
 	
 			$data_jual = $this->db->query($sql)->result_array();
 	
-			$sql = "SELECT SUM(j.total_harga) AS total,SUM(j.jumlah_produk) AS qty_pro FROM tx_jual as j where $where";
+			$sql = "SELECT SUM(harga_jual) AS total,SUM(jumlah) AS qty_pro FROM `tx_jual_tolak`  where $where";
 			$data_sum = $this->db->query($sql)->row();
 	
 			// var_dump($data_sum);
@@ -1747,6 +1753,7 @@ class Laporan extends CI_Controller {
 			  $sheet->setCellValue('D'.$numrow, $data['jumlah']);
 			  $sheet->setCellValue('E'.$numrow, $data['harga_jual']);
 			  $sheet->setCellValue('F'.$numrow, $data['catatan']);
+			//   $sheet->setCellValue('G'.$numrow, $data['catatan']);
 			  
 			  $no++; // Tambah 1 setiap kali looping
 			  $numrow++; // Tambah 1 setiap kali looping
@@ -1754,7 +1761,7 @@ class Laporan extends CI_Controller {
 			}
 			$sheet->setCellValue('C'.$fot, "Total :");
 			$sheet->setCellValue('D'.$fot, $data_sum->qty_pro);
-			$sheet->setCellValue('F'.$fot, $data_sum->total);
+			$sheet->setCellValue('E'.$fot, $data_sum->total);
 			$sheet->getStyle('C'.$fot,)->getFont()->setBold(true);
 			$sheet->getStyle('F'.$fot,)->getFont()->setBold(true);
 			$sheet->getStyle('D'.$fot,)->getFont()->setBold(true);
@@ -1763,9 +1770,74 @@ class Laporan extends CI_Controller {
 			
 			ob_end_clean();
 			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Disposition: attachment;filename=Laporan_Penjualan.xls'); 
+			header('Content-Disposition: attachment;filename=Laporan_Penjualan_Tertolak.xls'); 
 			header('Cache-Control: max-age=0');
 			$writer->save('php://output');
+		}
+
+		public function export_data_penjualan_tertolak_pdf(){
+
+			$searchValue = $_GET['text'];
+			$where = " is_delete = 0 ";
+			$tgl_awal ="";
+			$tgl_akhir = "";
+		
+			// Search
+			$searchQuery = "";
+			if ($searchValue != '') {
+				$searchQuery .= " and (nama_produk like '%" . $searchValue . "%'
+									 OR satuan like '%" . $searchValue . "%'
+									 OR catatan like '%" . $searchValue . "%'
+									 OR harga_jual like '%" . $searchValue . "%'			
+				) ";
+			}
+	
+			if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+				$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+				$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+				$where .= " AND insert_date BETWEEN '$tgl1' AND '$tgl2'";
+				$tgl_awal .= date('d-m-Y',strtotime($_GET['tgl1']));
+				$tgl_akhir .= date('d-m-Y',strtotime($_GET['tgl2']));
+			}else{
+				$where .= "AND DATE_FORMAT(insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+				$tgl_awal .= date('d-m-Y');
+				$tgl_akhir .= date('d-m-Y');
+			}
+		
+			$where .=  $searchQuery;
+
+			$sql = "SELECT nama_produk,satuan,jumlah,harga_jual,status_produk,catatan
+			FROM `tx_jual_tolak` 
+			WHERE $where
+			order by id_jual_tolak ";
+	
+			$var['data'] = $this->db->query($sql)->result();
+	
+			$sql = "SELECT SUM(harga_jual) AS total,SUM(jumlah) AS qty_pro FROM `tx_jual_tolak`  where $where";
+			$var['tot'] = $this->db->query($sql)->row();
+
+			$id_user = $this->session->userdata('id_user');
+			$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+					FROM tm_user as u 
+					LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+					WHERE u.id_user = $id_user";
+			$var['kop'] = $this->db->query($sql)->row();
+			$var['tgl_awal'] = $tgl_awal;
+			$var['tgl_akhir'] = $tgl_akhir;
+
+			
+			ob_start();
+			$this->load->view('print/print-lap-penjualan-tertolak',$var);
+			$html = ob_get_contents();
+				ob_end_clean();
+				require_once('./assets/html2pdf/html2pdf.class.php');
+			$resolution = array(215, 330);
+			$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+			$pdf->WriteHTML($html);
+			$pdf->Output('Laporan-penjualan-tertolak.pdf', 'P');
+
+	
+	
 		}
 	
 		// Laporan Penjualan Tertolak End 
@@ -1791,7 +1863,7 @@ class Laporan extends CI_Controller {
 				// Search
 				$searchQuery = "";
 				if ($searchValue != '') {
-					$searchQuery .= " and (a.nama_trans_keu like '%" . $searchValue . "%'
+					$searchQuery .= " and (a.nama_akun like '%" . $searchValue . "%'
 											or js.nama_transaksi like '%" . $searchValue . "%'	
 
 					) ";
@@ -1814,6 +1886,8 @@ class Laporan extends CI_Controller {
 				// Total number records with filter
 				$sql_filter = "SELECT count(*) as allcount
 				FROM `tx_trans_keu` AS t
+				LEFT JOIN tm_akun AS a ON t.id_akun = a.id_akun
+				LEFT JOIN tm_jenis_transaksi_akun AS js ON a.jenis_transaksi = js.id_jenis_transaksi
 				WHERE $where";
 				$records = $this->db->query($sql_filter)->row_array();
 				$totalRecordsFilter = $records['allcount'];
@@ -1920,7 +1994,7 @@ class Laporan extends CI_Controller {
 				$resolution = array(215, 330);
 				$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
 				$pdf->WriteHTML($html);
-				$pdf->Output('korwil.pdf', 'P');
+				$pdf->Output('print-trans-keu.pdf', 'P');
 
 
 
