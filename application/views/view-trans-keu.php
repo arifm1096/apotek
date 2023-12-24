@@ -22,10 +22,10 @@
             </div>
             <div class="col-md-10">
                 <ol class="breadcrumb float-sm-right">
-                    <button type="button" class="btn btn-sm btn-success">
+                    <button type="button" onclick="export_excel()" class="btn btn-sm btn-success">
                         <i class="fa fa-file-excel"></i> Export Excel
                     </button>
-                    <button type="button" class="btn btn-sm btn-warning" style="margin-left: 5px;">
+                    <button type="button" onclick="export_pdf()" class="btn btn-sm btn-warning" style="margin-left: 5px;">
                         <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>

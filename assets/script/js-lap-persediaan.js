@@ -146,3 +146,19 @@ function export_excel() {
 		"_blank"
 	);
 }
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var jual = $("#filter_status_jual").val();
+	var rak = $("#filter_rak").val();
+	window.open(
+		URL +
+			"laporan/export_data_stok_pdf?status_jual=" +
+			jual +
+			"&id_rak=" +
+			rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}

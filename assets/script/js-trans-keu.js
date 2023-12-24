@@ -198,3 +198,39 @@ $("#modal_input_trans_keu").on("hide.bs.modal", function () {
 	$("#jam_pulang").val("");
 	$("#jam_masuk").val("");
 });
+
+function export_pdf() {
+	var tgl_awal = $("#tanggal1").val();
+	var tgl_akhir = $("#tanggal2").val();
+
+	if (tgl_awal !== "" && tgl_akhir !== "") {
+		window.open(
+			URL + "laporan/export_trasn_keu_pdf?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir,
+			+"_blank"
+		);
+	}else{
+		Swal.fire({
+			icon : 'error',
+			title :'PERHATIAN..!!',
+			text : 'Inputkan Periode Tanggal Terlebih Dahulu',
+		});
+	}
+}
+
+function export_excel() {
+	var tgl_awal = $("#tanggal1").val();
+	var tgl_akhir = $("#tanggal2").val();
+
+	if (tgl_awal !== "" && tgl_akhir !== "") {
+		window.open(
+			URL + "laporan/export_trasn_keu_excel?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir,
+			+"_blank"
+		);
+	}else{
+		Swal.fire({
+			icon : 'error',
+			title :'PERHATIAN..!!',
+			text : 'Inputkan Periode Tanggal Terlebih Dahulu',
+		});
+	}
+}

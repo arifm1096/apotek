@@ -12,9 +12,14 @@
                         onclick="add_data();">
                         <i class="fa fa-plus"></i> Add Data
                     </button> -->
+
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>
 

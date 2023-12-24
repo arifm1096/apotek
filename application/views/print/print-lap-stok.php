@@ -71,7 +71,7 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP DATA PENJUALAN PERSHIF</p>
+           <p class="judul_content"> LAPORAN DATA STOK PRODUK</p>
        </page_header>
 
        <!-- End HEader -->
@@ -80,10 +80,10 @@
            <thead>
                <tr>
                    <th>No</th>
-                   <th>Nota</th>
+                   <th>SKU</th>
                    <th>Nama Produk</th>
-                   <th>Jumlah</th>
-                   <th>Total Penjualan</th>
+                   <th>Jumlah Stok</th>
+                   <th>Satuan</th>
                </tr>
            </thead>
 
@@ -94,23 +94,14 @@
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td style="width:150px"><?php echo $val->no_nota;?></td>
+               <td style="width:150px"><?php echo $val->sku_kode_produk;?></td>
                <td style="width:250px"><?php echo wordwrap($val->nama_produk,40,"<br>\n");?></td>
-               <td><?php echo $val->jumlah_nama_satuan;?></td>
-               <td align="right"><?php echo number_format($val->total_harga,0,',','.');?></td>
-
+               <td  style="text-align: center;"><?php echo $val->stok;?></td>
+               <td style="width:50px"><?php echo $val->nama_satuan;?></td>
            </tr>
            <?php     }
                 }
           ?>
-
-           <tr>
-               <td colspan="3">Total</td>
-
-               <td><?php echo $tot->tot_produk; ?></td>
-
-               <td><?php echo number_format($tot->total,0,',','.');?></td>
-           </tr>
 
        </table>
 

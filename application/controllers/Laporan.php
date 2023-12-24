@@ -368,6 +368,47 @@ class Laporan extends CI_Controller {
         $writer->save('php://output');
 	}
 
+	public function export_data_stok_pdf(){
+		$where = " p.is_delete = 0 ";
+
+		if($_GET['status_jual'] !='pil'){
+			$where .= " AND p.status_jual ='".$_GET['status_jual']."'";
+		}
+
+		if($_GET['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['id_rak']."'";
+		}
+		
+		$sql ="SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
+		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
+		p.harga_beli,ps.id_stok
+		FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as ps ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
+		WHERE $where";
+
+		$var['data'] = $this->db->query($sql)->result();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-lap-stok',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('Rekap Stok Produk.pdf', 'P');
+
+	}
+
 	// Laporan Stok
 
 	public function laporan_modal(){
@@ -1761,7 +1802,24 @@ class Laporan extends CI_Controller {
 			}
 
 			public function export_trasn_keu_excel(){
+				$where = " t.is_delete = 0 ";
 
+				$tgl_awal = $_GET['tgl_awal'];
+				$tgl_akhir = $_GET['tgl_akhir'];
+				$where .=" AND DATE_FORMAT(t.tgl_trans,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir' ";
+
+				$sql = "SELECT t.id_trans_keu,t.nominal,DATE_FORMAT(t.tgl_trans,'%d-%m-%Y') as tgl_trans,t.id_akun,a.nama_akun,a.kd_akun,js.nama_transaksi,t.ket
+				FROM `tx_trans_keu` AS t
+				LEFT JOIN tm_akun AS a ON t.id_akun = a.id_akun
+				LEFT JOIN tm_jenis_transaksi_akun AS js ON a.jenis_transaksi = js.id_jenis_transaksi
+				WHERE $where
+				order by id_trans_keu asc";
+
+				$data = $this->db->query($sql);
+
+				$var['data'] = $data->result();
+
+				$this->load->view('v-trans-keu',$var);
 			}
 		// Transaksi Keuangan
 

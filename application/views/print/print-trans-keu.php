@@ -74,10 +74,12 @@
            <p class="judul_content"> REKAP DATA TRANSAKSI KEUANGAN</p>
            <p class="tex" style=" text-align: center; font-weight: bold;">Periode :
                <?php echo $tgl_awal.' s/d '.$tgl_akhir;?></p>
+              
        </page_header>
 
        <!-- End HEader -->
        <!-- Table Content -->
+       <br><br>
        <table border="1px" class="tabel">
            <thead>
                <tr>
@@ -92,22 +94,30 @@
 
            <?php 
                 $no = 1;
+                $tot = [];
                 if(!empty($data)){
                     foreach ($data as $key => $val) {
+                        array_push($tot,$val->nominal);
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td style="width:150px"><?php echo $val->kd_akun;?></td>
-               <td style="width:250px"><?php echo wordwrap($val->nama_akun,20,"<br>\n");?></td>
-               <td><?php echo $val->nama_transaksi;?></td>
-               <td align="right"><?php echo number_format($val->nominal,0,',','.');?></td>
-               <td style="width:250px"><?php echo wordwrap($val->ket,40,"<br>\n");?></td>
+               <td style="width:70px"><?php echo $val->kd_akun;?></td>
+               <td style="width:120px"><?php echo wordwrap($val->nama_akun,20,"<br>\n");?></td>
+               <td style="text-align: center;"><?php echo $val->nama_transaksi;?></td>
+               <td style="width:100px; text-align: right;"><?php echo number_format($val->nominal,0,',','.');?></td>
+               <td style="width:200px"><?php echo wordwrap($val->ket,40,"<br>\n");?></td>
 
            </tr>
            <?php     }
                 }
           ?>
-
+            <tr>
+                <td colspan="4">Total Nominal</td>
+                <td style="text-align: right;">
+                <?php echo number_format(array_sum($tot),0,',','.');?>
+                </td>
+                <td></td>
+            </tr>
        </table>
 
    </page>

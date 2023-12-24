@@ -72,7 +72,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
-			URL + "laporan/export_excel_margin?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			URL + "laporan/export_excel_beli_langsung?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

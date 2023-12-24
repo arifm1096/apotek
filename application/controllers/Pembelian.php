@@ -487,7 +487,7 @@ class Pembelian extends CI_Controller {
 
 		$var['data'] = $this->db->query($sql)->result();
 		$id_user = $this->session->userdata('id_user');
-		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
 				FROM tm_user as u 
 				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
 				WHERE u.id_user = $id_user";
