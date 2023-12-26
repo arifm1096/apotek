@@ -40,6 +40,7 @@ function load_langsung(tgl1, tgl2) {
 			},
 			{ data: "harga_beli", render: $.fn.dataTable.render.number(".", ".", 0) },
 			{ data: "stok" },
+			{ data: "nama_satuan" },
 			{
 				data: "tot_harga_beli",
 				render: $.fn.dataTable.render.number(".", ".", 0),
@@ -73,6 +74,23 @@ function export_excel() {
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
 			URL + "laporan/export_excel_beli_langsung?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			+"_blank"
+		);
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian !!",
+			text: "Pilih FIlter Terlebih Dahulu",
+		});
+	}
+}
+
+function export_pdf() {
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	if (tgl1 !== "" && tgl2 !== "") {
+		window.open(
+			URL + "laporan/export_pdf_beli_langsung?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

@@ -473,7 +473,7 @@ class Pembelian extends CI_Controller {
 			) ";
 		}
 
-		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
+		$sql1 = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
 		REPLACE(GROUP_CONCAT(br.jumlah_produk),',','<br>') as jumlah_produk,
 		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as nama_satuan,
@@ -484,6 +484,17 @@ class Pembelian extends CI_Controller {
 		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
 		WHERE $where
 		GROUP BY br.id_pesan_beli";
+
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
+		p.nama_produk as produk,
+		br.jumlah_produk as jumlah_produk,
+		s.nama_satuan as nama_satuan,
+		br.status_terima,br.id_rencana_beli
+		FROM `tx_beli_rencana` as br
+		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
+		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		WHERE $where";
 
 		$var['data'] = $this->db->query($sql)->result();
 		$id_user = $this->session->userdata('id_user');

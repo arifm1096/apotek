@@ -72,7 +72,24 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
-			URL + "laporan/export_excel_margin?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			URL + "laporan/export_excel_beli_rencana?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			+"_blank"
+		);
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian !!",
+			text: "Pilih FIlter Terlebih Dahulu",
+		});
+	}
+}
+
+function export_pdf() {
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	if (tgl1 !== "" && tgl2 !== "") {
+		window.open(
+			URL + "laporan/export_pdf_beli_rencana?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

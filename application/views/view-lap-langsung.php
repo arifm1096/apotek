@@ -9,7 +9,11 @@
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-excel"></i> Export PDF
                     </button>
                 </ol>
 
@@ -56,12 +60,12 @@
                 <table id="tbl_langsung" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th style="width: 5px; text-align: right;" > No.</th>
+                            <th style="width: 5px; text-align: right;"> No.</th>
                             <th>Nama Produk</th>
                             <th>Harga Beli</th>
                             <th>Total Pembelian</th>
-                            <th>Pembelian</th>
-                            <!-- <th style="width: 75px; ">Action</th> -->
+                            <th>Satuan</th>
+                            <th>Total Harga Pembelian</th>
                         </tr>
                     </thead>
                     <tbody>

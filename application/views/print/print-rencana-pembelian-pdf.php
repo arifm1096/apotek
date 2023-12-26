@@ -80,7 +80,7 @@
            <tr>
                <th style="width: 10px; text-align: right;">No.</th>
                <th width="10px">Tgl Pesan</th>
-               <th>No. SP</th>
+               <th style="width: 100px;">No. SP</th>
                <th>Nama Produk</th>
                <th>Kuantitas</th>
                <th>Satuan</th>
@@ -97,7 +97,7 @@
                <!-- <td><?php echo wordwrap($val->produk,25,"<br>\n");?> </td> -->
                <td><?php echo $val->tgl;?> </td>
                <td><?php echo $val->no_sp;?></td>
-               <td><?php echo $val->produk;?></td>
+               <td style="width: 200px;"><?php echo wordwrap($val->produk,40,"<br>\n");?></td>
                <td><?php echo $val->jumlah_produk;?></td>
                <td><?php echo $val->nama_satuan;?></td>
                <!-- <td><?php if($val->status_terima == 0){ ?>
@@ -112,13 +112,19 @@
                 }
           ?>
        </table>
+       <br><br><br>
 
-       <table>
+       <table style="padding-left:600px;">
            <tr>
                <td>Nama Apoteker</td>
            </tr>
            <tr>
-               <td><?php echo $this->session->userdata('nama_user');?></td>
+               <td>
+                   <br><br><br>
+               </td>
+           </tr>
+           <tr>
+               <td><b><?php echo $this->session->userdata('nama_user');?></b></td>
            </tr>
        </table>
 

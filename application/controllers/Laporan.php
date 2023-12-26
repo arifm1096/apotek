@@ -1090,9 +1090,9 @@ class Laporan extends CI_Controller {
 		}
 
 		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_POST['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_POST['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 		
 		$where .=  $searchQuery;
@@ -1122,13 +1122,16 @@ class Laporan extends CI_Controller {
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_stok) as stok,
-		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
 		FROM `tx_produk_stok_detail` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_stok_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
+		// echo $this->db->last_query();
 
 		$sql_tot = "SELECT 
 		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
@@ -1158,49 +1161,41 @@ class Laporan extends CI_Controller {
         $sheet->setCellValue('A3', "No");
         $sheet->setCellValue('B3', "SKU");
         $sheet->setCellValue('C3', "Nama Produk");
-        $sheet->setCellValue('D3', "Total Terjual");
-		$sheet->setCellValue('E3', "Harga Beli");
-		$sheet->setCellValue('F3', "Total Harga Beli");
-		$sheet->setCellValue('G3', "Harga Jual");
-		$sheet->setCellValue('H3', "Total Harga Jual");
-		$sheet->setCellValue('I3', "Margin");
+        $sheet->setCellValue('D3', "Harga Beli");
+		$sheet->setCellValue('E3', "Total Pembelian");
+		$sheet->setCellValue('F3', "Satuan");
+		$sheet->setCellValue('G3', "Total Harga Pembelian");
 
-		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 1 or j.status = 3";
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 ";
 		
-		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_stok) as stok,
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_stok_detail";
+		$data_res = $this->db->query($sql)->result_array();
+
+		$sql_tot = "SELECT 
 		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
 		FROM `tx_produk_stok_detail` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
-		WHERE $where
-		GROUP BY p.id_produk
-		order by id_stok_detail ";
-		$data_res = $this->db->query($sql)->result_array();
-
-		$sql_tot = "SELECT sum(tx.margin) as tot_margin 
-		FROM
-		(SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
-		sum(j.jumlah_produk) as tot_produk_jual, 
-		j.harga_beli,
-		sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
-		j.harga_jual, 
-		sum(j.total_harga) as tot_harga_jual,
-		sum(j.total_harga) - sum(j.harga_beli) as margin
-		FROM `tx_resep_detail` as j
-		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-		WHERE $where
-		GROUP BY p.id_produk) as tx";
+		WHERE $where";
 
 		$data_tot = $this->db->query($sql_tot)->row();
 
-		$sheet->setCellValue('B2', $data_tot->tot_margin);
+		$sheet->setCellValue('B2', $data_tot->tot_harga_beli);
 		
         $no = 1; // Untuk penomoran tabel, di awal set dengan 1
         $numrow = 4;
@@ -1208,12 +1203,11 @@ class Laporan extends CI_Controller {
           $sheet->setCellValue('A'.$numrow, $no);
 		  $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
           $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['tot_produk_jual']);
-          $sheet->setCellValue('E'.$numrow, $data['harga_beli']);
+          $sheet->setCellValue('D'.$numrow, $data['harga_beli']);
+          $sheet->setCellValue('E'.$numrow, $data['stok']);
 		  $sheet->setCellValue('F'.$numrow, $data['tot_harga_beli']);
-		  $sheet->setCellValue('G'.$numrow, $data['harga_jual']);
-		  $sheet->setCellValue('H'.$numrow, $data['tot_harga_jual']);
-		  $sheet->setCellValue('I'.$numrow, $data['margin']);
+		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('H'.$numrow, $data['tot_harga_beli']);
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
@@ -1222,9 +1216,62 @@ class Laporan extends CI_Controller {
         $tgl = date('Y-m-d_H-i');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Laporan_Margin_'.$tgl.'.xls'); 
+        header('Content-Disposition: attachment;filename=Laporan_Pembelian_langsung_'.$tgl.'.xls'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+	}
+
+	public function export_pdf_beli_langsung(){
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 ";
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_stok) as stok,
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_stok_detail";
+		$var['data'] = $this->db->query($sql)->result();
+
+		$sql_tot = "SELECT 
+		sum(psd.jumlah_stok) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where";
+
+		$var['tot'] = $this->db->query($sql_tot)->row();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+			FROM tm_user as u 
+			LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+			WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+		$var['tgl_awal'] = $_GET['tgl1'];
+		$var['tgl_akhir'] = $_GET['tgl2'];
+
+		
+		ob_start();
+		$this->load->view('print/print-lap-pembelian-langsung',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+
+
 	}
 
 	public function laporan_beli_rencana(){
@@ -1253,9 +1300,9 @@ class Laporan extends CI_Controller {
 		}
 
 		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(psd.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_POST['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_POST['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
 		}
 		
 		$where .=  $searchQuery;
@@ -1285,9 +1332,11 @@ class Laporan extends CI_Controller {
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_produk) as stok,
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_rencana_beli " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -1309,6 +1358,127 @@ class Laporan extends CI_Controller {
 			"total_nominal" => "Rp. ".number_format($data_tot->tot_harga_beli,0,',','.'),
 		); 
 		echo json_encode($output);
+	}
+
+	public function export_excel_beli_rencana(){
+		$spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
+		$sheet->setCellValue('A2', "Total Modal");
+        $sheet->setCellValue('A3', "No");
+        $sheet->setCellValue('B3', "SKU");
+        $sheet->setCellValue('C3', "Nama Produk");
+        $sheet->setCellValue('D3', "Harga Beli");
+		$sheet->setCellValue('E3', "Total Pembelian");
+		$sheet->setCellValue('F3', "Satuan");
+		$sheet->setCellValue('G3', "Total Harga Pembelian");
+
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 AND psd.status_terima = 1 ";
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_produk) as stok,
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
+		FROM `tx_beli_rencana`as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_rencana_beli";
+		$data_res = $this->db->query($sql)->result_array();
+
+		$sql_tot = "SELECT 
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_beli_rencana` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where";
+
+		$data_tot = $this->db->query($sql_tot)->row();
+
+		$sheet->setCellValue('B2', $data_tot->tot_harga_beli);
+		
+        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
+        $numrow = 4;
+        foreach($data_res as $data){ // Lakukan looping pada variabel siswa
+          $sheet->setCellValue('A'.$numrow, $no);
+		  $sheet->setCellValue('B'.$numrow, $data['sku_kode_produk']);
+          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
+          $sheet->setCellValue('D'.$numrow, $data['harga_beli']);
+          $sheet->setCellValue('E'.$numrow, $data['stok']);
+		  $sheet->setCellValue('F'.$numrow, $data['tot_harga_beli']);
+		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('H'.$numrow, $data['tot_harga_beli']);
+          $no++; // Tambah 1 setiap kali looping
+          $numrow++; // Tambah 1 setiap kali looping
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $tgl = date('Y-m-d_H-i');
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Laporan_Pembelian_Rencana_'.$tgl.'.xls'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+	}
+
+	public function export_pdf_beli_rencana(){
+		$where = " psd.is_delete = 0 AND p.is_delete = 0 AND psd.status_terima = 1 ";
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1']));
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2']));
+			$where .= " AND DATE_FORMAT(psd.insert_date,'%Y-%m-%d') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
+		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		sum(psd.jumlah_produk) as stok,
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		s.nama_satuan
+		FROM `tx_beli_rencana`as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_rencana_beli";
+		$var['data'] = $this->db->query($sql)->result();
+
+		$sql_tot = "SELECT 
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		FROM `tx_beli_rencana` as psd
+		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+		WHERE $where";
+
+		$var['tot'] = $this->db->query($sql_tot)->row();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+			FROM tm_user as u 
+			LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+			WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+		$var['tgl_awal'] = $_GET['tgl1'];
+		$var['tgl_akhir'] = $_GET['tgl2'];
+
+		
+		ob_start();
+		$this->load->view('print/print-lap-pembelian-rencana',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+
+
 	}
 
 	public function laporan_keuangan(){
@@ -1499,8 +1669,6 @@ class Laporan extends CI_Controller {
 	}
 
 	public function export_data_keu(){
-		// $tgl_awal = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
-		// $tgl_akhir = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
 
 		$tgl_awal = $_GET['tgl1'];
 		$tgl_akhir = $_GET['tgl2'];

@@ -71,33 +71,42 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP DATA PENJUALAN PERSHIF</p>
+           <p class="judul_content"> REKAP LAPORAN PEMBELIAN LANGSUNG </p>
+           <p class="tex" style=" text-align: center; font-weight: bold;">Periode :
+               <?php echo $tgl_awal.' s/d '.$tgl_akhir;?></p>
        </page_header>
 
        <!-- End HEader -->
        <!-- Table Content -->
+       <br><br>
        <table border="1px" class="tabel">
            <thead>
                <tr>
                    <th>No</th>
-                   <th>Nota</th>
+                   <th>SKU</th>
                    <th>Nama Produk</th>
-                   <th>Jumlah</th>
-                   <th>Total Penjualan</th>
+                   <th>Harga Beli</th>
+                   <th>Total Pembelian</th>
+                   <th>Satuan</th>
+                   <th>Total Harga Beli</th>
                </tr>
            </thead>
 
            <?php 
                 $no = 1;
+                $tot = [];
                 if(!empty($data)){
                     foreach ($data as $key => $val) {
+                        array_push($tot,$val->tot_harga_beli);
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td style="width:150px"><?php echo $val->no_nota;?></td>
-               <td style="width:250px"><?php echo wordwrap($val->nama_produk,40,"<br>\n");?></td>
-               <td><?php echo $val->jumlah_nama_satuan;?></td>
-               <td align="right"><?php echo number_format($val->total_harga,0,',','.');?></td>
+               <td style="width:120px"><?php echo $val->sku_kode_produk;?></td>
+               <td style="width:150px"><?php echo wordwrap($val->nama_produk,40,"<br>\n");?></td>
+               <td align="right"><?php echo number_format($val->harga_beli,0,',','.');?></td>
+               <td align="center"><?php echo $val->stok;?></td>
+               <td><?php echo $val->nama_satuan;?></td>
+               <td align="right"><?php echo number_format($val->tot_harga_beli,0,',','.');?></td>
 
            </tr>
            <?php     }
@@ -105,11 +114,8 @@
           ?>
 
            <tr>
-               <td colspan="3">Total</td>
-
-               <td><?php echo $tot->tot_produk; ?></td>
-
-               <td><?php echo number_format($tot->total,0,',','.');?></td>
+               <td colspan="6">Total</td>
+               <td align="right"><?php echo number_format(array_sum($tot),0,',','.');?></td>
            </tr>
 
        </table>
