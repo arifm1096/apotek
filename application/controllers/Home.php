@@ -39,7 +39,21 @@ class Home extends CI_Controller {
 		$this->load->view('view-index',$var);
 	}
 
-	public function cek(){
-		echo "cek";
+	public function pembelian(){
+		$var['content'] = 'view-home-pembelian';
+		$var['js'] = 'js-home';
+		$this->load->view('view-index',$var);
+	}
+
+	public function penjualan(){
+		$var['content'] = 'view-home-penjualan';
+		$var['js'] = 'js-home';
+		$this->load->view('view-index',$var);
+	}
+
+	public function persediaan(){
+		$var['content'] = 'view-home-persedian';
+		$var['js'] = 'js-home';
+		$this->load->view('view-index',$var);
 	}
 }

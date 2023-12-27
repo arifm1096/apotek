@@ -55,7 +55,7 @@
                 </li>
                 <?php if ($this->session->userdata('hak_akses')=="ADMIN"){ ?>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="<?php echo base_url('home/pembelian'); ?>" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>
                         <p>
                             Dashboard Pembelian
@@ -63,7 +63,7 @@
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="<?php echo base_url('home/penjualan'); ?>" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>
                         <p>
                             Dashboard Penjualan
@@ -71,10 +71,10 @@
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="<?php echo base_url('home/persediaan'); ?>" class="nav-link">
                         <i class="fas fa-toolbox"></i></i>
                         <p>
-                            Dashboard Stok
+                            Dashboard Persediaan
                         </p>
                     </a>
                 </li>
