@@ -190,6 +190,89 @@
             </div>
         </div>
 
+        <div class="row">
+        <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header border-transparent bg-warning">
+                                <h3 class="card-title text-bold">Produk Akan Expired (3 Bulan Sebelum exp.)</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Produk</th>
+                                                <th>Tgl. Exp</th>
+                                                <th>Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="list_exp">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-footer clearfix">
+                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
+                                    class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header border-transparent bg-danger">
+                                <h3 class="card-title text-bold">Produk Expired </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Produk</th>
+                                                <th>Tgl. Exp</th>
+                                                <th>Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="list_exp">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-footer clearfix">
+                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
+                                    class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
     </div><!-- /.container-fluid -->

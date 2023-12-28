@@ -203,7 +203,7 @@ class Konsinyasi extends CI_Controller {
 	
 		// Fetch Records
 		$sql = "SELECT kd.id_konsinyasi_detail,p.id_produk,s.id_satuan,p.nama_produk,kd.kode_ksu,kd.tgl_exp,
-		kd.harga_beli,kd.harga_pokok,kd.jumlah_konsinyasi,s.nama_satuan
+		kd.harga_beli,kd.harga_pokok,kd.jumlah_konsinyasi,s.nama_satuan,kd.ppn
 		FROM `tx_konsinyasi_detail` as kd
 		LEFT JOIN tx_produk as p ON kd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON kd.id_satuan = s.id_satuan
@@ -264,7 +264,8 @@ class Konsinyasi extends CI_Controller {
 		$data['tgl_faktur'] = date('Y-m-d', strtotime($_POST['tgl_faktur']));
 		$data['tgl_terima'] = date('Y-m-d', strtotime($_POST['tgl_terima']));
 		$data['jatuh_tempo'] = date('Y-m-d', strtotime($_POST['jatuh_tempo']));
-		if($data['id_konsinyasi']==""){
+
+		if($data['id_konsinyasi']=="0"){
 			if($data['no_faktur'] ==""){
 				unset($data['no_faktur']);
 				$data['no_faktur'] = $this->model_konsinyasi->get_no_faktur($id);
@@ -401,6 +402,10 @@ class Konsinyasi extends CI_Controller {
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data Not FInd','result'=>null));
 		}
+	}
+
+	public function export_konsinyasi(){
+		
 	}
 	// end retrun
 

@@ -231,6 +231,7 @@ $("#kons_submit").submit(function (e) {
 				// clear_filter_pro();
 				// $("#tbl_produk_ren").DataTable().destroy();
 				// load_produk_konsinyasi("");
+				window.location.href = URL+'konsinyasi/data_konsinyasi';
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -266,8 +267,9 @@ function load_produk_konsinyasi() {
 			{ data: "tgl_exp" },
 			{ data: "jumlah_konsinyasi" },
 			{ data: "nama_satuan" },
-			{ data: "harga_beli" },
-			{ data: "harga_pokok" },
+			{ data: "harga_beli" , render: $.fn.dataTable.render.number(".", ".", 0)},
+			{ data: "ppn" , render: $.fn.dataTable.render.number(".", ".", 0)},
+			{ data: "harga_pokok" , render: $.fn.dataTable.render.number(".", ".", 0)},
 			{
 				data: null,
 				orderable: false,
@@ -285,6 +287,8 @@ function load_produk_konsinyasi() {
 						row.harga_beli +
 						`','` +
 						row.harga_pokok +
+						`','` +
+						row.ppn +
 						`','` +
 						row.id_produk +
 						`','` +
@@ -335,6 +339,7 @@ function edit_kons(
 	jum,
 	h_bel,
 	h_pok,
+	ppn,
 	id_p,
 	id_s
 ) {
@@ -344,6 +349,7 @@ function edit_kons(
 	$("#jumlah_konsinyasi").val(jum);
 	$("#harga_beli").val(h_bel);
 	$("#harga_pokok").val(h_pok);
+	$("#ppn").val(ppn);
 	load_select_konsinyasi_add(id_p, id_s);
 	$("#modal_add_produk_kons").modal("show");
 }
@@ -368,11 +374,11 @@ function clear_filter() {
 
 function clear_filter_pro() {
 	$("#tbl_produk_ren").DataTable().destroy();
-	load_produk_konsinyasi((text = ""));
+	load_produk_konsinyasi();
 	$("#jumlah_produk").val("");
 	$("#harga_beli").val("");
 	$("#keterangan").val("");
-	load_select("pil", "pil", "pil");
+	load_select_konsinyasi_add("pil", "pil");
 }
 
 function get_pesanan() {
@@ -401,4 +407,25 @@ function get_pesanan() {
 			},
 		});
 	}
+}
+
+function close_kon(){
+	
+	$("#modal_add_produk_kons").modal('hide');
+	$("#jumlah_produk").val("");
+	$("#harga_beli").val("");
+	$("#keterangan").val("");
+	$("#kode_ksu").val("");
+	$("#tgl_exp").val("");
+	$("#jumlah_konsinyasi").val("");
+	$("#harga_pokok").val("");
+	load_select_konsinyasi_add("pil", "pil");
+
+}
+
+function get_ppn(){
+	var nom = $('#harga_beli').val();
+	var ppn = nom * 11 / 100;
+
+	$("#ppn").val(ppn);
 }

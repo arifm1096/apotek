@@ -276,7 +276,7 @@
                         </li>
                     </ul>
                 </li>
-                <?php  if($this->session->userdata('hak_akses') == "DOKTER" ){ ?>
+                <?php  if($this->session->userdata('hak_akses') == "DOKTER"  || $this->session->userdata('hak_akses') == "ADMIN" ){ ?>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="fas fa-credit-card"></i></i>

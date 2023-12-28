@@ -20,9 +20,10 @@
     <div class="container-fluid">
 
         <div class="row">
-            <div class="col-7">
+            <div class="col-12">
                 <h2 class="lead"><b>Selamat Datang</b></h2>
-
+                <hr>
+                <h2 class="lead"><b>Periode : <?php echo $periode;?></b></h2>
             </div>
         </div>
         <!-- /.row -->
@@ -81,21 +82,27 @@
                         <div class="info-box mb-3 bg-info">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan 7 hari Terahkir</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 4</span>
                                 <span class="info-box-number">Rp. 114,381</span>
                             </div>
                         </div>
                         <div class="info-box mb-3 bg-primary">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan 2 minggu</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 3</span>
                                 <span class="info-box-number">Rp. 114,381</span>
                             </div>
                         </div>
                         <div class="info-box mb-3 bg-success">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan 1 bulan terhakir</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 2</span>
+                                <span class="info-box-number">Rp. 114,381</span>
+                            </div>
+                        </div> <div class="info-box mb-3 bg-olive">
+                            <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Penjualan Minggu Ke 1</span>
                                 <span class="info-box-number">Rp. 114,381</span>
                             </div>
                         </div>
@@ -104,86 +111,7 @@
 
 
             </div>
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header border-transparent bg-warning">
-                                <h3 class="card-title text-bold">Produk Akan Expired (3 Bulan Sebelum exp.)</h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table m-0">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Produk</th>
-                                                <th>Tgl. Exp</th>
-                                                <th>Qty</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="list_exp">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card-footer clearfix">
-                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
-                                    class="btn btn-sm btn-secondary float-right">View All Orders</a>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header border-transparent bg-danger">
-                                <h3 class="card-title text-bold">Produk Expired </h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table m-0">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Produk</th>
-                                                <th>Tgl. Exp</th>
-                                                <th>Qty</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="list_exp">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card-footer clearfix">
-                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
-                                    class="btn btn-sm btn-secondary float-right">View All Orders</a>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
         </div>
 
 

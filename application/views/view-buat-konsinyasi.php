@@ -121,6 +121,7 @@
                                     <th>Kuantitias</th>
                                     <th>Satuan</th>
                                     <th>Harga Beli</th>
+                                    <th>PPN 11%</th>
                                     <th>Harga Pokok</th>
                                     <th style="width: 80px; text-align: right;">Action</th>
                                 </tr>
@@ -141,7 +142,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger">
                 <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk
-                    kons
+                    Konsiyasi
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -153,7 +154,7 @@
                         <form id="kons_add">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_konsinyasi_detail">
+                            <input type="hidden" name="id_konsinyasi_detail" id="id_konsinyasi_detail">
                             <input type="hidden" name="id_konsinyasi_p" id="id_konsinyasi_p"
                                 value="<?php echo $id_konsinyasi; ?>">
                             <div class="row">
@@ -170,14 +171,14 @@
                                     <div class="form-group">
                                         <label>KSU kode</label>
                                         <input type="text" id="kode_ksu" name="kode_ksu" class="form-control"
-                                            placeholder="Inputkan Kuantitias" required>
+                                            placeholder="Inputkan KSU kode" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Tgl. Exp.</label>
                                         <input type="text" id="tgl_exp" name="tgl_exp" class="form-control tgl_piker"
-                                            placeholder="Inputkan Kuantitias" required>
+                                            placeholder="Inputkan Tgl. Exp." required >
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -198,8 +199,15 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Harga</label>
-                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control"
+                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control" oninput="get_ppn();"
                                             placeholder="Inputkan Harga" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>PPN 11 %</label>
+                                        <input type="text" id="ppn" name="ppn" class="form-control"
+                                            placeholder="Inputkan PPN Harga" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -209,6 +217,7 @@
                                             placeholder="Inputkan Harga Pokok" required>
                                     </div>
                                 </div>
+                                
                             </div>
 
                             <div class="row">
@@ -221,7 +230,7 @@
                                     </button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-block btn-danger" type="button" onclick="close_kasir()">
+                                    <button class="btn btn-block btn-danger" type="button" onclick="close_kon()">
                                         <i class="fa fa-save fa-window-close"></i> &nbsp;
                                         <span id="batal-tolak">Batal</span>
                                     </button>

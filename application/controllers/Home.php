@@ -22,14 +22,22 @@ class Home extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('tgl_indo_helper');
-		
+		$this->load->model('Model_home');
+
 		if($this->session->userdata('status') != "login"){
 			redirect(base_url("login"));
 		}
 	}
 
 	public function index(){
-		$this->load->model('Model_home');
+		$datetime = $this->db->select("DATE_FORMAT(NOW(),'%m') as bulan,DATE_FORMAT(NOW(),'%Y') as tahun, NOW() AS tgl")->get()->row();
+		$bulan = bulan($datetime->bulan);
+		$tahun = $datetime->tahun;
+
+		$tgl1 = date('Y-m',strtotime($_POST['tgl1'])).' 00:00:00';
+		$tgl2 = date('Y-m',strtotime($_POST['tgl2'])).' 23:59:00';
+
+		$var['periode'] = $bulan.' '.$tahun;
 		$var['penjualan'] = $this->Model_home->get_sum_penjualan();
 		$var['stok'] = $this->Model_home->get_sum_stok();
 		$var['pembelian'] = $this->Model_home->get_sum_pembelian();
