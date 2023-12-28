@@ -33,7 +33,7 @@
                 <div class="small-box bg-info">
                     <div class="inner">
                         <h3><sup
-                                style="font-size: 20px">RP.</sup><?php echo number_format($uang->total_uang,0,',','.');?>
+                                style="font-size: 20px">RP.</sup><?php echo number_format($penjualan->total,0,',','.');?>
                         </h3>
                         <p>Total Penjualan</p>
                     </div>
@@ -48,7 +48,7 @@
 
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3><sup style="font-size: 20px">RP.</sup><?php echo $pembelian->jumlah_pembelian;?></h3>
+                        <h3><sup style="font-size: 20px">RP.</sup><?php echo number_format(0,0,',','.');?></h3>
                         <p>Retur Penjualan</p>
                     </div>
                     <div class="icon">
@@ -62,8 +62,8 @@
 
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3><sup style="font-size: 20px">RP.</sup>
-                            <?Php echo $penjualan->jumlah_penjualan;?>
+                        <h3><sup
+                                style="font-size: 20px">RP.</sup><?php echo number_format($penjualan_tertolak->total,0,',','.');?>
                         </h3>
                         <p>Penjualan Tertolak</p>
                     </div>
@@ -82,28 +82,33 @@
                         <div class="info-box mb-3 bg-info">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan Minggu Ke 4</span>
-                                <span class="info-box-number">Rp. 114,381</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 4 (Tgl. 22 - 31)</span>
+                                <span class="info-box-number">Rp.
+                                    <?php echo number_format($penjualan_4->total,0,',','.');?></span>
                             </div>
                         </div>
                         <div class="info-box mb-3 bg-primary">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan Minggu Ke 3</span>
-                                <span class="info-box-number">Rp. 114,381</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 3 (Tgl. 15 - 21)</span>
+                                <span class="info-box-number">Rp.
+                                    <?php echo number_format($penjualan_3->total,0,',','.');?></span>
                             </div>
                         </div>
                         <div class="info-box mb-3 bg-success">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan Minggu Ke 2</span>
-                                <span class="info-box-number">Rp. 114,381</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 2 (Tgl. 8 - 14)</span>
+                                <span class="info-box-number">Rp.
+                                    <?php echo number_format($penjualan_2->total,0,',','.');?></span>
                             </div>
-                        </div> <div class="info-box mb-3 bg-olive">
+                        </div>
+                        <div class="info-box mb-3 bg-olive">
                             <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Penjualan Minggu Ke 1</span>
-                                <span class="info-box-number">Rp. 114,381</span>
+                                <span class="info-box-text">Penjualan Minggu Ke 1 (Tgl. 1 - 7)</span>
+                                <span class="info-box-number">Rp.
+                                    <?php echo number_format($penjualan_1->total,0,',','.');?></span>
                             </div>
                         </div>
                     </div>
@@ -111,7 +116,7 @@
 
 
             </div>
-           
+
         </div>
 
 

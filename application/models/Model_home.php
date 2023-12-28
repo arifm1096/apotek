@@ -1,14 +1,59 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 	class Model_home extends CI_Model {
 
-		public function get_penjualan(){
-			$data = $this->db->select('count(k.id_kasir) as jumlah_penjualan')
-							 ->from('tx_kasir as k')
-							 ->where('k.tgl_transaksi >= CURDATE()')
-							 ->where('k.is_delete',0)
-							 ->get();
+		public function get_penjualan($where){
+			$sql = "SELECT SUM(total_harga) AS total,SUM(jumlah_produk) AS qty_pro 
+					FROM tx_jual 
+					where is_delete = 0 AND is_selesai = 1 $where";
+			$data = $this->db->query($sql);
+			
 			if($data->num_rows()>0){
 				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_margin($where){
+			$sql = "SELECT SUM(total_harga) AS total,SUM(jumlah_produk) AS qty_pro 
+					FROM tx_jual 
+					where is_delete = 0 AND is_selesai = 1 $where";
+			$data = $this->db->query($sql);
+			
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_penjualan_tertolak($where){
+			$sql = "SELECT  SUM(harga_jual) AS total,SUM(jumlah) AS qty_pro 
+					FROM tx_jual_tolak
+					where is_delete = 0 $where";
+			$data = $this->db->query($sql);
+			
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_produk_terlaris(){
+			$sql = "SELECT t.nama_produk,t.qty FROM (
+					SELECT nama_produk,SUM(jumlah_produk) as qty
+					FROM `tx_jual`
+					WHERE is_delete = 0 AND is_selesai = 1
+					GROUP BY id_produk
+					) as t
+					GROUP BY t.nama_produk
+					ORDER BY t.qty DESC
+					LIMIT 10";
+			$data = $this->db->query($sql);
+
+			if($data->num_rows()>0){
+				return $data->result();
 			}else{
 				return null;
 			} 

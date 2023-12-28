@@ -655,10 +655,16 @@ class Laporan extends CI_Controller {
 			) ";
 		}
 
+		// if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+		// 	$tgl1 = $_POST['tgl1'];
+		// 	$tgl2 = $_POST['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
 		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_POST['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_POST['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}
 		
 		$where .=  $searchQuery;
@@ -754,10 +760,17 @@ class Laporan extends CI_Controller {
 
 		$where = " j.is_delete = 0 AND j.is_selesai = 1";
 		
+		// if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+		// 	$tgl1 = $_GET['tgl1'];
+		// 	$tgl2 = $_GET['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
+		
 		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
 		$sql = "SELECT j.id_jual,p.id_produk,p.sku_kode_produk,p.nama_produk,
@@ -826,10 +839,16 @@ class Laporan extends CI_Controller {
 	public function export_pdf_margin(){
 		$where = " j.is_delete = 0 AND j.is_selesai = 1";
 		
+		// if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+		// 	$tgl1 = $_GET['tgl1'];
+		// 	$tgl2 = $_GET['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
 		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
 		$sql = "SELECT j.id_jual,p.id_produk,p.sku_kode_produk,p.nama_produk,
@@ -1492,11 +1511,14 @@ class Laporan extends CI_Controller {
 		$tgl_awal = $_POST['tgl1'];
 		$tgl_akhir = $_POST['tgl2'];
 
+		$tgl1 = date('Y-m-d',strtotime($_POST['tgl1'])).' 00:00:00';
+		$tgl2 = date('Y-m-d',strtotime($_POST['tgl2'])).' 23:59:00';
+
 		$modal = $this->Model_laporan->get_lap_modal();
-		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl_awal,$tgl_akhir);
-		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl_awal,$tgl_akhir);
-		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl_awal,$tgl_akhir);
-		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl_awal,$tgl_akhir);
+		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl1,$tgl2);
+		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl1,$tgl2);
+		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl1,$tgl2);
+		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl1,$tgl2);
 		$pem_kas = $this->Model_laporan->get_lap_pem_kas($tgl_awal,$tgl_akhir);
 		$pem_dok = $this->Model_laporan->get_lap_pem_dok($tgl_awal,$tgl_akhir);
 		$var['akun_masuk'] = $this->Model_laporan->get_akun_masuk($tgl_awal,$tgl_akhir);

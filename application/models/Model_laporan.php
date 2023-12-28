@@ -49,7 +49,7 @@
 			sum(j.total_harga) - (sum(j.jumlah_produk) * j.harga_beli) as margin
 			FROM `tx_jual` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
 			GROUP BY j.id_produk) as tx";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
@@ -77,7 +77,7 @@
 			sum(j.total_harga) - (sum(j.jumlah_produk) * j.harga_beli) as margin
 			FROM `tx_resep_detail` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'
 			AND j.status = 1 or j.status = 3
 			GROUP BY j.id_produk) as tx";
 			$sql = $this->db->query($query);
@@ -98,7 +98,7 @@
 			sum(j.total_harga) - sum(j.harga_beli) as margin
 			FROM `tx_resep_detail` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1 AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();
@@ -117,7 +117,7 @@
 			sum(j.total_harga) - sum(j.harga_beli) as margin
 			FROM `tx_jual` as j
 			LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
-			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+			WHERE j.is_delete = 0 AND j.is_selesai = 1  AND j.insert_date BETWEEN '$tgl_awal' AND '$tgl_akhir'";
 			$sql = $this->db->query($query);
 			if($sql->num_rows()>0){
 				return $sql->row();
