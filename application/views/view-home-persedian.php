@@ -23,6 +23,7 @@
             <div class="col-12">
                 <h2 class="lead"><b>Selamat Datang</b></h2>
                 <hr>
+                <h2 class="lead"><b>Periode : <?php echo $periode;?></b></h2>
 
             </div>
         </div>
@@ -45,7 +46,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                    Rp. <?php echo number_format($pesediaan->total_modal,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Stok dalam Rupiah</span>
                             </p>
@@ -94,7 +95,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                    Rp. <?php echo number_format($penjualan,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Terjual</span>
                             </p>
@@ -143,7 +144,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    14
+                                    <?php echo $produk->total_produk; ?> Qty
                                 </span>
                                 <span class="text-muted">Total Produk</span>
                             </p>

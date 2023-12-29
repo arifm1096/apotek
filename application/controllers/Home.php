@@ -123,8 +123,28 @@ class Home extends CI_Controller {
 	}
 
 	public function persediaan(){
+		$this->load->model('Model_home');
+		$this->load->model('Model_laporan');
+		$datetime = $this->db->select("DATE_FORMAT(NOW(),'%m') as bulan,DATE_FORMAT(NOW(),'%Y') as tahun, NOW() AS tgl")->get()->row();
+		$bulan = bulan($datetime->bulan);
+		$tahun = $datetime->tahun;
+
+		$tgl_p = $datetime->tahun.'-'.$datetime->bulan;
+		$tgl1 = $tgl_p.'-01 00:00:00';
+		$tgl2 = $tgl_p.'-31 23:59:59';
+		$where = " AND insert_date between '$tgl1' AND '$tgl2'";
+
+		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl1,$tgl2);
+		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl1,$tgl2);
+		$var['penjualan'] = (int) $pen_dok->tot_harga_jual + (int) $pen_kas->tot_harga_jual;
+		$var['periode'] = $bulan.' '.$tahun;
+		$var['pesediaan'] = $this->Model_laporan->get_lap_modal();
+		$var['produk'] = $this->Model_home->get_data_produk();
+		
 		$var['content'] = 'view-home-persedian';
 		$var['js'] = 'js-home';
 		$this->load->view('view-index',$var);
 	}
+
+	
 }
