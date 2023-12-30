@@ -125,7 +125,8 @@ class Home extends CI_Controller {
 	public function persediaan(){
 		$this->load->model('Model_home');
 		$this->load->model('Model_laporan');
-		$datetime = $this->db->select("DATE_FORMAT(NOW(),'%m') as bulan,DATE_FORMAT(NOW(),'%Y') as tahun, NOW() AS tgl")->get()->row();
+		$datetime = $this->db->select("DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 MONTH),'%Y-%m') as bulan_kemarin,DATE_FORMAT(NOW(),'%m') as bulan,DATE_FORMAT(NOW(),'%Y') as tahun, NOW() AS tgl")
+							->get()->row();
 		$bulan = bulan($datetime->bulan);
 		$tahun = $datetime->tahun;
 
@@ -140,7 +141,56 @@ class Home extends CI_Controller {
 		$var['periode'] = $bulan.' '.$tahun;
 		$var['pesediaan'] = $this->Model_laporan->get_lap_modal();
 		$var['produk'] = $this->Model_home->get_data_produk();
+		$tgl_a = '2000-01-01 00:00:00';
+		$tgl_b = $datetime->bulan_kemarin.'-31 23:59:59';
+		$var['persediaan_awal'] = $this->Model_home->get_persedian($tgl_a,$tgl_b);
+		$var['persediaan_akhir'] = $this->Model_home->get_persedian($tgl_a,$tgl2);
+
+		$tot_kadaluarsa = $this->Model_home->get_tot_kadaluarsa();
+		$exp = [];
+		$data = [];
+
+		foreach ($tot_kadaluarsa as $key => $val) {
+			$date_exp = strtotime($val->exp_date);
+			$date_now =  strtotime($val->tgl_now);
+			
+			if($date_exp <= $date_now){
+				array_push($exp,1);
+				array_push($data,(object)[
+					'nama_produk' => $val->nama_produk,
+					'jumlah_stok' => $val->jumlah_stok,
+					'exp_date' => $val->exp_date
+				]);
+			}
+		}
+		$tot_data = array_sum($exp);
 		
+		$var['exp_tot'] = $tot_data;
+		$var['exp_data'] = $data;
+
+		$tot_kadaluarsa_3mn = $this->Model_home->get_tot_kadaluarsa_3mn();
+		$exp_3mn = [];
+		$data_3mn = [];
+
+		foreach ($tot_kadaluarsa_3mn as $key => $val) {
+			$date_exp = strtotime($val->exp_date);
+			$date_now =  strtotime($val->tgl_3m);
+			$date_to = strtotime($val->tgl_now);
+			
+			if($date_to <= $date_exp && $date_exp <= $date_now){
+				array_push($exp_3mn,1);
+				array_push($data_3mn,(object)[
+					'nama_produk' => $val->nama_produk,
+					'jumlah_stok' => $val->jumlah_stok,
+					'exp_date' => $val->exp_date
+				]);
+			}
+		}
+		
+		$tot_data_3mn = array_sum($exp_3mn);
+		$var['exp_tot_3mn'] = $tot_data_3mn;
+		$var['exp_data_3mn'] = $data_3mn;
+
 		$var['content'] = 'view-home-persedian';
 		$var['js'] = 'js-home';
 		$this->load->view('view-index',$var);

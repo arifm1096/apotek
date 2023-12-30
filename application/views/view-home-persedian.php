@@ -57,7 +57,7 @@
                                 <i class="fa fa-shopping-cart"></i>
                             </p>
                             <p class="d-flex flex-column text-right">
-                                <span class="font-weight-bold">Rp. 200.000.000
+                                <span class="font-weight-bold">Rp. 0
                                 </span>
                                 <span class="text-muted">Mutasi keluar/masuk </span>
                             </p>
@@ -107,7 +107,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                    Rp. <?php echo number_format($persediaan_awal->total_modal,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Persediaan Awal</span>
                             </p>
@@ -119,7 +119,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 100.000.000
+                                    Rp. <?php echo number_format($persediaan_akhir->total_modal,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Persediaan Akhir</span>
                             </p>
@@ -156,7 +156,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    23
+                                    <?php echo $exp_tot;?> Qty
                                 </span>
                                 <span class="text-muted">Total Sudah Kadaluarsa</span>
                             </p>
@@ -168,9 +168,9 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    23
+                                    <?php echo $exp_tot_3mn;?> Qty
                                 </span>
-                                <span class="text-muted">Total Akan Kadaluarsa</span>
+                                <span class="text-muted">Total Akan Kadaluarsa (Dalam 3 Bulan)</span>
                             </p>
                         </div>
 
@@ -180,7 +180,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    25
+                                    <?php echo $pesediaan->total_produk;?>
                                 </span>
                                 <span class="text-muted">Total Stok</span>
                             </p>
@@ -219,7 +219,33 @@
                                                 <th>Qty</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="list_exp">
+                                        <tbody>
+                                            <?php 
+                                                $no = 1;
+                                                if(!empty($exp_data_3mn)){
+                                                foreach ($exp_data_3mn as $key => $val) {
+                                                     if($no == 11){
+                                                        break;
+                                                    }
+                                                   
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                    <?php echo $no++;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->nama_produk;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->exp_date;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->jumlah_stok;?>
+                                                </td>
+                                            </tr>
+                                            <?php }
+                                                };
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -257,7 +283,32 @@
                                                 <th>Qty</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="list_exp">
+                                        <tbody>
+                                            <?php 
+                                                $no = 1;
+                                                if(!empty($exp_data)){
+                                                foreach ($exp_data as $key => $val) {
+                                                    if($no == 11){
+                                                        break;
+                                                    }
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                    <?php echo $no++;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->nama_produk;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->exp_date;?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $val->jumlah_stok;?>
+                                                </td>
+                                            </tr>
+                                            <?php }
+                                                };
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
