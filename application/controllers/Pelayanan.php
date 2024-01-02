@@ -1376,7 +1376,7 @@ class Pelayanan extends CI_Controller {
 
 public function detail_resep(){
 	$var['content'] = 'view-detail-resep';
-	$var['js'] = 'view-detail-resep';
+	$var['js'] = 'js-detail-resep';
 	$this->load->view('view-index',$var);
 }
 
