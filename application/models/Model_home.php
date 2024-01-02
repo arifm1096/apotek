@@ -146,25 +146,38 @@
 			}
 		}
 
-		public function get_sum_tot_uang(){
-			$data = $this->db->select('sum(k.total) as total_uang')
-							 ->from('tx_kasir as k')
-							 ->where('k.tgl_transaksi >= CURDATE()')
-							 ->where('k.is_delete',0)
-							 ->where('k.is_delete',0)
-							 ->get();
+		public function get_data_pesan_aktif(){
+			$sql = "SELECT s.nama_supplier,bs.tgl_pesan,SUM(br.harga_beli) as nominal
+					FROM `tx_beli_rencana` as br
+					LEFT JOIN tx_beli_pesan as bs ON br.id_pesan_beli = bs.id_pesan_beli
+					LEFT JOIN tm_supplier as s ON bs.id_supplier = s.id_supplier
+					WHERE br.is_delete = 0 AND br.status_terima = 0
+					GROUP BY bs.id_pesan_beli";
+			$data = $this->db->query($sql);
 			if($data->num_rows()>0){
-				return $data->row();
+				return $data->result();
 			}else{
 				return null;
 			} 
 		}
 
-		
+		public function get_data_jatuh_tempo(){
+			$sql = "SELECT s.nama_supplier,bs.tgl_pesan,SUM(br.harga_beli) as nominal,DATE_FORMAT(DATE_ADD(now(),INTERVAL -14 DAY),'%Y-%m-%d') as tgl
+					FROM `tx_beli_rencana` as br
+					LEFT JOIN tx_beli_pesan as bs ON br.id_pesan_beli = bs.id_pesan_beli
+					LEFT JOIN tm_supplier as s ON bs.id_supplier = s.id_supplier
+					WHERE br.is_delete = 0 AND br.status_terima = 0 AND bs.tgl_pesan <= DATE_FORMAT(DATE_ADD(now(),INTERVAL -14 DAY),'%Y-%m-%d') 
+					GROUP BY bs.id_pesan_beli";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->result();
+			}else{
+				return null;
+			} 
+		}
 
-		public function get_sum_pembelian(){
-			$sql = "SELECT COUNT(id_stok_detail) as jumlah_pembelian FROM `tx_produk_stok_detail` 
-					WHERE is_delete = 0 and DATE_FORMAT(insert_date,'%m-%Y') = DATE_FORMAT(CURRENT_DATE,'%m-%Y')";
+		public function get_rencana_beli(){
+			$sql = "SELECT sum(harga_beli) as harga FROM `tx_beli_rencana` WHERE is_selesai = 0 AND is_delete = 0";
 			$data = $this->db->query($sql);
 			if($data->num_rows()>0){
 				return $data->row();
@@ -173,7 +186,50 @@
 			} 
 		}
 
-	
+		public function get_pesanan_aktif(){
+			$sql = "SELECT sum(harga_beli) as harga FROM `tx_beli_rencana` WHERE is_selesai = 0 AND status_terima = 0";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_fakture(){
+			$sql = "SELECT sum(harga_beli) as tot_harga FROM `tx_beli_rencana` WHERE is_delete = 0 AND status_terima = 1";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_tot_beli($tgl_awal,$tgl_akhir){
+			$sql = "SELECT sum(harga_beli) as tot_harga 
+					FROM `tx_beli_rencana` 
+					WHERE is_delete = 0 AND status_terima = 1
+					AND insert_date between '$tgl_awal' and '$tgl_akhir'";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
+		public function get_retur($tgl_awal,$tgl_akhir){
+			$sql = "SELECT sum(harga) as nominal 
+					FROM `tx_retur_detail` WHERE is_delete = 0 AND insert_date
+			 		between '$tgl_awal' and '$tgl_akhir'";
+			$data = $this->db->query($sql);
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
 	
 	}
 

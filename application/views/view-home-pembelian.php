@@ -45,7 +45,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                Rp. <?php echo number_format($ren_tot->harga,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Rencana Pembelian</span>
                             </p>
@@ -56,7 +56,8 @@
                                 <i class="fa fa-shopping-cart"></i>
                             </p>
                             <p class="d-flex flex-column text-right">
-                                <span class="font-weight-bold">Rp. 200.000.000
+                                <span class="font-weight-bold">
+                                    Rp. <?php echo number_format($pes_akt->harga,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Pesanan Aktif</span>
                             </p>
@@ -68,7 +69,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 100.000.000
+                                    Rp. 0
                                 </span>
                                 <span class="text-muted">Hutang Pembelian</span>
                             </p>
@@ -94,7 +95,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                Rp. <?php echo number_format($beli->tot_harga,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Total Pembelian</span>
                             </p>
@@ -106,7 +107,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 200.000.000
+                                Rp. <?php echo number_format($faktur->tot_harga,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Faktur Pembalian</span>
                             </p>
@@ -118,7 +119,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 100.000.000
+                                Rp. <?php echo number_format($retur->nominal,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Retur Pembalian</span>
                             </p>
@@ -135,7 +136,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header border-transparent bg-warning">
-                                <h3 class="card-title text-bold">Jatuh Tempo Terdekat</h3>
+                                <h3 class="card-title text-bold">Jatuh Tempo (2 Minggu Dari Tgl. Pesan)</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                         <i class="fas fa-minus"></i>
@@ -153,16 +154,40 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Nama Supplier</th>
-                                                <th>Tgl Jatuh Tempo</th>
+                                                <th>Tgl Pesan</th>
                                                 <th>Nominal</th>
                                             </tr>
                                         </thead>
+                                        <tbody>
+                                            <?php $no = 1;
+                                                 if(!empty($pesan_tempo)){
+                                                    foreach ($pesan_tempo as $key => $val) {
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                    <?php echo $no++?>
+                                                </td>
+                                                <td>
+                                                <?php echo $val->nama_supplier;?>
+                                                </td>
+                                                <td>
+                                                <?php echo $val->tgl_pesan;?>
+                                                </td>
+                                                <td>
+                                                <?php echo number_format($val->nominal,0,',','.');?>
+                                                </td>
+                                            </tr>
+                                            <?php 
+                                                    }
+                                                }
+                                            ?>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
 
                             <div class="card-footer clearfix">
-                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
+                                <a href="<?php echo base_url('pembelian/rencana_pembelian')?>"
                                     class="btn btn-sm btn-secondary float-right">View All Orders</a>
                             </div>
 
@@ -197,14 +222,35 @@
                                                 <th>Nominal</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="list_exp">
+                                        <tbody>
+                                            <?php if(!empty($pesan_aktif)){
+                                                    foreach ($pesan_aktif as $key => $val) {
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                <?php echo $val->nama_supplier;?>
+                                                </td>
+                                                <td>
+                                                <?php echo $val->tgl_pesan;?>
+                                                </td>
+                                                <td>
+                                                <?php echo number_format($val->nominal,0,',','.');?>
+                                                </td>
+                                            </tr>
+                                                
+                                                
+                                                
+                                            <?php 
+                                                    }
+                                                }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
 
                             <div class="card-footer clearfix">
-                                <a href="<?php echo base_url('persediaan/stok_kadaluarsa')?>"
+                                <a href="<?php echo base_url('pembelian/data_pesanan')?>"
                                     class="btn btn-sm btn-secondary float-right">View All Orders</a>
                             </div>
 

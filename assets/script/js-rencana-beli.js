@@ -142,6 +142,7 @@ function load_produk_rencana(text) {
 			},
 			{ data: "jumlah_produk" },
 			{ data: "nama_satuan" },
+			{ data: "harga_beli", render: $.fn.dataTable.render.number(".", ".", 0) },
 			{ data: "stok" },
 
 			{

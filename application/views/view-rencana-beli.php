@@ -48,6 +48,7 @@
                                     <th>Produk</th>
                                     <th>Kuantitas </th>
                                     <th>Satuan </th>
+                                    <th>Harga</th>
                                     <th>Stok Terkini</th>
                                     <th style="width: 30px; text-align: right;">Action</th>
                                 </tr>

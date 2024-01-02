@@ -81,9 +81,13 @@ class Home extends CI_Controller {
 		$tgl2 = $tgl_p.'-31 23:59:59';
 		$where = " AND insert_date between '$tgl1' AND '$tgl2'";
 
-		$var['periode'] = $bulan.' '.$tahun;
-		$var['penjualan'] = $this->Model_home->get_penjualan($where);
-		$var['penjualan_tertolak'] = $this->Model_home->get_penjualan_tertolak($where);
+		$var['pesan_aktif'] = $this->Model_home->get_data_pesan_aktif();
+		$var['pesan_tempo'] = $this->Model_home->get_data_jatuh_tempo();
+		$var['ren_tot'] = $this->Model_home->get_rencana_beli();
+		$var['pes_akt'] = $this->Model_home->get_pesanan_aktif();
+		$var['faktur'] = $this->Model_home->get_fakture();
+		$var['beli'] = $this->Model_home->get_tot_beli($tgl1,$tgl2);
+		$var['retur'] = $this->Model_home->get_retur($tgl1,$tgl2);
 		
 		$var['content'] = 'view-home-pembelian';
 		$var['js'] = 'js-home';
