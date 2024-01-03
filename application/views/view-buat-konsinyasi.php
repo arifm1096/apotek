@@ -11,7 +11,7 @@
                 <form id="kons_submit">
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                         value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                    <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value = "<?php echo $id_konsinyasi; ?>">
+                    <input type="hidden" name="id_konsinyasi" id="id_konsinyasi" value="<?php echo $id_konsinyasi; ?>">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -70,7 +70,8 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Jenis Pembayaran</label>
-                                <select class="form-control select2" name="jenis_pembayaran" id="jenis_pembayaran" required>
+                                <select class="form-control select2" name="jenis_pembayaran" id="jenis_pembayaran"
+                                    required>
                                     <option value="pil"> -- Pilih --</option>
                                 </select>
                             </div>
@@ -178,7 +179,7 @@
                                     <div class="form-group">
                                         <label>Tgl. Exp.</label>
                                         <input type="text" id="tgl_exp" name="tgl_exp" class="form-control tgl_piker"
-                                            placeholder="Inputkan Tgl. Exp." required >
+                                            placeholder="Inputkan Tgl. Exp." required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -199,15 +200,15 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Harga</label>
-                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control" oninput="get_ppn();"
-                                            placeholder="Inputkan Harga" required>
+                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control"
+                                            oninput="get_ppn();" placeholder="Inputkan Harga" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>PPN 11 %</label>
                                         <input type="text" id="ppn" name="ppn" class="form-control"
-                                            placeholder="Inputkan PPN Harga" required readonly>
+                                            placeholder="Inputkan PPN Harga" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -217,7 +218,7 @@
                                             placeholder="Inputkan Harga Pokok" required>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                             <div class="row">
