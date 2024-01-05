@@ -127,7 +127,7 @@ $("#add_remik").submit(function (e) {
 		},
 	});
 });
-
+// hapus
 function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:
