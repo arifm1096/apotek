@@ -372,7 +372,7 @@ function add_resep() {
 				});
 			} else {
 				Swal.fire({
-					title: "<strong><u>Perhatian !!/u></strong>",
+					title: "<strong><u>Perhatian !!</u></strong>",
 					icon: "error",
 					html: res.msg,
 				});

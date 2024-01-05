@@ -26,16 +26,15 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Kode Racikan</th>
-                            <th>Nama Racikan</th>
-                            <th>Keterangan</th>
+                            <th>Kode Resep</th>
+                            <th>Nama Dokter</th>
+                            <th>Nama Pelanggan</th>
+                            <th>Resep</th>
+                            <th>Total Harga (Rp.)</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
-
                 </table>
             </div>
             <!-- /.card-body -->

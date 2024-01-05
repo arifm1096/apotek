@@ -440,28 +440,38 @@ class Pelayanan extends CI_Controller {
 						'insert_by' => $id_user,
 						'insert_date' => $datetime->time
 					);
-					
-		$this->db->insert('tx_resep', $data);
-   		$insert_id = $this->db->insert_id();
+		$kode_resep = $in['kode_resep'];
 
-		$data_up = array(
-						'id_resep'=>$insert_id,
-						'status' => 2
-		);
+		$cek = $this->db->get_where('tx_resep',array('kode_resep'=>$kode_resep));
 
-		if(!empty($insert_id)){
-			$up = $this->db->where('insert_by',$id_user)
-						   ->where('is_selesai',0)
-						   ->where('is_delete',0)
-						   ->update('tx_resep_detail',$data_up);
-			if($up){
-				echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+		if($cek->num_rows() ==0 ){
+			$this->db->insert('tx_resep', $data);
+			$insert_id = $this->db->insert_id();
+
+			$data_up = array(
+							'id_resep'=>$insert_id,
+							'status' => 2,
+							'is_selesai' => 1
+			);
+
+			if(!empty($insert_id)){
+				$up = $this->db->where('insert_by',$id_user)
+							->where('is_selesai',0)
+							->where('is_delete',0)
+							->update('tx_resep_detail',$data_up);
+				if($up){
+					echo json_encode(array('status'=>1,'msg'=>'Data Susscess Diinput, Silahkan Cetak Nota Resep','id'=>$insert_id));
+				}else{
+					echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				}
 			}else{
-				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
+				echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
 			}
 		}else{
-			echo json_encode(array('status'=>0,'msg'=>'Error Insert Kasir Error','id'=>null));
+			echo json_encode(array('status'=>0,'msg'=>'<b>Data Sudah Tersimpan</b>, SIlahkan Cetak Struk Atau Tambah Baru','id'=>null));
 		}
+					
+		
 	}
 
 	public function cetak_struk_resep() {
@@ -1393,13 +1403,20 @@ public function load_detail_resep(){
 	// Search
 	$searchQuery = "";
 	if ($searchValue != '') {
-		$searchQuery .= " and (nama_racikan like '%" . $searchValue . "%'
-							OR ket like '%" . $searchValue . "%'
-							OR kode_racikan like '%" . $searchValue . "%'					
+		$searchQuery .= " and (r.kode_resep like '%" . $searchValue . "%'
+							OR d.nama_dokter like '%" . $searchValue . "%'
+							OR p.nama_pelanggan like '%" . $searchValue . "%'	
+							OR sp.nama_status_resep like '%" . $searchValue . "%'					
 		) ";
 	}
 
-	$where = " is_delete = 0 " . $searchQuery . "";
+	$where = " r.is_delete = 0 " . $searchQuery . "";
+
+	$hak_akses = $this->session->userdata('hak_akses');
+	$id_user = $this->session->userdata('id_user');
+	if($hak_akses){
+		$where .= " AND r.id_dokter = $id_user";
+	}
 
 
 	// Total number records without filtering
@@ -1410,16 +1427,33 @@ public function load_detail_resep(){
 
 	// Total number records with filter
 	$sql_filter = "SELECT count(*) as allcount
-	FROM `tx_racik`
+	FROM `tx_resep` as r
+	LEFT JOIN tm_dokter as d ON r.id_dokter = d.id_dokter
+	LEFT JOIN tm_pelanggan as p ON r.id_pelanggan = p.id_pelanggan
+	LEFT JOIN tm_status_resep as sp ON r.status = sp.id_status_resep
+	LEFT JOIN (SELECT rd.id_resep, REPLACE(GROUP_CONCAT(rd.nama_produk,'. ',rd.jumlah_produk,' ',s.nama_satuan),',','<br>') as produk_detail
+	FROM `tx_resep_detail` as rd
+	LEFT JOIN tm_satuan as s ON rd.id_satuan_utama = s.id_satuan
+	WHERE rd.is_delete = 0 AND rd.is_selesai = 1 AND rd.`status` = 2
+	GROUP BY rd.id_resep)as pd ON r.id_resep = pd.id_resep
 	WHERE $where";
 	$records = $this->db->query($sql_filter)->row_array();
 	$totalRecordsFilter = $records['allcount'];
 
 	// Fetch Records
-	$sql = "SELECT id_racik,kode_racikan,nama_racikan,ket,aktif
-	FROM `tx_racik`
+	$sql = "SELECT r.kode_resep,d.nama_dokter,p.nama_pelanggan,sp.nama_status_resep,r.`status`,pd.produk_detail,pd.total_harga
+	FROM `tx_resep` as r
+	LEFT JOIN tm_dokter as d ON r.id_dokter = d.id_dokter
+	LEFT JOIN tm_pelanggan as p ON r.id_pelanggan = p.id_pelanggan
+	LEFT JOIN tm_status_resep as sp ON r.status = sp.id_status_resep
+	LEFT JOIN (SELECT rd.id_resep, REPLACE(GROUP_CONCAT(rd.nama_produk,'. ',rd.jumlah_produk,' ',s.nama_satuan),',','<br>') as produk_detail,
+	SUM(rd.harga_jual) as total_harga
+	FROM `tx_resep_detail` as rd
+	LEFT JOIN tm_satuan as s ON rd.id_satuan_utama = s.id_satuan
+	WHERE rd.is_delete = 0 AND rd.is_selesai = 1 AND rd.`status` = 2
+	GROUP BY rd.id_resep)as pd ON r.id_resep = pd.id_resep
 	WHERE $where
-	order by id_racik " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+	order by r.id_resep " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 	$data = $this->db->query($sql)->result();
 
 	// Response
@@ -1430,6 +1464,27 @@ public function load_detail_resep(){
 		"aaData" => $data
 	); 
 	echo json_encode($output);
+}
+
+public function hapus_detail_resep(){
+	$id = $this->input->post('id_resep');
+	$datetime = $this->db->select('now() as time')->get()->row();
+		$user = $this->session->userdata('id_user');
+		if(!empty($id)){
+			$del = $this->db->where('id_resep',$id)
+							->update('tx_resep',array(
+								'is_delete'=>1,
+								'delete_by' => $user,
+								'delete_date' => $datetime->time
+							));
+			if($del){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Delete NUll || Error Code : 7232'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
+		}
 }
 // Detail Resep End
 }

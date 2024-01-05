@@ -48,22 +48,27 @@ function load_detail_resep() {
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_supplier",
+				data: "id_resep",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{ data: "kode_racikan" },
-			{ data: "nama_racikan" },
-			{ data: "ket" },
+			{ data: "kode_resep" },
+			{ data: "nama_dokter" },
+			{ data: "nama_pelanggan" },
+			{ data: "produk_detail" },
+			{
+				data: 'total_harga',
+				render: $.fn.dataTable.render.number( ',', '.', 0 )
+			},
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					if (row.aktif == "y") {
-						return '<span class="badge bg-success">aktif</span>';
+					if (row.status == "2") {
+						return '<span class="badge bg-danger">'+row.nama_status_resep+'</span>';
 					} else {
-						return '<span class="badge bg-danger">Tidak aktif</span>';
+						return '<span class="badge bg-success">'+row.nama_status_resep+'</span>';
 					}
 				},
 			},
@@ -72,18 +77,12 @@ function load_detail_resep() {
 				orderable: false,
 				render: function (data, type, row) {
 					return (
-						'<button type="button"  class="btn btn-warning btn-sm" onclick="edit(\'' +
-						row.id_racik +
-						'\')"><i class="fa fa-pencil-alt"></i></button> &nbsp' +
-						'<button type="button"  class="btn btn-success btn-sm" onclick="shop(\'' +
-						row.id_racik +
-						'\')"><i class="fa fa-shopping-cart"></i></button> &nbsp' +
 						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
-						row.id_racik +
+						row.id_resep +
 						"','" +
-						row.kode_racikan +
+						row.kode_resep +
 						"','" +
-						row.nama_racikan +
+						row.nama_pelanggan +
 						'\')"><i class="fa fa-trash"></i></button>'
 					);
 				},
@@ -132,7 +131,7 @@ $("#add_remik").submit(function (e) {
 function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:
-			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Kode Remik  : " +
+			"<b>Apakah Anda yakin Menghapus Data ?</b> <br> Kode Resep : " +
 			kode +
 			"<br> " +
 			"Nama Pelanggan: " +
@@ -145,7 +144,7 @@ function hapus(id, kode, nama_pelanggan) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "pelayanan/hapus_remik",
+				url: URL + "pelayanan/hapus_detail_resep",
 				type: "POST",
 				data: {
 					id: id,
