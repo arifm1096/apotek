@@ -84,9 +84,9 @@ $db['default'] = array(
 	// 'username' => 'administrator',
 	// 'password' => '@R0s4l144dm1n',
 	
-	// 'database' => 'apotek_db_ext',
+	'database' => 'apotek_db_ext',
 
-	'database' => 'apotek_db_p',
+	// 'database' => 'apotek_db_p',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

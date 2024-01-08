@@ -331,8 +331,6 @@ class Konsinyasi extends CI_Controller {
 			$tgl1 = $_POST['tgl1'];
 			$tgl2 = $_POST['tgl2'];
 			$where .= " AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
-		}else{
-			$where .= "AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 		
@@ -408,6 +406,86 @@ class Konsinyasi extends CI_Controller {
 		
 	}
 	// end retrun
+
+	public function status_konsiyasi(){
+		$var['content'] = 'view-status_konsiyasi';
+		$var['js'] = 'js-status_konsiyasi';
+		$this->load->view('view-index',$var);
+	}
+
+	public function load_status_konsinyasi(){
+		// Read Value 
+		$draw = $_POST['draw'];
+		$row = $_POST['start'];
+		$rowperpage = $_POST['length']; // Rows display per page
+		$columnIndex = $_POST['order'][0]['column']; // Column index
+		$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+		$searchValue1 = $_POST['search']['value'];
+		$searchValue = $_POST['text'];
+		
+		$where = " k.is_delete = 0 AND kd.is_selesai = 2 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR k.no_faktur like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		
+	
+		$where .=  $searchQuery ;
+	
+		// Total number records without filtering
+		$sql_count = "SELECT count(*) as allcount
+		FROM `tx_konsinyasi` 
+		where is_delete = 0
+		GROUP BY id_konsinyasi";
+		$records = $this->db->query($sql_count)->row_array();
+		$totalRecords = $records['allcount'];
+	
+		// Total number records with filter
+		$sql_filter = "SELECT count(*) as allcount
+		FROM `tx_konsinyasi` as k
+		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+		WHERE $where";
+		$records = $this->db->query($sql_filter)->row_array();
+		$totalRecordsFilter = $records['allcount'];
+	
+		// Fetch Records
+		$sql = "SELECT 
+		k.id_konsinyasi,
+		k.no_faktur,
+		k.tgl_terima,
+		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p
+		FROM `tx_konsinyasi` as k
+		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY k.id_konsinyasi
+		order by k.id_konsinyasi " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
+		$data = $this->db->query($sql)->result();
+	
+		// Response
+		$output = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordsFilter,
+			"aaData" => $data
+		); 
+		echo json_encode($output);
+	}
+
 
 
 }

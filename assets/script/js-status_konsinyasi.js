@@ -94,7 +94,7 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 		serverMethod: "POST",
 		columns: [
 			{
-				data: "id_konsinyasi",
+				data: "id_retur",
 				render: function (data, type, row, meta) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
