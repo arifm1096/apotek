@@ -83,14 +83,14 @@ const rupiah = (number) => {
 function loda_konsinyasi(text, tgl1, tgl2) {
 	$("#tbl_konsinyasi").DataTable({
 		ajax: {
-			url: URL + "konsinyasi/load_konsinyasi",
+			url: URL + "konsinyasi/load_status_konsinyasi",
 			type: "POST",
 			data: { text: text, tgl1: tgl1, tgl2: tgl2 },
 		},
 		processing: true,
 		serverSide: true,
 		searching: false,
-		order: [[1, 'desc']],
+		order: [[1, "desc"]],
 		serverMethod: "POST",
 		columns: [
 			{
@@ -99,10 +99,14 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			{ data: "tgl_terima" },
 			{ data: "no_faktur" },
+			{ data: "nama_supplier" },
 			{ data: "produk" },
 			{ data: "jumlah_konsinyasi_p" },
+			{
+				data: "nom_harga_pokok",
+				render: $.fn.dataTable.render.number(".", ".", 0),
+			},
 			{
 				data: null,
 				orderable: false,
@@ -110,12 +114,12 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 					return (
 						`<div class="row">
 								<div class="col-md-12">
-									<button type="button" class="btn btn-outline-warning btn-sm" onclick="edit_ret('` +
+									<button type="button" class="btn btn-outline-info btn-sm" onclick="edit_ret('` +
 						row.id_konsinyasi +
-						`')"><i class="fa fa-pencil-alt"></i></button>
+						`')">BAYAR</button>
 						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
 						row.id_konsinyasi +
-						`')"><i class="fa fa-trash"></i></button>
+						`')">RETURE</i></button>
 								</div>
 							</div>
 

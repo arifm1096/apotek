@@ -74,11 +74,12 @@
                     <thead>
                         <tr>
                             <th style="width: 10px; text-align: right;">No.</th>
-                            <th>Tgl. Terima Konsiyasi</th>
                             <th>No. Faktur</th>
+                            <th>Penitip</th>
                             <th>Produk</th>
-                            <th>Qty. Konsiyasi</th>
-                            <th style="width: 75px; ">Action</th>
+                            <th>Qty</th>
+                            <th>Harga Pokok</th>
+                            <th style="width: 150px; ">Action</th>
                         </tr>
                     </thead>
                     <tbody>

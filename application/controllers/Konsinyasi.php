@@ -408,8 +408,8 @@ class Konsinyasi extends CI_Controller {
 	// end retrun
 
 	public function status_konsiyasi(){
-		$var['content'] = 'view-status_konsiyasi';
-		$var['js'] = 'js-status_konsiyasi';
+		$var['content'] = 'view-status_konsinyasi';
+		$var['js'] = 'js-status_konsinyasi';
 		$this->load->view('view-index',$var);
 	}
 
@@ -457,7 +457,9 @@ class Konsinyasi extends CI_Controller {
 		FROM `tx_konsinyasi` as k
 		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
 		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
-		WHERE $where";
+		LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+		WHERE $where
+		GROUP BY k.id_konsinyasi";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
 	
@@ -466,11 +468,14 @@ class Konsinyasi extends CI_Controller {
 		k.id_konsinyasi,
 		k.no_faktur,
 		k.tgl_terima,
+		s.nama_supplier,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
-		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p
+		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p,
+		sum(kd.harga_pokok) as nom_harga_pokok
 		FROM `tx_konsinyasi` as k
 		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
 		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+		LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
 		WHERE $where
 		GROUP BY k.id_konsinyasi
 		order by k.id_konsinyasi " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
