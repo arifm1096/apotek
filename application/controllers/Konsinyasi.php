@@ -658,12 +658,90 @@ class Konsinyasi extends CI_Controller {
 
 	}
 
+	public function get_data_konsinyasi_det(){
+		$id = $_POST['id_konsinyasi'];
+		$sql_det = "SELECT kd.id_konsinyasi_detail,kd.id_konsinyasi,p.nama_produk,kd.jumlah_konsinyasi,s.nama_satuan, CONCAT(p.nama_produk,' ',jumlah_konsinyasi,' ',s.nama_satuan) as produk_nm 
+					FROM tx_konsinyasi_detail as kd 
+					LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+					LEFT JOIN tm_satuan as s ON p.satuan_utama = s.id_satuan
+					WHERE kd.id_konsinyasi = $id AND kd.is_delete = 0
+					GROUP BY kd.id_konsinyasi_detail";
+		$sql_det = $this->db->query($sql_det)->result();
+		// echo $this->db->last_query();
+			$table ="";
+			$no = 1;
+			if(!empty($sql_det)){
+				$table .= "<table>
+						 <tr>
+						 	<th>No</th>
+							<th>Produk</th>
+							<th>Qty</th>
+							<th>Satuan</th>
+						 </tr>";
+				foreach ($sql_det as $key => $val) {
+					$n = $no++;
+					$table .= "<tr>
+								<td>$n</td>
+								<td>$val->nama_produk</td>
+								<td>$val->jumlah_konsinyasi</td>
+								<td>$val->nama_satuan</td>
+							  </tr>";
+				}
+				$table .= "</table>";
+			}
+			
+		
+		$sql_kon = "SELECT 
+					k.id_konsinyasi,
+					k.no_faktur,
+					k.tgl_terima,
+					s.nama_supplier,
+					sum(kd.harga_pokok) as nom_harga_pokok,
+					sum(kd.ppn) as nom_harga_pokok
+					FROM `tx_konsinyasi` as k
+					LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+					LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+					LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+					WHERE kd.id_konsinyasi = $id 
+					GROUP BY k.id_konsinyasi";
+		$sql_kon = $this->db->query($sql_kon);
+
+		if(!empty($sql_det) || !empty($sql_kon)){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','detail'=>$table,'konsinyasi'=>$sql_kon->row()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Not Find','detail'=>null,'konsinyasi'=>null));
+		}
+	}
+
 	public function bayar_konsiyasi(){
-		$id_detail = $this->input->post('id');
-		$tgl_retur = date('Y-m-d', strtotime($_POST['tgl_retur']));
+		$id_kon = $this->input->post('id_konsinyasi');
+		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
 		$id_gudang = $this->session->userdata('gudang');
 		$datetime = $this->db->select('now() as time')->get()->row();
+		$ext = 0;
+
+		$sql_up = "UPDATE tx_konsinyasi_detail SET status = 1, update_by = '$id', update_date= '$datetime->time'
+			WHERE is_selesai = 2 AND is_delete = 0 AND `status` = 0 AND id_konsinyasi = $id_kon";
+		$ext_up = $this->db->query($sql_up);
+		if($ext_up){
+			$ext += 1;
+		}
+
+		unset($data['id_konsinyasi']);
+		unset($data['tgl_trans']);
+
+		$data['tgl_trans'] = date('Y-m-d', strtotime($_POST['tgl_trans']));
+		$sql = $this->db->insert('tx_trans_keu',$data);
+			if($sql){
+				$ext += 1;
+			}
+
+		if($ext > 1){
+			echo json_encode(array('status'=>1,'msg'=>'Konsiyasi Success DIbayar'));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Konsiyasi Gagal DIbayar'));
+		}
 	}
 
 }

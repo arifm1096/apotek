@@ -2,9 +2,8 @@ $(document).ready(function () {
 	load_select_retur_add("pil", "pil");
 	load_produk_retur();
 	load_edit_retur();
+	load_select_retur_head("pil", "pil", "pil", "pil", "pil");
 });
-
-
 
 $(".tgl_piker").datepicker({
 	todayHighlight: "TRUE",
@@ -15,30 +14,31 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function load_edit_retur(){
+function load_edit_retur() {
 	var id = $("#id_retur").val();
-	if(id !==""){
+	if (id !== "") {
 		$.ajax({
-			type : 'POST',
-			url : URL +'pembelian/get_data_retur',
-			data : {id:id},
-			success : function(data){
-				var res = JSON.parse(data)
-				if(res.status == 1){
-					load_select_retur_head(res.result.id_supplier,
-											res.result.id_gudang,
-											res.result.no_sp,
-											res.result.insert_by,
-											res.result.metode_pembayaran,
-										  );
+			type: "POST",
+			url: URL + "pembelian/get_data_retur",
+			data: { id: id },
+			success: function (data) {
+				var res = JSON.parse(data);
+				if (res.status == 1) {
+					load_select_retur_head(
+						res.result.id_supplier,
+						res.result.id_gudang,
+						res.result.no_sp,
+						res.result.insert_by,
+						res.result.metode_pembayaran
+					);
 					$("#no_faktur").val(res.result.no_faktur);
 					$("#tgl_retur").val(res.result.tgl_retur);
 					$("#tgl_pesan").val(res.result.tgl_pesan);
-				}else{
+				} else {
 					load_select_retur_head();
 				}
-			}
-		})
+			},
+		});
 	}
 }
 
@@ -80,7 +80,13 @@ function load_select_retur_add(id_produk, id_satuan) {
 	});
 }
 
-function load_select_retur_head(id_supplier, id_wilayah, no_sp, id_user,id_pembayaran) {
+function load_select_retur_head(
+	id_supplier,
+	id_wilayah,
+	no_sp,
+	id_user,
+	id_pembayaran
+) {
 	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
 	var html_gudang = "<option value='pil'>-- Pilih Gudang --</option>";
 	var html_no_sp = "<option value='pil'>-- Pilih No. SP --</option>";
@@ -197,7 +203,7 @@ $("#retur_add").submit(function (e) {
 				});
 				$("#tbl_produk_re").DataTable().destroy();
 				load_produk_retur();
-				$("#modal_add_produk_retur").modal('hide');
+				$("#modal_add_produk_retur").modal("hide");
 				clear_filter();
 			} else {
 				Swal.fire({
@@ -253,7 +259,7 @@ function load_produk_retur() {
 		ajax: {
 			url: URL + "pembelian/load_detail_retur",
 			type: "POST",
-			data: {id:id},
+			data: { id: id },
 		},
 		processing: true,
 		serverSide: true,
@@ -279,15 +285,24 @@ function load_produk_retur() {
 				render: function (data, type, row) {
 					return (
 						`<button type="button" class="btn btn-warning btn-sm mr-1" onclick="edit_ren('` +
-						row.id_detail_retur +`','`+
-						row.harga +`','`+
-						row.tgl_exp +`','`+
-						row.tgl_pesan +`','`+
-						row.kode_ksu +`','`+
-						row.jumlah_produk_beli +`','`+
-						row.jumlah_retur +`','`+
-						row.keterangan +`','`+
-						row.id_produk +`','`+
+						row.id_detail_retur +
+						`','` +
+						row.harga +
+						`','` +
+						row.tgl_exp +
+						`','` +
+						row.tgl_pesan +
+						`','` +
+						row.kode_ksu +
+						`','` +
+						row.jumlah_produk_beli +
+						`','` +
+						row.jumlah_retur +
+						`','` +
+						row.keterangan +
+						`','` +
+						row.id_produk +
+						`','` +
 						row.id_satuan +
 						`')"><i class="fa fa-pencil-alt"></i></button> 
 						<button type="button" class="btn btn-danger btn-sm" onclick="hapus_ren('` +
@@ -328,7 +343,18 @@ function hapus_ren(id) {
 	});
 }
 
-function edit_ren(id,harga,tgl_exp,tgl_p,kode,jum,jum_re,ket,id_p,id_s){
+function edit_ren(
+	id,
+	harga,
+	tgl_exp,
+	tgl_p,
+	kode,
+	jum,
+	jum_re,
+	ket,
+	id_p,
+	id_s
+) {
 	$("#id_detail_retur").val(id);
 	$("#harga").val(harga);
 	$("#tgl_exp").val(tgl_exp);
@@ -338,7 +364,7 @@ function edit_ren(id,harga,tgl_exp,tgl_p,kode,jum,jum_re,ket,id_p,id_s){
 	$("#jumlah_retur").val(jum_re);
 	$("#keterangan").val(ket);
 	load_select_retur_add(id_p, id_s);
-	$("#modal_add_produk_retur").modal('show');
+	$("#modal_add_produk_retur").modal("show");
 }
 
 function filter_data() {

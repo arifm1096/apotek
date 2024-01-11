@@ -2,6 +2,7 @@ $(document).ready(function () {
 	// filter_data_penjualan();
 	loda_konsinyasi((text = ""), (tgl = ""));
 	$("#loading").hide();
+	$(".uang").mask("000.000.000.000", { reverse: true });
 });
 
 $(".tgl_piker").datepicker({
@@ -61,7 +62,6 @@ const rupiah = (number) => {
 		currency: "IDR",
 	}).format(number);
 };
-
 
 function loda_konsinyasi(text, tgl1, tgl2) {
 	$("#tbl_konsinyasi").DataTable({
@@ -150,67 +150,65 @@ function export_excel() {
 	);
 }
 
-function retur_konsiyasi(id_konsinyasi){
-	$('#modal_retur').modal('hide');
+function retur_konsiyasi(id_konsinyasi) {
+	$("#modal_retur").modal("hide");
 	$.ajax({
-		url : URL +'konsinyasi/get_data_konsiyasi',
-		type : 'POST',
-		data : {id_konsinyasi:id_konsinyasi},
-		success : function(data) {
+		url: URL + "konsinyasi/get_data_konsiyasi",
+		type: "POST",
+		data: { id_konsinyasi: id_konsinyasi },
+		success: function (data) {
 			var res = JSON.parse(data);
-			if(res.status == 1){
-				$('#list_konsinyasi_detail').html(res.detail_konsiyasi);
-				$('#no_faktur').html(res.konsinyasi.no_faktur);
-				$('#penitip').html(res.konsinyasi.nama_supplier);
-				$('#modal_retur').modal('show');
-			}else{
+			if (res.status == 1) {
+				$("#list_konsinyasi_detail").html(res.detail_konsiyasi);
+				$("#no_faktur").html(res.konsinyasi.no_faktur);
+				$("#penitip").html(res.konsinyasi.nama_supplier);
+				$("#modal_retur").modal("show");
+			} else {
 				Swal.fire({
-					icon : 'error',
-					title : 'Perhatian',
-					text : res.msg
+					icon: "error",
+					title: "Perhatian",
+					text: res.msg,
 				});
 			}
-		}
+		},
 	});
-	
 }
 
-function retur(id,id_konsinyasi){
-	var tgl_retur = $('#tgl_retur').val();
+function retur(id, id_konsinyasi) {
+	var tgl_retur = $("#tgl_retur").val();
 
-	if(tgl_retur !==""){
+	if (tgl_retur !== "") {
 		$.ajax({
-			url : URL +'konsinyasi/retur_konsiyasi',
-			type : 'POST',
-			data : {id:id,tgl_retur : tgl_retur},
-			success : function(data) {
+			url: URL + "konsinyasi/retur_konsiyasi",
+			type: "POST",
+			data: { id: id, tgl_retur: tgl_retur },
+			success: function (data) {
 				var res = JSON.parse(data);
-				if(res.status == 1){
+				if (res.status == 1) {
 					Swal.fire({
-						icon : 'success',
-						title : 'Success',
-						text : res.msg
+						icon: "success",
+						title: "Success",
+						text: res.msg,
 					});
 					retur_konsiyasi(id_konsinyasi);
 					$("#tbl_konsinyasi").DataTable().destroy();
 					loda_konsinyasi((text = ""), (tgl = ""));
-				}else{
+				} else {
 					Swal.fire({
-						icon : 'error',
-						title : 'Perhatian',
-						text : res.msg
+						icon: "error",
+						title: "Perhatian",
+						text: res.msg,
 					});
 				}
-			}
+			},
 		});
-	}else{
+	} else {
 		Swal.fire({
-			icon : 'error',
-			title : 'Perhatian',
-			text : 'Ketik Tgl Retur Terlebih Dahulu'
+			icon: "error",
+			title: "Perhatian",
+			text: "Ketik Tgl Retur Terlebih Dahulu",
 		});
 	}
-
 }
 
 function select_trans_keu(p_akun) {
@@ -242,7 +240,70 @@ function select_trans_keu(p_akun) {
 	});
 }
 
-function bayar_konsiyasi(){
-	select_trans_keu();
-	$('#modal_bayar').modal('show');
+function bayar_konsiyasi(id_konsinyasi) {
+	$.ajax({
+		url: URL + "konsinyasi/get_data_konsinyasi_det",
+		type: "POST",
+		data: { id_konsinyasi: id_konsinyasi },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#no_faktur_ls").html(res.konsinyasi.no_faktur);
+				$("#supplier_ls").html(res.konsinyasi.nama_supplier);
+				$("#produk_ls").html(res.detail);
+				$("#id_konsinyasi").val(res.konsinyasi.id_konsinyasi);
+				select_trans_keu();
+				$("#modal_bayar").modal("show");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !!",
+					text: res.msg,
+				});
+			}
+		},
+	});
 }
+
+function clear_data() {
+	$("#tgl_trans").val();
+	$("#nominal").val();
+	$("#ket").val();
+}
+
+$("#add_bayar").submit(function (e) {
+	e.preventDefault();
+	$("#save-button").html("Sending...");
+	$.ajax({
+		url: URL + "konsinyasi/bayar_konsiyasi",
+		type: "post",
+		data: new FormData(this),
+		processData: false,
+		contentType: false,
+		cache: false,
+		async: false,
+		beforeSend: function () {
+			$("#add_bayar").find("span.error-text").text();
+		},
+		success: function (data) {
+			$("#save-button").html("Simpan");
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.message,
+				});
+				filter_data();
+				clear_data();
+				$("#modal_bayar").modal("hide");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: res.message,
+				});
+			}
+		},
+	});
+});

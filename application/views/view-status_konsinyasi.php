@@ -94,113 +94,108 @@
 </section>
 
 <!-- modal add start -->
-    <div class="modal fade" id="modal_retur">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger">
-                    <h4 class="modal-title" id="mediumModalLabel"><i class="fa fa-reply-all"></i> Retur Konsiyasi</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                </div>
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5>
-                                <div id="nama_produk_stok"></div>
-                            </h5>
-                            
-                            <div class="row">
-                                <div class="col-md-3">
-                                        <h6>
-                                            <b>
-                                                Nomer Faktur : <div id="no_faktur"></div> 
-                                            </b>
-                                        </h6>
-                                </div>
-                                <div class="col-md-2">
-                                        <h6>
-                                            <b>
-                                                Nama Penitip :<div id="penitip"></div>
-                                            </b>
-                                        </h6>
-                                </div>
-                                <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Tanggal Retur</label>
-                                            <input type="text" id="tgl_retur" name="tgl_retur" class="form-control tgl_piker"
-                                                placeholder="Inputkan Retur" required>
-                                        </div>
-                                </div>
+<div class="modal fade" id="modal_retur">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fa-reply-all"></i> Retur Konsiyasi</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>
+                            <div id="nama_produk_stok"></div>
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>
+                                    <b>
+                                        Nomer Faktur : <div id="no_faktur"></div>
+                                    </b>
+                                </h6>
                             </div>
-
-
-                            <hr>
-                            <div class="card-body table-responsive">
-                                <table id="tbl_konsinyasi" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 10px; text-align: right;">No.</th>
-                                            <th>Produk</th>
-                                            <th>Tgl. Expired</th>
-                                            <th>Stok</th>
-                                            <th>Harga Pokok</th>
-                                            <th style="width: 150px; ">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="list_konsinyasi_detail">
-                                    </tbody>
-                                </table>
+                            <div class="col-md-2">
+                                <h6>
+                                    <b>
+                                        Nama Penitip :<div id="penitip"></div>
+                                    </b>
+                                </h6>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Tanggal Retur</label>
+                                    <input type="text" id="tgl_retur" name="tgl_retur" class="form-control tgl_piker"
+                                        placeholder="Inputkan Retur" required>
+                                </div>
                             </div>
                         </div>
-                        <!-- /.login-card-body -->
-                    </div>
 
+
+                        <hr>
+                        <div class="card-body table-responsive">
+                            <table id="tbl_konsinyasi" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px; text-align: right;">No.</th>
+                                        <th>Produk</th>
+                                        <th>Tgl. Expired</th>
+                                        <th>Stok</th>
+                                        <th>Harga Pokok</th>
+                                        <th style="width: 150px; ">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list_konsinyasi_detail">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.login-card-body -->
                 </div>
+
             </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
+    <!-- /.modal-dialog -->
+</div>
 <!-- modal add end -->
 
 <!-- modal add start -->
 <div class="modal fade" id="modal_bayar">
-        <div class="modal-dialog modal-md modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger">
-                    <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-money"></i> Bayar Konsiyasi</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                </div>
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5>
-                                <div id="nama_produk_stok"></div>
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <h6><b>
-                                            Faktur : <div id="nama_gudang_stok"></div>
-                                        </b></h6>
-                                </div>
-                                <div class="col-md-2">
-                                    <h6>
-                                        <b>
-                                            Penititp :<div id="satuan_stok"></div>
-                                        </b>
-                                    </h6>
-                                </div>
-                            </div>
-
-
-                            <hr>
-                            <form id="add_trans_keu">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-money"></i> Bayar Konsiyasi</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>No Faktur :</label>
+                            <h6 id="no_faktur_ls"></h6>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label>Penitip :</label>
+                            <h6 id="supplier_ls"></h6>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label>Produk List :</label>
+                            <div id="produk_ls"></div>
+                        </div>
+                        <hr>
+                        <form id="add_bayar">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                            <input type="hidden" name="id_trans_keu" id="id_trans_keu">
+                            <input type="hidden" name="id_konsinyasi" id="id_konsinyasi">
                             <div class="form-group">
                                 <label>Tanggal</label>
                                 <input type="text" id="tgl_trans" name="tgl_trans" class="form-control tgl_piker"
@@ -213,7 +208,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Nominal</label>
-                                <input type="text" id="nominal" name="nominal" class="form-control uang"
+                                <input type="text" id="nominal" name="nominal" class="form-control"
                                     placeholder="Inputkan Nominal">
                             </div>
                             <div class="form-group">
@@ -238,14 +233,14 @@
                                 </div>
                             </div>
                         </form>
-                        </div>
-                        <!-- /.login-card-body -->
                     </div>
-
+                    <!-- /.login-card-body -->
                 </div>
+
             </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
+    <!-- /.modal-dialog -->
+</div>
 <!-- modal add end -->
