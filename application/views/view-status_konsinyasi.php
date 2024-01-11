@@ -77,7 +77,7 @@
                             <th>No. Faktur</th>
                             <th>Penitip</th>
                             <th>Produk</th>
-                            <th>Qty</th>
+                            <th>Qty Konsiyasi</th>
                             <th>Harga Pokok</th>
                             <th style="width: 150px; ">Action</th>
                         </tr>
@@ -94,100 +94,158 @@
 </section>
 
 <!-- modal add start -->
-<div class="modal fade" id="modal_data_penjualan">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Tambah Stok</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-            </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>
-                            <div id="nama_produk_stok"></div>
-                        </h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6><b>
-                                        Gudang : <div id="nama_gudang_stok"></div>
-                                    </b></h6>
+    <div class="modal fade" id="modal_retur">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h4 class="modal-title" id="mediumModalLabel"><i class="fa fa-reply-all"></i> Retur Konsiyasi</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>
+                                <div id="nama_produk_stok"></div>
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-3">
+                                        <h6>
+                                            <b>
+                                                Nomer Faktur : <div id="no_faktur"></div> 
+                                            </b>
+                                        </h6>
+                                </div>
+                                <div class="col-md-2">
+                                        <h6>
+                                            <b>
+                                                Nama Penitip :<div id="penitip"></div>
+                                            </b>
+                                        </h6>
+                                </div>
+                                <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Tanggal Retur</label>
+                                            <input type="text" id="tgl_retur" name="tgl_retur" class="form-control tgl_piker"
+                                                placeholder="Inputkan Retur" required>
+                                        </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <h6>
-                                    <b>
-                                        Satuan Utama :<div id="satuan_stok"></div>
-                                    </b>
-                                </h6>
+
+
+                            <hr>
+                            <div class="card-body table-responsive">
+                                <table id="tbl_konsinyasi" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10px; text-align: right;">No.</th>
+                                            <th>Produk</th>
+                                            <th>Tgl. Expired</th>
+                                            <th>Stok</th>
+                                            <th>Harga Pokok</th>
+                                            <th style="width: 150px; ">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list_konsinyasi_detail">
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                        <!-- /.login-card-body -->
+                    </div>
 
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+<!-- modal add end -->
 
-                        <hr>
-                        <form id="data_penjualan">
-
-
+<!-- modal add start -->
+<div class="modal fade" id="modal_bayar">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-money"></i> Bayar Konsiyasi</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>
+                                <div id="nama_produk_stok"></div>
+                            </h5>
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Kuantitas</label>
-                                        <input type="hidden" id="id_produk_stok">
-                                        <input type="hidden" id="id_stok">
-                                        <input type="text" id="jumlah_stok" name="jumlah_stok" class="form-control"
-                                            placeholder="Inputkan Nama Produk" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Tgl. Expired</label>
-                                        <input type="text" id="exp_date" name="exp_date" class="form-control tgl_piker"
-                                            placeholder="Inputkan Nama Produk" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Satuan</label>
-                                        <select name="id_satuan_stok" id="id_satuan_stok" class="form-control select2"
-                                            required>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Supplier</label>
-                                        <select name="id_supplier_stok" id="id_supplier_stok"
-                                            class="form-control select2" required>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Harga Beli Per Satuan</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">Rp.</span>
-                                            </div>
-                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
-                                        </div>
-                                    </div>
+                                <div class="col-md-2">
+                                    <h6><b>
+                                            Faktur : <div id="nama_gudang_stok"></div>
+                                        </b></h6>
                                 </div>
-
+                                <div class="col-md-2">
+                                    <h6>
+                                        <b>
+                                            Penititp :<div id="satuan_stok"></div>
+                                        </b>
+                                    </h6>
+                                </div>
                             </div>
-                            <p>*Klik <b>Tambahkan Produk</b>, Sebelum Lanjut Ke Tahap Selanjutnya</p>
-                            <div class="row">
-                                <div class="col-md-2"></div>
-                                <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button"
-                                        onclick="save_data_penjualan()">
-                                        <i class="fa fa-save fa-lg"></i> &nbsp;
-                                        <span id="save-button-produk">Simpan Data</span>
-                                        <span id="send-button-produk" style="display:none;">Sending…</span>
-                                    </button>
+
+
+                            <hr>
+                            <form id="add_trans_keu">
+                            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
+                                value="<?=$this->security->get_csrf_hash();?>" style="display: none">
+                            <input type="hidden" name="id_trans_keu" id="id_trans_keu">
+                            <div class="form-group">
+                                <label>Tanggal</label>
+                                <input type="text" id="tgl_trans" name="tgl_trans" class="form-control tgl_piker"
+                                    placeholder="Inputkan Tanggal">
+                            </div>
+                            <div class="form-group">
+                                <label>Akun Transaksi</label>
+                                <select class="form-control select2" id="id_akun" name="id_akun" style="width: 100%;">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nominal</label>
+                                <input type="text" id="nominal" name="nominal" class="form-control uang"
+                                    placeholder="Inputkan Nominal">
+                            </div>
+                            <div class="form-group">
+                                <label>Keterangan</label>
+                                <textarea class="form-control" name="ket" id="ket" cols="30" rows="3"></textarea>
+                            </div>
+                            <div class="social-auth-links text-center mb-1">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-block btn-primary" type="submit">
+                                            <i class="fa fa-save fa-lg"></i> &nbsp;
+                                            <span id="save-button">Save</span>
+                                            <span id="send-button" style="display:none;">Sending…</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-block btn-danger" data-dismiss="modal">
+                                            <i class="fa fa-times fa-lg"></i> &nbsp;
+                                            <span>Batal</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
+                        </div>
+                        <!-- /.login-card-body -->
                     </div>
-                    <!-- /.login-card-body -->
-                </div>
 
+                </div>
             </div>
+            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-content -->
+        <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
-</div>
 <!-- modal add end -->

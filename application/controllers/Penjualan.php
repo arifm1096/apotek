@@ -674,9 +674,13 @@ class Penjualan extends CI_Controller {
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			// $tgl1 = $_POST['tgl1'];
+			// $tgl2 = $_POST['tgl2'];
+			// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+
+			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.'00:00:00';
+			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.'23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
@@ -723,9 +727,11 @@ class Penjualan extends CI_Controller {
 		}
 
 		if($_POST['tgl1'] !='' && $_POST['tgl2'] !=''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			// $tgl1 = $_POST['tgl1'];
+			// $tgl2 = $_POST['tgl2'];
+			$tgl1 = date("Y-m-d", strtotime($_POST['tgl1'])).' '.'00:00:00';
+			$tgl2 = date("Y-m-d", strtotime($_POST['tgl2'])).' '.'23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
 			$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
@@ -821,9 +827,13 @@ class Penjualan extends CI_Controller {
 			}
 
 			if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
-				$tgl1 = $_GET['tgl1'];
-				$tgl2 = $_GET['tgl2'];
-				$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+				// $tgl1 = $_GET['tgl1'];
+				// $tgl2 = $_GET['tgl2'];
+				// $where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+
+				$tgl1 = date("Y-m-d", strtotime($_GET['tgl1'])).' '.'00:00:00';
+				$tgl2 = date("Y-m-d", strtotime($_GET['tgl2'])).' '.'23:59:00';
+				$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 			}else{
 				$where .= "AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 			}

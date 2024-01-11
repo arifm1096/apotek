@@ -113,7 +113,7 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 									<button type="button" class="btn btn-outline-warning btn-sm" onclick="edit_ret('` +
 						row.id_konsinyasi +
 						`')"><i class="fa fa-pencil-alt"></i></button>
-						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
+						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="hapus_kon('` +
 						row.id_konsinyasi +
 						`')"><i class="fa fa-trash"></i></button>
 								</div>
@@ -145,6 +145,31 @@ function clear_filter() {
 
 function edit_ret(id) {
 	window.location.href = URL + "konsinyasi/edit_konsinyasi/" + id;
+}
+
+function hapus_kon(id){
+		$.ajax({
+			url : URL +'konsinyasi/hapus_konsinyasi',
+			type : 'POST',
+			data : {id:id},
+			success : function(data){
+				var res = JSON.parse(data);
+				if (res.status == 1) {
+					Swal.fire({
+						icon: "success",
+						title: "Success",
+						text: res.msg,
+					});
+					filter_data();
+				} else {
+					Swal.fire({
+						icon: "error",
+						title: "Error",
+						text: res.msg,
+					});
+				}
+			}
+		});
 }
 
 function export_excel() {

@@ -86,12 +86,12 @@ function load_select_konsinyasi_add(id_produk, id_satuan) {
 function load_select_konsinyasi_head(
 	id_supplier,
 	id_gudang,
-	id_kas,
+	id_akun,
 	id_pembayaran
 ) {
 	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
 	var html_gudang = "<option value='pil'>-- Pilih Gudang --</option>";
-	var html_kas = "<option value='pil'>-- Pilih KAS --</option>";
+	var html_akun = "<option value='pil'>-- Pilih KAS --</option>";
 	var html_pembayaran = "<option value='pil'>-- Pilih Pembayaran --</option>";
 	$.ajax({
 		url: URL + "konsinyasi/get_konsinyasi_select",
@@ -122,14 +122,14 @@ function load_select_konsinyasi_head(
 						"</option>";
 				});
 
-				res.kas.forEach((e) => {
-					html_kas +=
+				res.akun.forEach((e) => {
+					html_akun +=
 						'<option value="' +
-						e.id_kas +
+						e.id_akun +
 						'"' +
-						(e.id_kas === id_kas ? 'selected="selected"' : "") +
+						(e.id_akun === id_akun ? 'selected="selected"' : "") +
 						">" +
-						e.nama_kas +
+						e.nama_akun +
 						"</option>";
 				});
 
@@ -146,7 +146,7 @@ function load_select_konsinyasi_head(
 			}
 			$("#id_supplier").html(html_supplier);
 			$("#id_gudang").html(html_gudang);
-			$("#id_kas").html(html_kas);
+			$("#id_kas").html(html_akun);
 			$("#jenis_pembayaran").html(html_pembayaran);
 		},
 	});

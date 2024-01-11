@@ -375,14 +375,102 @@ class Pembelian extends CI_Controller {
 
 	public function get_terima_pesan(){
 		$user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
 		$id = $_POST['id'];
-		$ext = $this->db->where('id_rencana_beli',$id)
+		$jumlah_stok = 0;
+		$msg = "";
+		$param = 0;
+
+
+		$sql_p = "SELECT b.id_produk,b.jumlah_produk,p.id_supplier,b.id_satuan,b.harga_beli
+					FROM `tx_beli_rencana` as b
+					LEFT JOIN tx_beli_pesan as p ON b.id_pesan_beli = p.id_pesan_beli
+					WHERE b.id_rencana_beli = $id AND b.is_selesai = 2 AND b.status_terima = 0";
+		$data_p = $this->db->query($sql_p)->row();
+		
+		if(!empty($data_p)){
+			$ext = 0;
+			$id_produk = $data_p->id_produk;
+			$jumlah_p = $data_p->jumlah_produk;
+			$supplier = $data_p->id_supplier;
+			$harga = $data_p->harga_beli;
+			$satuan = $data_p->id_satuan;
+
+			
+			$sql_jum = "SELECT SUM(jumlah_stok) as stok FROM `tx_produk_stok` WHERE id_produk = $id_produk";
+			$jum = $this->db->query($sql_jum)->row();
+			$cek = $this->db->get_where('tx_produk_stok',array('id_produk'=>$id_produk));
+
+			if($cek->num_rows()>0){
+				$jumlah_stok += (int)$jumlah_p * 1 + (int)$jum->stok;
+				$ext +=2;
+			}else{
+				$jumlah_stok += (int)$jumlah_p;
+			}
+
+			$data = array(
+				'id_produk' => $id_produk,
+				'id_gudang' => $this->session->userdata('gudang'),
+				'jumlah_stok' => $jumlah_stok,
+				'id_supplier'=> $supplier,
+				'insert_date' => $datetime->time
+			);
+
+			$data_his = array(
+				'id_produk' => $id_produk,
+				'id_gudang' => $this->session->userdata('gudang'),
+				'jumlah_stok' => $jumlah_p,
+				'id_supplier'=> $supplier,
+				'id_satuan' => $satuan,
+				'harga_beli' => $harga,
+				'id_status_stok' => "1",
+				'insert_by' => $user,
+				'insert_date' => $datetime->time
+			);
+
+			if($ext != 2){
+					$data['insert_by'] = $user;
+					$sql_inStok = $this->db->insert('tx_produk_stok',$data);
+					if($sql_inStok){
+						$sql_hisStok = $this->db->insert('tx_produk_stok_detail',$data_his);
+						if($sql_hisStok){
+							$param += 1;
+							$msg .= "Produk Success Diterima";
+						}else{
+							$msg .= "Gagal Insert Data His || Error Code : 3412";
+						}
+					}else{
+						$msg .= "Gagal Insert Data Stok || Error Code : 3413";
+					}
+			}else{
+					$data['update_by'] = $user;
+					$sql_inStok = $this->db->where('id_produk',$id_produk)->update('tx_produk_stok',$data);
+					if($sql_inStok){
+						$sql_hisStok = $this->db->insert('tx_produk_stok_detail',$data_his);
+						
+						if($sql_hisStok){
+							$param += 1;
+							$msg .= "Produk Success Diterima";
+						}else{
+							$msg .= "Gagal Insert Data His || Error Code : 3412";
+						}
+					}else{
+						$msg .= "Gagal Insert Data Stok || Error Code : 3413";
+					}
+
+			}
+			
+		}else{
+			$msg .= "Produk Sudah Diterima ";
+		}
+		
+		if($param > 0){
+			echo json_encode(array('status'=>1,'msg'=>$msg));
+			$up_terima = $this->db->where('id_rencana_beli',$id)
 						->update('tx_beli_rencana',array('status_terima'=>1,'update_by'=>$user));
 
-		if($ext){
-			echo json_encode(array('status'=>1,'msg'=>'Data Berhasil DIupdate'));
 		}else{	
-			echo json_encode(array('status'=>0,'msg'=>'Data Gagal DIupdate'));
+			echo json_encode(array('status'=>0,'msg'=>$msg));
 		}
 	}
 

@@ -76,17 +76,17 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 
-	// 'hostname' => '127.0.0.1',
-	// 'username' => 'root',
-	// 'password' => '',
+	'hostname' => '127.0.0.1',
+	'username' => 'root',
+	'password' => '',
 
-	'hostname' => '192.168.71.6',
-	'username' => 'administrator',
-	'password' => '@R0s4l144dm1n',
+	// 'hostname' => '192.168.71.6',
+	// 'username' => 'administrator',
+	// 'password' => '@R0s4l144dm1n',
 	
-	'database' => 'apotek_db_ext',
+	// 'database' => 'apotek_db_ext',
 
-	// 'database' => 'apotek_db_p',
+	'database' => 'apotek_db_dev',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

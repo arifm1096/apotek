@@ -62,23 +62,6 @@ const rupiah = (number) => {
 	}).format(number);
 };
 
-// function load_total_penjualan(text, tgl1, tgl2) {
-// 	$.ajax({
-// 		url: URL + "penjualan/load_sum_pejualan",
-// 		type: "POST",
-// 		data: { text: text, tgl1: tgl1, tgl2: tgl2 },
-// 		success: function (data) {
-// 			var res = JSON.parse(data);
-// 			if (res.status == 1) {
-// 				var nom = rupiah(res.result.total);
-// 				$("#total_pejualan").html(nom);
-// 			} else {
-// 				var nom = rupiah(0);
-// 				$("#total_pejualan").html(nom);
-// 			}
-// 		},
-// 	});
-// }
 
 function loda_konsinyasi(text, tgl1, tgl2) {
 	$("#tbl_konsinyasi").DataTable({
@@ -114,10 +97,10 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 					return (
 						`<div class="row">
 								<div class="col-md-12">
-									<button type="button" class="btn btn-outline-info btn-sm" onclick="edit_ret('` +
+									<button type="button" class="btn btn-outline-info btn-sm" onclick="bayar_konsiyasi('` +
 						row.id_konsinyasi +
 						`')">BAYAR</button>
-						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
+						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="retur_konsiyasi('` +
 						row.id_konsinyasi +
 						`')">RETURE</i></button>
 								</div>
@@ -165,4 +148,101 @@ function export_excel() {
 			text,
 		"_blank"
 	);
+}
+
+function retur_konsiyasi(id_konsinyasi){
+	$('#modal_retur').modal('hide');
+	$.ajax({
+		url : URL +'konsinyasi/get_data_konsiyasi',
+		type : 'POST',
+		data : {id_konsinyasi:id_konsinyasi},
+		success : function(data) {
+			var res = JSON.parse(data);
+			if(res.status == 1){
+				$('#list_konsinyasi_detail').html(res.detail_konsiyasi);
+				$('#no_faktur').html(res.konsinyasi.no_faktur);
+				$('#penitip').html(res.konsinyasi.nama_supplier);
+				$('#modal_retur').modal('show');
+			}else{
+				Swal.fire({
+					icon : 'error',
+					title : 'Perhatian',
+					text : res.msg
+				});
+			}
+		}
+	});
+	
+}
+
+function retur(id,id_konsinyasi){
+	var tgl_retur = $('#tgl_retur').val();
+
+	if(tgl_retur !==""){
+		$.ajax({
+			url : URL +'konsinyasi/retur_konsiyasi',
+			type : 'POST',
+			data : {id:id,tgl_retur : tgl_retur},
+			success : function(data) {
+				var res = JSON.parse(data);
+				if(res.status == 1){
+					Swal.fire({
+						icon : 'success',
+						title : 'Success',
+						text : res.msg
+					});
+					retur_konsiyasi(id_konsinyasi);
+					$("#tbl_konsinyasi").DataTable().destroy();
+					loda_konsinyasi((text = ""), (tgl = ""));
+				}else{
+					Swal.fire({
+						icon : 'error',
+						title : 'Perhatian',
+						text : res.msg
+					});
+				}
+			}
+		});
+	}else{
+		Swal.fire({
+			icon : 'error',
+			title : 'Perhatian',
+			text : 'Ketik Tgl Retur Terlebih Dahulu'
+		});
+	}
+
+}
+
+function select_trans_keu(p_akun) {
+	var html1 = "<option value='pil'> Pilih Akun </option>";
+
+	$.ajax({
+		type: "POST",
+		url: URL + "master/get_akun",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				res.result.forEach((e) => {
+					html1 +=
+						'<option value="' +
+						e.id_akun +
+						'"' +
+						(e.id_akun === p_akun ? 'selected="selected"' : "") +
+						">" +
+						e.kd_akun +
+						" - " +
+						e.nama_akun +
+						"</option>";
+				});
+			}
+			$("#id_akun").html(html1);
+		},
+	});
+}
+
+function bayar_konsiyasi(){
+	select_trans_keu();
+	$('#modal_bayar').modal('show');
 }

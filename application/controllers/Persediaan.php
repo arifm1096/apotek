@@ -221,13 +221,14 @@ class Persediaan extends CI_Controller {
 	}
 
 	public function save_stok_produk(){
-		$ext =0;
+		$ext = 0;
 		$msg ="";
 		$user = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$jumlah_stok =0;
 		$id_produk =  $_POST['id_produk'];
 		$id_satuan =  $_POST['id_satuan'];
+		
 		$tgl_exp = date('Y-m-d',strtotime($_POST['exp_date']));
 		$sql_jum = "SELECT SUM(jumlah_stok) as stok FROM `tx_produk_stok` WHERE id_produk = $id_produk";
 		$jum = $this->db->query($sql_jum)->row();

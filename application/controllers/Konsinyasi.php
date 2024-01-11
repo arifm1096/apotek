@@ -72,9 +72,9 @@ class Konsinyasi extends CI_Controller {
 		$sql_pem = "SELECT nama_pembayaran,id_pembayaran FROM `tm_pembayaran`";
 		$data_pem = $this->db->query($sql_pem)->result();
 
-		$sql_kas = "SELECT nama_kas,id_kas 
-					FROM tm_kas";
-		$data_kas = $this->db->query($sql_kas)->result();
+		$sql_akun = "SELECT nama_akun,kd_akun,id_akun 
+					FROM tm_akun";
+		$data_akun = $this->db->query($sql_akun)->result();
 		
 		if(!empty($data)){
 			echo json_encode(array('status'=>1,
@@ -84,7 +84,7 @@ class Konsinyasi extends CI_Controller {
 								'satuan'=>$data_st,
 								'user' => $data_user,
 								'gudang'=>$data_gd,
-								'kas'=>$data_kas,
+								'akun'=>$data_akun,
 								'supplier'=>$data_spl
 							));
 		}else{
@@ -253,10 +253,34 @@ class Konsinyasi extends CI_Controller {
 		}
 	}
 
+	public function hapus_konsinyasi(){
+		$id = $_POST['id'];
+		$id = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+			$data = array(
+			'delete_by' => $id,
+			'delete_date' => $datetime->time,
+			'is_delete'=>1
+			);
+
+			$ext = $this->db->where('id_konsinyasi',$_POST['id'])
+							->update('tx_konsinyasi_detail', $data);
+
+			$ext = $this->db->where('id_konsinyasi',$_POST['id'])
+							->update('tx_konsinyasi', $data);
+
+			if($ext){
+				echo json_encode(array('status'=>1,'msg'=>'Data Berhasil DiHapus'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Data Gagal DiHapus'));
+			}
+	}
+
 	public function save_konsinyasi(){
 		$ext = 0;
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
+		$id_gudang = $this->session->userdata('gudang');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		unset($data['tgl_faktur']);
 		unset($data['tgl_terima']);
@@ -276,6 +300,7 @@ class Konsinyasi extends CI_Controller {
 			unset($data['id_konsinyasi']);
 			$this->db->insert('tx_konsinyasi', $data);
 			$insert_id = $this->db->insert_id();
+			// $insert_id = "14";
 			$up_data = array(
 								'is_selesai'=>2,
 								'id_konsinyasi'=> $insert_id
@@ -285,6 +310,69 @@ class Konsinyasi extends CI_Controller {
 							->where('is_selesai',1)
 							->where('insert_by',$id)
 							->update('tx_konsinyasi_detail',$up_data);
+
+			$sql_produk = $this->db->select('id_produk')
+								->from('tx_konsinyasi_detail')
+								->where('id_konsinyasi',$insert_id)
+								->where('is_selesai',2)
+								->where('is_delete',0)
+								->get()
+								->result();
+			$in_id_produk = " (";
+
+			foreach ($sql_produk as $key => $val) {
+				$in_id_produk .= "'$val->id_produk',";
+			}
+
+			$in_fix_id = rtrim($in_id_produk, ",").")";
+
+			$sql_qty = "SELECT kd.id_produk, kd.jumlah_konsinyasi, if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) as jumlah_stok, (kd.jumlah_konsinyasi + if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok)) as tot_qty,
+						k.id_supplier,kd.id_satuan,kd.tgl_exp
+						FROM `tx_konsinyasi_detail` as kd
+						LEFT JOIN tx_konsinyasi as k on kd.id_konsinyasi = k.id_konsinyasi
+						LEFT JOIN tx_produk_stok as ps ON kd.id_produk = ps.id_produk
+						WHERE kd.id_konsinyasi = $insert_id AND is_selesai = 2 AND kd.is_delete = 0 AND ps.id_produk IN $in_fix_id";
+			$data_qty = $this->db->query($sql_qty)->result();
+
+			$up_id_produk = " (";
+			foreach ($data_qty as $key => $vall) {
+				$sql_up = "UPDATE `tx_produk_stok` SET jumlah_stok ='$vall->tot_qty' WHERE id_produk = '$vall->id_produk' AND id_gudang = $id_gudang";
+				$up_qty = $this->db->query($sql_up);
+
+				$sql_in_detail = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_supplier,id_status_stok,jumlah_stok,insert_by,insert_date) VALUE
+									('$vall->id_produk','$id_gudang','$vall->id_supplier','5','$vall->jumlah_konsinyasi','$id','$datetime->time')";
+				$in_detail = $this->db->query($sql_in_detail);
+
+				$up_id_produk .= "'$val->id_produk',";
+			}
+
+			$up_praram = rtrim($up_id_produk, ",").")";
+			if($up_praram == " ()"){
+				$up_fix_id = "('')";
+			}else{
+				$up_fix_id = $up_praram;
+			}
+
+
+			$sql_qty_in = "SELECT kd.id_produk, kd.jumlah_konsinyasi, if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) as jumlah_stok, (kd.jumlah_konsinyasi + if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok)) as tot_qty,
+						k.id_supplier,kd.id_satuan,kd.tgl_exp
+						FROM `tx_konsinyasi_detail` as kd
+						LEFT JOIN tx_konsinyasi as k on kd.id_konsinyasi = k.id_konsinyasi
+						LEFT JOIN tx_produk_stok as ps ON kd.id_produk = ps.id_produk
+						WHERE kd.id_konsinyasi = $insert_id AND is_selesai = 2 AND kd.is_delete = 0 AND kd.id_produk NOT IN $up_fix_id";
+			$data_qty_in = $this->db->query($sql_qty_in)->result();
+
+			foreach ($data_qty_in as $key => $valll) {
+				$sql_in = "INSERT `tx_produk_stok`(id_produk,id_gudang,id_supplier,jumlah_stok,exp_date,insert_by,insert_date) VALUES
+							('$valll->id_produk','$id_gudang','$valll->id_supplier','$valll->tot_qty','$valll->tgl_exp','$id','$datetime->time')";
+				$up_qty = $this->db->query($sql_in);
+
+				$sql_in_detail = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_supplier,id_status_stok,jumlah_stok,insert_by,insert_date) VALUE
+									('$valll->id_produk','$id_gudang','$valll->id_supplier','5','$valll->jumlah_konsinyasi','$id','$datetime->time')";
+				$in_detail = $this->db->query($sql_in_detail);
+
+				$up_id_produk .= "$val->id_produk,";
+			}
 
 			if($ext){
 				$ext += 0;
@@ -424,7 +512,7 @@ class Konsinyasi extends CI_Controller {
 		$searchValue1 = $_POST['search']['value'];
 		$searchValue = $_POST['text'];
 		
-		$where = " k.is_delete = 0 AND kd.is_selesai = 2 ";
+		$where = " k.is_delete = 0 AND kd.is_selesai = 2 AND kd.status = 0 ";
 	
 		// Search
 		$searchQuery = "";
@@ -491,6 +579,91 @@ class Konsinyasi extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function get_data_konsiyasi(){
+		$id_konsiyasi = $this->input->post('id_konsinyasi');
 
+		$sql_kon_detail ="SELECT p.nama_produk,kd.tgl_exp,kd.jumlah_konsinyasi,harga_pokok,kd.id_konsinyasi_detail,
+						kd.id_konsinyasi,kd.id_konsinyasi_detail,ps.jumlah_stok
+						FROM `tx_konsinyasi_detail` as kd
+						LEFT JOIN tx_produk as p ON kd.id_produk = p.id_produk
+						LEFT JOIN tx_produk_stok as ps ON kd.id_produk = ps.id_produk
+						WHERE kd.status = 0 AND kd.id_konsinyasi = $id_konsiyasi";
+		$data_kon_detail = $this->db->query($sql_kon_detail)->result();
+
+		$sql_kon = "SELECT k.no_faktur,s.nama_supplier,k.tgl_terima,k.jatuh_tempo
+		FROM `tx_konsinyasi` as k
+		LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+		WHERE k.id_konsinyasi = $id_konsiyasi";
+		$data_kon = $this->db->query($sql_kon)->row();
+
+		$data_detail ="";
+		$no = 1;
+			if(!empty($data_kon_detail)){
+				foreach ($data_kon_detail as $key => $val) {
+				$data_detail .="<tr><td>".$no++."</td>".
+					"<td>".$val->nama_produk."</td>".
+					"<td>".date('d-m-Y', strtotime($val->tgl_exp))."</td>".
+					"<td>".$val->jumlah_stok."</td>".
+					"<td>".number_format($val->harga_pokok,0,',','.')."</td>".
+					"<td> <button type='button' class='btn btn-outline-danger btn-sm ml-1' onclick='retur($val->id_konsinyasi_detail,$val->id_konsinyasi)'>RETURE</i></button></td></tr>";
+				}
+			}
+			
+		
+		if(!empty($data_kon_detail) || !empty($data_kon)){
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','detail_konsiyasi'=>$data_detail,'konsinyasi'=>$data_kon));
+		}else{
+			echo json_encode(array('status'=>1,'msg'=>'Data is Find','detail_konsiyasi'=>null,'konsiyasi'=>null));
+		}
+
+	}
+
+	public function retur_konsiyasi(){
+		$id_detail = $this->input->post('id');
+		$tgl_retur = date('Y-m-d', strtotime($_POST['tgl_retur']));
+		$id = $this->session->userdata('id_user');
+		$id_gudang = $this->session->userdata('gudang');
+		$datetime = $this->db->select('now() as time')->get()->row();
+
+			$sql_qty = "SELECT kd.id_produk, kd.jumlah_konsinyasi, if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) as jumlah_stok, 
+						(kd.jumlah_konsinyasi + if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok)) as tot_qty,
+						(if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) - if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok)) as sisa,
+						k.id_supplier,kd.id_satuan,kd.tgl_exp
+						FROM `tx_konsinyasi_detail` as kd
+						LEFT JOIN tx_konsinyasi as k on kd.id_konsinyasi = k.id_konsinyasi
+						LEFT JOIN tx_produk_stok as ps ON kd.id_produk = ps.id_produk
+						WHERE is_selesai = 2 AND kd.is_delete = 0 AND kd.`status` = 0 AND kd.id_konsinyasi_detail = $id_detail";
+			$data_qty = $this->db->query($sql_qty)->result();
+
+			
+			foreach ($data_qty as $key => $vall) {
+				$sql_up = "UPDATE `tx_produk_stok` SET jumlah_stok ='$vall->sisa' WHERE id_produk = '$vall->id_produk' AND id_gudang = $id_gudang";
+				$up_qty = $this->db->query($sql_up);
+
+				$sql_in_detail = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_supplier,id_status_stok,jumlah_stok,insert_by,insert_date) VALUE
+									('$vall->id_produk','$id_gudang','$vall->id_supplier','6','$vall->jumlah_stok','$id','$datetime->time')";
+				$in_detail = $this->db->query($sql_in_detail);
+			}
+
+			$sql_up = "UPDATE tx_konsinyasi_detail SET status = 2, tgl_retur = '$tgl_retur', update_by = '$id', update_date= '$datetime->time'
+			WHERE is_selesai = 2 AND is_delete = 0 AND `status` = 0 AND id_konsinyasi_detail = $id_detail";
+
+			$ext_up = $this->db->query($sql_up);
+
+			if($ext_up){
+				echo json_encode(array('status'=>1,'msg'=>'Produk Success Diretur'));
+			}else{
+				echo json_encode(array('status'=>1,'msg'=>'Produk Gagal Diretur'));
+			}
+
+	}
+
+	public function bayar_konsiyasi(){
+		$id_detail = $this->input->post('id');
+		$tgl_retur = date('Y-m-d', strtotime($_POST['tgl_retur']));
+		$id = $this->session->userdata('id_user');
+		$id_gudang = $this->session->userdata('gudang');
+		$datetime = $this->db->select('now() as time')->get()->row();
+	}
 
 }
