@@ -704,6 +704,7 @@ class Pembelian extends CI_Controller {
 
 		if($_POST['id_detail_retur']==""){
 			unset($data['tgl_exp']);
+			unset($data['id_retur_p']);
 			$data['insert_by'] = $id;
 			$data['insert_date'] = $datetime->time;
 			$data['is_selesai'] = 1;
@@ -832,6 +833,7 @@ class Pembelian extends CI_Controller {
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
+		$this->load->model('Model_pembelian');
 		unset($data['tgl_retur']);
 		unset($data['tgl_pesan']);
 		$data['tgl_retur'] = date('Y-m-d', strtotime($_POST['tgl_retur']));
@@ -839,7 +841,7 @@ class Pembelian extends CI_Controller {
 		if($data['id_retur']==""){
 			if($data['no_faktur'] ==""){
 				unset($data['no_faktur']);
-				$data['no_faktur'] = $this->model_pembelian->get_no_faktur($id);
+				$data['no_faktur'] = $this->Model_pembelian->get_no_faktur($id);
 			}
 
 			$data['insert_by'] = $id;
