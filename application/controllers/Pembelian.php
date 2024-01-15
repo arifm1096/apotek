@@ -118,7 +118,7 @@ class Pembelian extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT p.nama_produk,r.jumlah_produk,t.nama_satuan,CONCAT(s.jumlah_stok,' ',t.nama_satuan) as stok,r.id_rencana_beli,r.harga_beli
+		$sql = "SELECT p.nama_produk,r.jumlah_produk,r.ppn,t.nama_satuan,CONCAT(s.jumlah_stok,' ',t.nama_satuan) as stok,r.id_rencana_beli,r.harga_beli
 				FROM `tx_beli_rencana` as r
 				LEFT JOIN tx_produk as p ON r.id_produk = p.id_produk
 				LEFT JOIN tx_produk_stok as s on r.id_produk = s.id_produk

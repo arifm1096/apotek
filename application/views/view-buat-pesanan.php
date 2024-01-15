@@ -84,7 +84,8 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk Pesan
+                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk
+                    Pesan
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -96,7 +97,7 @@
                         <form id="produk_add">
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
-                                <input type="hidden" name="is_selesai" value="1">
+                            <input type="hidden" name="is_selesai" value="1">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -133,6 +134,13 @@
                                     <div class="form-group">
                                         <label>Harga Beli</label>
                                         <input type="text" id="harga_beli" name="harga_beli" class="form-control"
+                                            oninput="get_ppn()" placeholder="Inputkan Harga Beli" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>PPN 11%</label>
+                                        <input type="text" id="ppn" name="ppn" class="form-control"
                                             placeholder="Inputkan Harga Beli" required>
                                     </div>
                                 </div>

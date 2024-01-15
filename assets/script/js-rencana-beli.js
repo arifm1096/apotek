@@ -143,6 +143,7 @@ function load_produk_rencana(text) {
 			{ data: "jumlah_produk" },
 			{ data: "nama_satuan" },
 			{ data: "harga_beli", render: $.fn.dataTable.render.number(".", ".", 0) },
+			{ data: "ppn", render: $.fn.dataTable.render.number(".", ".", 0) },
 			{ data: "stok" },
 
 			{
@@ -242,4 +243,11 @@ function get_pesanan() {
 			},
 		});
 	}
+}
+
+function get_ppn() {
+	var nom = $("#harga_beli").val();
+	var ppn = (nom * 11) / 100;
+
+	$("#ppn").val(ppn);
 }

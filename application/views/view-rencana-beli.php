@@ -49,6 +49,7 @@
                                     <th>Kuantitas </th>
                                     <th>Satuan </th>
                                     <th>Harga</th>
+                                    <th>PPN</th>
                                     <th>Stok Terkini</th>
                                     <th style="width: 30px; text-align: right;">Action</th>
                                 </tr>
@@ -116,6 +117,13 @@
                                     <div class="form-group">
                                         <label>Harga Beli</label>
                                         <input type="text" id="harga_beli" name="harga_beli" class="form-control"
+                                            oninput="get_ppn()" placeholder="Inputkan Harga Beli" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>PPN 11%</label>
+                                        <input type="text" id="ppn" name="ppn" class="form-control"
                                             placeholder="Inputkan Harga Beli" required>
                                     </div>
                                 </div>

@@ -13,6 +13,13 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
+function get_ppn() {
+	var nom = $("#harga_beli").val();
+	var ppn = (nom * 11) / 100;
+
+	$("#ppn").val(ppn);
+}
+
 function load_select(id_produk, id_jenis_pesanan) {
 	var html_jenis_pes =
 		"<option value='pil'> -- Pilih Jenis Pesanan -- </option>";
