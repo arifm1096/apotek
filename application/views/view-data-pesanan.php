@@ -64,11 +64,11 @@
 </section>
 
 <!-- modal penjualan tertolak start -->
-<div class="modal fade" id="modal_add_produk">
+<div class="modal fade" id="modal_terima_barang">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Tambah Produk
+                <h4 class="modal-title" id="mediumModalLabel"><i class="fa fas fa-shopping-bag"></i> &nbsp;Produk Diterima
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -81,49 +81,29 @@
                             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>"
                                 value="<?=$this->security->get_csrf_hash();?>" style="display: none">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-12"> 
                                     <div class="form-group">
                                         <label>Nama Produk</label>
-                                        <select class="form-control select2" name="id_produk" id="id_produk">
-                                            <option value="pil"> --Pilih Produk--</option>
-                                        </select>
+                                            <h3 id="v-produk"></h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-12"> 
+                                    <div class="form-group">
+                                        <label>Jumlah Dipesan</label>
+                                            <h3 id="v-qty"></h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-12"> 
+                                    <div class="form-group">
+                                        <label>Nama Satuan</label>
+                                            <h3 id="v-satuan"></h3>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Jenis Pesanan</label>
-                                        <select class="form-control" name="jenis_pesanan" id="jenis_pesanan">
-                                            <option value="pil"> --Pilih Produk--</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Satuan</label>
-                                        <select class="form-control" name="id_satuan" id="id_satuan">
-                                            <option value="pil"> --Pilih Produk--</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Kuantitas</label>
-                                        <input type="text" id="jumlah_produk" name="jumlah_produk" class="form-control"
-                                            placeholder="Inputkan Kuantitias" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Harga Beli</label>
-                                        <input type="text" id="harga_beli" name="harga_beli" class="form-control"
-                                            placeholder="Inputkan Harga Beli" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Keterangan</label>
-                                        <textarea class="form-control" name="keterangan" id="keterangan" cols="30"
-                                            rows="3"></textarea>
+                                        <label>Jumlah Diterima</label>
+                                        <input type="text" id="jumlah_terima" name="jumlah_terima" class="form-control"
+                                            placeholder="Inputkan Jumlah Diterima" required>
                                     </div>
                                 </div>
                             </div>
@@ -138,7 +118,7 @@
                                     </button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-block btn-danger" type="button" onclick="close_kasir()">
+                                    <button class="btn btn-block btn-danger" type="button" onclick="close_terima()">
                                         <i class="fa fa-save fa-window-close"></i> &nbsp;
                                         <span id="batal-tolak">Batal</span>
                                     </button>

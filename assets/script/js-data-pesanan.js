@@ -93,7 +93,36 @@ function get_pesanan() {
 	window.open(URL + "pembelian/buat_pesanan");		
 }
 
-function get_terima(id,produk,qty,satuan,tgl){
+function get_terima(id,produk,qty,satuan,tgl) {
+	$.ajax({
+		type : 'POST',
+		url : URL+'pembelian/cek_terima_pesan',
+		data  : {id:id},
+		success : function(data){
+			var res = JSON.parse(data);
+
+			if(res.status == 1){
+				$('#v-produk').html(produk);
+				$('#v-qty').html(qty);
+				$('#v-satuan').html(satuan);
+				$('#modal_terima_barang').modal('show');
+			}else{
+				Swal.fire({
+					icon : 'error',
+					title : 'Perhatian',
+					text :res.msg
+				})
+			}
+		}
+	});
+}
+
+function close_terima() {
+	$('#jumlah_terima').val("");
+	$('#modal_terima_barang').modal('hide');
+	
+}
+function get_terimaa(id,produk,qty,satuan,tgl){
 	Swal.fire({
 		html:
 			"<b>Apakah Anda yakin Sudah Terima..?</b> <br> Nama Produk  : " +

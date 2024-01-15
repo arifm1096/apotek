@@ -373,16 +373,34 @@ class Pembelian extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function cek_terima_pesan(){
+		$id = $_POST['id'];
+		$sql_p = "SELECT b.id_produk,b.jumlah_produk,p.id_supplier,b.id_satuan,b.harga_beli
+					FROM `tx_beli_rencana` as b
+					LEFT JOIN tx_beli_pesan as p ON b.id_pesan_beli = p.id_pesan_beli
+					WHERE b.id_rencana_beli = $id AND b.is_selesai = 2 AND b.status_terima = 0";
+		$data_p = $this->db->query($sql_p)->row();
+
+		if(!empty($data_p)){
+			echo json_encode(array('status'=>1,'msg'=>'Produk Belum Diterima'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Produk Sudah Diterima'));
+		}
+	}
+
 	public function get_terima_pesan(){
 		$user = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$id = $_POST['id'];
+		$jumlah_diterima = $_POST['jumlah_diterima'];
 		$jumlah_stok = 0;
 		$msg = "";
 		$param = 0;
 
+		$up_terima = $this->db->where('id_rencana_beli',$id)
+						->update('tx_beli_rencana',array('jumlah_diterima'=>$jumlah_diterima,'update_by'=>$user));
 
-		$sql_p = "SELECT b.id_produk,b.jumlah_produk,p.id_supplier,b.id_satuan,b.harga_beli
+		$sql_p = "SELECT b.id_produk,b.jumlah_diterima as jumlah_produk,p.id_supplier,b.id_satuan,b.harga_beli
 					FROM `tx_beli_rencana` as b
 					LEFT JOIN tx_beli_pesan as p ON b.id_pesan_beli = p.id_pesan_beli
 					WHERE b.id_rencana_beli = $id AND b.is_selesai = 2 AND b.status_terima = 0";
@@ -467,7 +485,7 @@ class Pembelian extends CI_Controller {
 		if($param > 0){
 			echo json_encode(array('status'=>1,'msg'=>$msg));
 			$up_terima = $this->db->where('id_rencana_beli',$id)
-						->update('tx_beli_rencana',array('status_terima'=>1,'update_by'=>$user));
+						->update('tx_beli_rencana',array('status_terima'=>1,'jumlah_diterima'=>$jumlah_diterima,'update_by'=>$user));
 
 		}else{	
 			echo json_encode(array('status'=>0,'msg'=>$msg));
