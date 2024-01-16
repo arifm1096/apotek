@@ -1,5 +1,6 @@
 $(document).ready(function () {
 	load_pesanan("");
+	status_terima();
 });
 
 $(".tgl_piker").datepicker({
@@ -11,16 +12,42 @@ $(".tgl_piker").datepicker({
 //Initialize Select2 Elements
 $(".select2").select2();
 
-function load_pesanan(text) {
+function status_terima(p_status) {
+	var html = "<option value='pil'> Pilih Status </option>";
+	var data = [
+		{
+			id: "1",
+			title: "Sudah Diterima",
+		},
+		{
+			id: "0",
+			title: "Belum Diterima",
+		},
+	];
+	data.forEach((e) => {
+		html +=
+			'<option value="' +
+			e.id +
+			'"' +
+			(e.id === p_status ? 'selected="selected"' : "") +
+			">" +
+			e.title +
+			"</option>";
+	});
+	$("#status_terima").html(html);
+}
+
+function load_pesanan(text, tgl_awal, tgl_akhir, status) {
 	$("#tbl_pesanan").DataTable({
 		ajax: {
 			url: URL + "pembelian/load_data_pesan_beli",
 			type: "POST",
-			data: { text: text },
+			data: { text: text, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir, status },
 		},
 		processing: true,
 		serverSide: true,
 		searching: false,
+		order: [[1, "desc"]],
 		serverMethod: "POST",
 		columns: [
 			{
@@ -29,21 +56,21 @@ function load_pesanan(text) {
 					return meta.row + meta.settings._iDisplayStart + 1;
 				},
 			},
-			
+
 			{ data: "tgl" },
 			{ data: "no_sp" },
 			{ data: "nama_produk" },
 			{ data: "jumlah_produk" },
+			{ data: "jumlah_diterima" },
 			{ data: "nama_satuan" },
 			{
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-
-					if(row.status_terima==1){
-						return ('<span class="badge bg-success">Diterima</span>');
-					}else{
-						return ('<span class="badge bg-warning">Belum DIterima</span>');
+					if (row.status_terima == 1) {
+						return '<span class="badge bg-success">Diterima</span>';
+					} else {
+						return '<span class="badge bg-warning">Belum DIterima</span>';
 					}
 				},
 			},
@@ -51,23 +78,49 @@ function load_pesanan(text) {
 				data: null,
 				orderable: false,
 				render: function (data, type, row) {
-					var btn_str ="";
-					if(row.status_terima==0){
-						btn_str +=`<button type="button" class="btn btn-outline-primary btn-sm" onclick="get_terima('` +
-						row.id_rencana_beli +`','`+row.nama_produk+`','`+row.jumlah_produk+`','`+row.nama_satuan+`','`+row.tgl+
-						`')">DIterima</button>`;
-					}else{
-						btn_str +=`<button type="button" class="btn btn-outline-primary btn-sm disabled" onclick="get_terima('` +
-						row.id_rencana_beli +`','`+row.nama_produk+`','`+row.jumlah_produk+`','`+row.nama_satuan+`','`+row.tgl+
-						`')">DIterima</button>`;
+					var btn_str = "";
+					if (row.status_terima == 0) {
+						btn_str +=
+							`<button type="button" class="btn btn-outline-primary btn-sm" onclick="get_terima('` +
+							row.id_rencana_beli +
+							`','` +
+							row.nama_produk +
+							`','` +
+							row.jumlah_produk +
+							`','` +
+							row.nama_satuan +
+							`','` +
+							row.tgl +
+							`')">DIterima</button>`;
+					} else {
+						btn_str +=
+							`<button type="button" class="btn btn-outline-primary btn-sm disabled" onclick="get_terima('` +
+							row.id_rencana_beli +
+							`','` +
+							row.nama_produk +
+							`','` +
+							row.jumlah_produk +
+							`','` +
+							row.nama_satuan +
+							`','` +
+							row.tgl +
+							`')">DIterima</button>`;
 					}
 					return (
-						btn_str +`&nbsp
+						btn_str +
+						`&nbsp
 						<button type="button" class="btn btn-danger btn-sm" onclick="hapus_pro('` +
-						row.id_rencana_beli +`,`+row.nama_produk+`,`+row.jumlah_produk+`,`+row.nama_satuan+`,`+row.tgl+
+						row.id_rencana_beli +
+						`,` +
+						row.nama_produk +
+						`,` +
+						row.jumlah_produk +
+						`,` +
+						row.nama_satuan +
+						`,` +
+						row.tgl +
 						`')"><i class="fa fa-trash"></i></button>`
 					);
-					
 				},
 			},
 		],
@@ -76,8 +129,11 @@ function load_pesanan(text) {
 
 function filter_data() {
 	var text = $("#filter_text").val();
+	var status = $("#status_terima").val();
+	var tgl_awal = $("#tgl_awal").val();
+	var tgl_akhir = $("#tgl_akhir").val();
 	$("#tbl_pesanan").DataTable().destroy();
-	load_pesanan(text);
+	load_pesanan(text, tgl_awal, tgl_akhir, status);
 }
 
 function clear_filter() {
@@ -90,47 +146,87 @@ function clear_filter() {
 }
 
 function get_pesanan() {
-	window.open(URL + "pembelian/buat_pesanan");		
+	window.open(URL + "pembelian/buat_pesanan");
 }
 
-function get_terima(id,produk,qty,satuan,tgl) {
+function get_terima(id, produk, qty, satuan, tgl) {
 	$.ajax({
-		type : 'POST',
-		url : URL+'pembelian/cek_terima_pesan',
-		data  : {id:id},
-		success : function(data){
+		type: "POST",
+		url: URL + "pembelian/cek_terima_pesan",
+		data: { id: id },
+		success: function (data) {
 			var res = JSON.parse(data);
 
-			if(res.status == 1){
-				$('#v-produk').html(produk);
-				$('#v-qty').html(qty);
-				$('#v-satuan').html(satuan);
-				$('#modal_terima_barang').modal('show');
-			}else{
+			if (res.status == 1) {
+				$("#v-produk").html(produk);
+				$("#v-qty").html(qty);
+				$("#v-satuan").html(satuan);
+				$("#id").val(id);
+				$("#modal_terima_barang").modal("show");
+			} else {
 				Swal.fire({
-					icon : 'error',
-					title : 'Perhatian',
-					text :res.msg
-				})
+					icon: "error",
+					title: "Perhatian",
+					text: res.msg,
+				});
 			}
-		}
+		},
 	});
 }
 
 function close_terima() {
-	$('#jumlah_terima').val("");
-	$('#modal_terima_barang').modal('hide');
-	
+	$("#jumlah_terima").val("");
+	$("#modal_terima_barang").modal("hide");
 }
-function get_terimaa(id,produk,qty,satuan,tgl){
+
+$("#pesan_diterima").submit(function (e) {
+	e.preventDefault();
+	$("#save-button").html("Sending...");
+	$.ajax({
+		url: URL + "pembelian/get_terima_pesan",
+		type: "POST",
+		data: new FormData(this),
+		processData: false,
+		contentType: false,
+		cache: false,
+		async: false,
+		beforeSend: function () {
+			$("#pesan_diterima").find("span.error-text").text();
+		},
+		success: function (data) {
+			var res = JSON.parse(data);
+
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.msg,
+				});
+				filter_data();
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian",
+					text: res.msg,
+				});
+			}
+		},
+	});
+});
+
+function get_terimaa(id, produk, qty, satuan, tgl) {
 	Swal.fire({
 		html:
 			"<b>Apakah Anda yakin Sudah Terima..?</b> <br> Nama Produk  : " +
 			produk +
 			"<br> " +
 			"Qty : " +
-			qty+' '+satuan+"<br> "+
-			"Tgl. Pesan : "+tgl,
+			qty +
+			" " +
+			satuan +
+			"<br> " +
+			"Tgl. Pesan : " +
+			tgl,
 		icon: "info",
 		showCancelButton: true,
 		confirmButtonColor: "#30d63e",
@@ -139,32 +235,31 @@ function get_terimaa(id,produk,qty,satuan,tgl){
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				type : 'POST',
-				url : URL+'pembelian/get_terima_pesan',
-				data  : {id:id},
-				success : function(data){
+				type: "POST",
+				url: URL + "pembelian/get_terima_pesan",
+				data: { id: id },
+				success: function (data) {
 					var res = JSON.parse(data);
-		
-					if(res.status == 1){
+
+					if (res.status == 1) {
 						Swal.fire({
-							icon : 'success',
-							title : 'Success',
-							text :res.msg
+							icon: "success",
+							title: "Success",
+							text: res.msg,
 						});
 						$("#tbl_pesanan").DataTable().destroy();
 						load_pesanan(text);
-					}else{
+					} else {
 						Swal.fire({
-							icon : 'error',
-							title : 'Perhatian',
-							text :res.msg
-						})
+							icon: "error",
+							title: "Perhatian",
+							text: res.msg,
+						});
 					}
-				}
-			})
+				},
+			});
 		}
 	});
-	
 }
 
 function hapus_pro(id) {
@@ -174,8 +269,12 @@ function hapus_pro(id) {
 			produk +
 			"<br> " +
 			"Qty : " +
-			qty+' '+satuan+"<br> "+
-			"Tgl. Pesan : "+tgl,
+			qty +
+			" " +
+			satuan +
+			"<br> " +
+			"Tgl. Pesan : " +
+			tgl,
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
@@ -184,29 +283,29 @@ function hapus_pro(id) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				type : 'POST',
-				url : URL+'pembelian/get_terima_pesan',
-				data  : {id:id},
-				success : function(data){
+				type: "POST",
+				url: URL + "pembelian/get_terima_pesan",
+				data: { id: id },
+				success: function (data) {
 					var res = JSON.parse(data);
-		
-					if(res.status == 1){
+
+					if (res.status == 1) {
 						Swal.fire({
-							icon : 'success',
-							title : 'Success',
-							text :res.msg
+							icon: "success",
+							title: "Success",
+							text: res.msg,
 						});
 						$("#tbl_pesanan").DataTable().destroy();
 						load_pesanan(text);
-					}else{
+					} else {
 						Swal.fire({
-							icon : 'error',
-							title : 'Perhatian',
-							text :res.msg
-						})
+							icon: "error",
+							title: "Perhatian",
+							text: res.msg,
+						});
 					}
-				}
-			})
+				},
+			});
 		}
 	});
 }
@@ -214,10 +313,7 @@ function hapus_pro(id) {
 function export_pdf() {
 	var text = $("#filter_text").val();
 	window.open(
-		URL +
-			"pembelian/export_pdf_data_pesan?"+
-			"&text=" +
-			text,
+		URL + "pembelian/export_pdf_data_pesan?" + "&text=" + text,
 		"_blank"
 	);
 }

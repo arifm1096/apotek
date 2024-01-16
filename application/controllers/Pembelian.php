@@ -330,9 +330,14 @@ class Pembelian extends CI_Controller {
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR s.nama_satuan like '%" . $searchValue . "%'			
+			 					OR s.nama_satuan like '%" . $searchValue . "%'
+								OR bp.no_sp like '%" . $searchValue . "%'			
 			) ";
 		}
+
+		// if(){
+			
+		// }
 	
 		$where .=  $searchQuery;
 	
@@ -354,7 +359,7 @@ class Pembelian extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,s.nama_satuan,br.status_terima,br.id_rencana_beli
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,br.jumlah_diterima,s.nama_satuan,br.status_terima,br.id_rencana_beli
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
@@ -392,7 +397,7 @@ class Pembelian extends CI_Controller {
 		$user = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$id = $_POST['id'];
-		$jumlah_diterima = $_POST['jumlah_diterima'];
+		$jumlah_diterima = $_POST['jumlah_terima'];
 		$jumlah_stok = 0;
 		$msg = "";
 		$param = 0;
@@ -527,8 +532,10 @@ class Pembelian extends CI_Controller {
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR s.nama_satuan like '%" . $searchValue . "%'			
+			 					OR s.nama_satuan like '%" . $searchValue . "%'
+								OR bp.no_sp like '%" . $searchValue . "%'					
 			) ";
+			$where .=$searchQuery;
 		}
 
 
@@ -575,9 +582,14 @@ class Pembelian extends CI_Controller {
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR s.nama_satuan like '%" . $searchValue . "%'			
+			 					OR s.nama_satuan like '%" . $searchValue . "%'
+								OR bp.no_sp like '%" . $searchValue . "%'					
 			) ";
+
+			$where .=$searchQuery;
 		}
+
+		
 
 		$sql1 = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
