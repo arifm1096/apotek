@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label>Kode Resep</label>
                             <input type="text" id="kode_resep" name="kode_resep" class="form-control"
-                                value="<?php echo $kode_resep;?>" readonly>
+                                value="<?php if(!empty($kode_resep)){echo $kode_resep;}?>" readonly>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -45,8 +45,8 @@
                             title="Cetak Nota Resep"><i class="fa fa-print" aria-hidden="true"></i>
                             Print Resep</button>
                         <button style="height: 70px;width: 70px;" type="button" class="btn btn-app bg-success"
-                            onclick="window.location.reload();" data-toggle="tooltip" data-placement="top" title="Cetak Nota Resep"><i
-                                class="fa fa-plus" aria-hidden="true"></i>
+                            onclick="window.location.reload();" data-toggle="tooltip" data-placement="top"
+                            title="Cetak Nota Resep"><i class="fa fa-plus" aria-hidden="true"></i>
                             Data Baru</button>
                     </div>
                 </div>

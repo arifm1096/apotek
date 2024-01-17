@@ -370,6 +370,7 @@ function add_resep() {
 					icon: "success",
 					html: res.msg,
 				});
+				// window.location.reload();
 			} else {
 				Swal.fire({
 					title: "<strong><u>Perhatian !!</u></strong>",

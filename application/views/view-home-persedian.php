@@ -69,9 +69,20 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    Rp. 100.000.000
+                                    Rp. <?php echo number_format($pembelian->tot_harga_beli,0,',','.');?>
                                 </span>
                                 <span class="text-muted">Pembelian</span>
+                            </p>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-0">
+                            <p class="text-danger text-xl">
+                                <i class="fa fa-credit-card"></i>
+                            </p>
+                            <p class="d-flex flex-column text-right">
+                                <span class="font-weight-bold">
+                                    <?php echo $pembelian->jumlah;?>
+                                </span>
+                                <span class="text-muted">Stok Pembelian</span>
                             </p>
                         </div>
 

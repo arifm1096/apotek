@@ -186,6 +186,22 @@
 			} 
 		}
 
+		public function get_rencana_beli_tot($tgl1,$tgl2){
+			$sql = "SELECT 
+						sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+						sum(psd.ppn) as tot_ppn
+						FROM `tx_beli_rencana` as psd
+						LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
+						WHERE psd.is_delete = 0 AND psd.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+			$data = $this->db->query($sql);
+			// echo $this->db->last_query();
+			if($data->num_rows()>0){
+				return $data->row();
+			}else{
+				return null;
+			} 
+		}
+
 		public function get_pesanan_aktif(){
 			$sql = "SELECT sum(harga_beli) as harga FROM `tx_beli_rencana` WHERE is_selesai = 0 AND status_terima = 0";
 			$data = $this->db->query($sql);

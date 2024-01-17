@@ -135,7 +135,7 @@ class Home extends CI_Controller {
 		$tahun = $datetime->tahun;
 
 		$tgl_p = $datetime->tahun.'-'.$datetime->bulan;
-		$tgl1 = $tgl_p.'-01 00:00:00';
+		$tgl1 = $datetime->bulan_kemarin.'-01 00:00:00';
 		$tgl2 = $tgl_p.'-31 23:59:59';
 		$where = " AND insert_date between '$tgl1' AND '$tgl2'";
 
@@ -149,7 +149,8 @@ class Home extends CI_Controller {
 		$tgl_b = $datetime->bulan_kemarin.'-31 23:59:59';
 		$var['persediaan_awal'] = $this->Model_home->get_persedian($tgl_a,$tgl_b);
 		$var['persediaan_akhir'] = $this->Model_home->get_persedian($tgl_a,$tgl2);
-
+		$var['pembelian'] = $this->Model_home->get_rencana_beli_tot($tgl1,$tgl2);
+		echo $this->db->last_query();
 		$tot_kadaluarsa = $this->Model_home->get_tot_kadaluarsa();
 		$exp = [];
 		$data = [];

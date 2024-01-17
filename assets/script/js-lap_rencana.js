@@ -44,6 +44,10 @@ function load_rencana(tgl1, tgl2) {
 				data: "tot_harga_beli",
 				render: $.fn.dataTable.render.number(".", ".", 0),
 			},
+			{
+				data: "ppn",
+				render: $.fn.dataTable.render.number(".", ".", 0),
+			},
 		],
 		drawCallback: function (settings) {
 			$("#total_nominal").html(settings.json.total_nominal);

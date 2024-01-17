@@ -115,9 +115,9 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Harga Beli</label>
+                                        <label>Harga Beli Per Satuan</label>
                                         <input type="text" id="harga_beli" name="harga_beli" class="form-control"
-                                            oninput="get_ppn()" placeholder="Inputkan Harga Beli" required>
+                                            oninput="get_ppn()" placeholder="Inputkan Harga Beli Per Satuan" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">

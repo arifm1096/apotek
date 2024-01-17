@@ -71,9 +71,9 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP DATA PENJUALAN PERSHIF</p>
+           <p class="judul_content"> REKAP DATA PEMBELIAN RENCANA</p>
            <p class="tex" style=" text-align: center; font-weight: bold;">Periode :
-               <?php echo $tgl_awal.' s/d '.$tgl_akhir;?></p>
+               <?php echo $tgl_awal.' s/d '.$tgl_akhir." ".date('H:i:s');?></p>
        </page_header>
 
        <!-- End HEader -->
@@ -85,28 +85,33 @@
                    <th>No</th>
                    <th>SKU</th>
                    <th>Nama Produk</th>
-                   <th>Harga Beli</th>
                    <th>Total Pembelian</th>
                    <th>Satuan</th>
+                   <th>Harga Beli</th>
                    <th>Total Harga Beli</th>
+                   <th>PPN</th>
                </tr>
            </thead>
 
            <?php 
                 $no = 1;
                 $tot = [];
+                $tot_ppn = [];
                 if(!empty($data)){
                     foreach ($data as $key => $val) {
                         array_push($tot,$val->tot_harga_beli);
+                         array_push($tot_ppn,$val->ppn);
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
                <td style="width:120px"><?php echo $val->sku_kode_produk;?></td>
                <td style="width:150px"><?php echo wordwrap($val->nama_produk,40,"<br>\n");?></td>
-               <td align="right"><?php echo number_format($val->harga_beli,0,',','.');?></td>
+
                <td align="center"><?php echo $val->stok;?></td>
                <td><?php echo $val->nama_satuan;?></td>
+               <td align="right"><?php echo number_format($val->harga_beli,0,',','.');?></td>
                <td align="right"><?php echo number_format($val->tot_harga_beli,0,',','.');?></td>
+               <td align="right"><?php echo number_format($val->ppn,0,',','.');?></td>
 
            </tr>
            <?php     }
@@ -116,7 +121,23 @@
            <tr>
                <td colspan="6">Total</td>
                <td align="right"><?php echo number_format(array_sum($tot),0,',','.');?></td>
+               <td align="right"><?php echo number_format(array_sum($tot_ppn),0,',','.');?></td>
            </tr>
 
+       </table>
+       <br><br><br>
+
+       <table style="padding-left:600px;">
+           <tr>
+               <td>Nama Apoteker</td>
+           </tr>
+           <tr>
+               <td>
+                   <br><br><br>
+               </td>
+           </tr>
+           <tr>
+               <td><b><?php echo $this->session->userdata('nama_user');?></b></td>
+           </tr>
        </table>
    </page>

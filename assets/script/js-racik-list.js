@@ -145,7 +145,7 @@ function hapus(id, kode, nama_pelanggan) {
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: URL + "pelayanan/hapus_remik",
+				url: URL + "pelayanan/hapus_racik_obat",
 				type: "POST",
 				data: {
 					id: id,

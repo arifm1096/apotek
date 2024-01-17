@@ -65,6 +65,7 @@
                             <th>Harga Beli</th>
                             <th>Total Pembelian</th>
                             <th>Pembelian</th>
+                            <th>PPN. </th>
                         </tr>
                     </thead>
                     <tbody>

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	load_pesanan("","","","pil");
+	load_pesanan("", "", "", "pil");
 	status_terima("pil");
 });
 
@@ -42,7 +42,12 @@ function load_pesanan(text, tgl_awal, tgl_akhir, status) {
 		ajax: {
 			url: URL + "pembelian/load_data_pesan_beli",
 			type: "POST",
-			data: { text: text, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir, status:status },
+			data: {
+				text: text,
+				tgl_awal: tgl_awal,
+				tgl_akhir: tgl_akhir,
+				status: status,
+			},
 		},
 		processing: true,
 		serverSide: true,
@@ -59,6 +64,7 @@ function load_pesanan(text, tgl_awal, tgl_akhir, status) {
 
 			{ data: "tgl" },
 			{ data: "no_sp" },
+			{ data: "nama_supplier" },
 			{ data: "nama_produk" },
 			{ data: "jumlah_produk" },
 			{ data: "jumlah_diterima" },
@@ -317,7 +323,15 @@ function export_pdf() {
 	var tgl_awal = $("#tgl_awal").val();
 	var tgl_akhir = $("#tgl_akhir").val();
 	window.open(
-		URL + "pembelian/export_pdf_data_pesan?text=" + text+ "&status=" + status+ "&tgl_awal=" + tgl_awal+ "&tgl_akhir=" + tgl_akhir,
+		URL +
+			"pembelian/export_pdf_data_pesan?text=" +
+			text +
+			"&status=" +
+			status +
+			"&tgl_awal=" +
+			tgl_awal +
+			"&tgl_akhir=" +
+			tgl_akhir,
 		"_blank"
 	);
 }
@@ -328,7 +342,15 @@ function export_excel() {
 	var tgl_awal = $("#tgl_awal").val();
 	var tgl_akhir = $("#tgl_akhir").val();
 	window.open(
-		URL + "pembelian/export_excel_data_pesan?text=" + text+ "&status=" + status+ "&tgl_awal=" + tgl_awal+ "&tgl_akhir=" + tgl_akhir,
+		URL +
+			"pembelian/export_excel_data_pesan?text=" +
+			text +
+			"&status=" +
+			status +
+			"&tgl_awal=" +
+			tgl_awal +
+			"&tgl_akhir=" +
+			tgl_akhir,
 		"_blank"
 	);
 }

@@ -1352,7 +1352,7 @@ class Laporan extends CI_Controller {
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_produk) as stok,
 		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
-		s.nama_satuan
+		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
@@ -1391,6 +1391,7 @@ class Laporan extends CI_Controller {
 		$sheet->setCellValue('E3', "Total Pembelian");
 		$sheet->setCellValue('F3', "Satuan");
 		$sheet->setCellValue('G3', "Total Harga Pembelian");
+		$sheet->setCellValue('H3', "PPN");
 
 		$where = " psd.is_delete = 0 AND p.is_delete = 0 AND psd.status_terima = 1 ";
 		
@@ -1404,7 +1405,7 @@ class Laporan extends CI_Controller {
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_produk) as stok,
 		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
-		s.nama_satuan
+		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
@@ -1434,6 +1435,7 @@ class Laporan extends CI_Controller {
 		  $sheet->setCellValue('F'.$numrow, $data['tot_harga_beli']);
 		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
 		  $sheet->setCellValue('H'.$numrow, $data['tot_harga_beli']);
+		  $sheet->setCellValue('I'.$numrow, $data['ppn']);
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
@@ -1460,7 +1462,7 @@ class Laporan extends CI_Controller {
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_produk) as stok,
 		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
-		s.nama_satuan
+		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s on psd.id_satuan = s.id_satuan
@@ -1470,7 +1472,8 @@ class Laporan extends CI_Controller {
 		$var['data'] = $this->db->query($sql)->result();
 
 		$sql_tot = "SELECT 
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		sum(psd.ppn) as tot_ppn
 		FROM `tx_beli_rencana` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		WHERE $where";

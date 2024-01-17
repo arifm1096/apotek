@@ -238,6 +238,7 @@ $("#retur_submit").submit(function (e) {
 					title: "Success",
 					text: res.msg,
 				});
+				window.open(URL + "pembelian/data_retur");
 				// $("#modal_add_produk").modal("hide");
 				// clear_filter_pro();
 				// $("#tbl_produk_ren").DataTable().destroy();

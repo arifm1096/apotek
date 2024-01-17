@@ -1,9 +1,9 @@
    <style>
 .tabel {
     border-collapse: collapse;
-    font-size: 11px;
+    font-size: 12px;
     margin: auto;
-    padding-top: 200px;
+    padding-top: 220px;
 }
 
 .tabel th,
@@ -71,23 +71,26 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content"> REKAP RENCANA PEMBELIAN</p>
+           <p class="judul_content">RETUR PRODUK / OBAT</p>
+           <p class="tex" style=" text-align: center; font-weight: bold;">Hari / Tgl :
+               <?php echo longdate_indo('Y-m-d')." ".date('H:i:s');?></p>
        </page_header>
 
        <!-- End HEader -->
        <!-- Table Content -->
        <table border="1px" class="tabel">
-           <tr>
-               <th style="width: 10px; text-align: right;">No.</th>
-               <th width="10px">Tgl Pesan</th>
-               <th style="width: 100px;">No. SP</th>
-               <th>Supplier</th>
-               <th>Nama Produk</th>
-               <th>Qty. Pesan</th>
-               <th>Qty. Terima</th>
-               <th>Satuan</th>
-               <th>Status</th>
-           </tr>
+           <thead>
+               <tr>
+                   <th>No</th>
+                   <th>Tgl. Retur</th>
+                   <th>No. Faktur</th>
+                   <th>Supplier</th>
+                   <th>Produk</th>
+                   <th>Total Retur</th>
+                   <th>Satuan</th>
+               </tr>
+           </thead>
+
            <?php 
                 $no = 1;
                 if(!empty($data)){
@@ -95,26 +98,17 @@
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <!-- <td><?php echo wordwrap($val->sku_kode_produk,15,"<br>\n");?></td> -->
-               <!-- <td><?php echo wordwrap($val->produk,25,"<br>\n");?> </td> -->
-               <td><?php echo $val->tgl;?> </td>
-               <td><?php echo $val->no_sp;?></td>
-               <td><?php echo wordwrap($val->nama_supplier,15,"<br>\n");?></td>
-               <td style="width: 150px;"><?php echo wordwrap($val->produk,35,"<br>\n");?></td>
-               <td style="text-align: center;"><?php echo $val->jumlah_produk;?></td>
-               <td style="text-align: center;"><?php echo $val->jumlah_diterima;?></td>
-               <td><?php echo $val->nama_satuan;?></td>
-               <td><?php if($val->status_terima == 0){ ?>
-                   <span style="color:red;font-weight:bold">Belum Diterima</span>
-                   <?php }else{ ?>
-                   <span style="color:green;font-weight:bold">Diterima</span>
-
-                   <?php };?>
-               </td>
+               <td style="width:50px"><?php echo date('d-m-Y',strtotime($val->tgl_retur));?></td>
+               <td style="width:150px"><?php echo $val->no_faktur;?></td>
+               <td style="width:100px"><?php echo $val->nama_supplier;?></td>
+               <td style="width:200px"><?php echo wordwrap($val->produk,40,"<br>\n");?></td>
+               <td style="text-align: center;"><?php echo $val->jumlah_retur_p;?></td>
+               <td style="width:50px"><?php echo $val->satuan;?></td>
            </tr>
            <?php     }
                 }
           ?>
+
        </table>
        <br><br><br>
 

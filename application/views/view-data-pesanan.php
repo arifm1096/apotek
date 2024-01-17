@@ -23,13 +23,13 @@
                     <div class="col-md-2">
                         <div class="input-group">
                             <input type="search" class="form-control tgl_piker" id="tgl_awal" name="tgl_awal"
-                            onchange="filter_data()" placeholder="Tgl Pesan Awal">
+                                onchange="filter_data()" placeholder="Tgl Pesan Awal">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="input-group">
                             <input type="search" class="form-control tgl_piker" id="tgl_akhir" name="tgl_akhir"
-                            onchange="filter_data()" placeholder="Tgl Pesan Akhir">
+                                onchange="filter_data()" placeholder="Tgl Pesan Akhir">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -61,6 +61,7 @@
                                     <th style="width: 10px; text-align: right;">No.</th>
                                     <th>Tgl. Pesan</th>
                                     <th>No. Sp.</th>
+                                    <th>Supplier</th>
                                     <th>Produk</th>
                                     <th>Qty Pesan</th>
                                     <th>Qty Diterima</th>

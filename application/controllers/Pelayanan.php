@@ -1306,7 +1306,7 @@ class Pelayanan extends CI_Controller {
 						   ->where('is_delete',0)
 						   ->update('tx_racik_obat',$data_up);
 			if($up){
-				echo json_encode(array('status'=>1,'msg'=>'Untuk Print Struk Klik, <b>Print</b> atau Pencet Keyboard P','id'=>$insert_id));
+				echo json_encode(array('status'=>1,'msg'=>'Data Success Disimpan','id'=>$insert_id));
 			}else{
 				echo json_encode(array('status'=>0,'msg'=>'Error Update Produk Jual','id'=>null));
 			}
@@ -1373,6 +1373,27 @@ class Pelayanan extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function hapus_racik_obat(){
+		$id = $this->input->post('id');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$user = $this->session->userdata('id_user');
+		if(!empty($id)){
+			$del = $this->db->where('id_racik',$id)
+							->update('tx_racik',array(
+								'is_delete'=>1,
+								'delete_by' => $user,
+								'delete_date' => $datetime->time
+							));
+			if($del){
+				echo json_encode(array('status'=>1,'msg'=>'Delete Data Berhasil !'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Delete NUll || Error Code : 7232'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
+		}
+	}
+
 	public function get_detail_racikan(){
 		// $id = $this->uri->segment(3);
 		$id = $_GET['id_racik'];
@@ -1380,6 +1401,29 @@ class Pelayanan extends CI_Controller {
 		$var['content'] = 'view-racik-obat';
 		$var['js'] = 'js-racik-obat';
 		$this->load->view('view-index',$var);
+	}
+
+	public function get_shop_racik(){
+		$id = $_POST['id'];
+		$id_user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$tgl = $datetime->time;
+		if($id !==""){
+			$sql = "INSERT INTO tx_jual (id_produk,nama_produk,harga_beli,harga_jual,id_jenis_harga,id_satuan_utama,id_satuan,jumlah_produk,total_harga,insert_by,insert_date)
+				SELECT id_produk,nama_produk,harga_beli,harga_jual,id_jenis_harga,id_satuan_utama,id_satuan,jumlah_produk,total_harga,$id_user,'$tgl'
+				FROM `tx_racik_obat` as ro
+				LEFT JOIN tx_racik as r ON ro.id_racik = r.id_racik
+				WHERE ro.is_delete = 0 AND ro.id_racik = $id";
+			$ext = $this->db->query($sql);
+			if($ext){
+				echo json_encode(array('status'=>1,'msg'=>'Success Insert Data'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Error Gagal Insert Data'));
+			}	
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Error Pramater Null'));
+		}
+		
 	}
 // End Racik Obat
 

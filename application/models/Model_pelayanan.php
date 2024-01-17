@@ -75,7 +75,12 @@
 						FROM `tm_dokter` where id_dokter = $id";
 			$data_id = $this->db->query($sql_id)->row();
 			$us = sprintf("%02s", "RE");
-			$dok =  $data_id->kode_dokter;
+			if(!empty($data_id)){
+				$dok =  $data_id->kode_dokter;
+			}else{
+				$dok = $this->session->userdata('id_user');
+			}
+			
 			$date = sprintf("%06s", date('dmy'));
 			$no_tx = sprintf("%03s", $urutan);
 			$no_ta = $us.$dok.$date.$no_tx;

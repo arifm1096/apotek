@@ -52,7 +52,7 @@ function filter_data_penjualan(id) {
 }
 
 function add_data_retur() {
-	window.location.href =URL +'pembelian/retur_detail';
+	window.location.href = URL + "pembelian/retur_detail";
 }
 
 const rupiah = (number) => {
@@ -100,9 +100,10 @@ function loda_retur(text, tgl1, tgl2) {
 			},
 			{ data: "tgl_retur" },
 			{ data: "no_faktur" },
+			{ data: "nama_supplier" },
 			{ data: "produk" },
 			{ data: "jumlah_retur_p" },
-			{data : "satuan"},
+			{ data: "satuan" },
 			// {
 			// 	data: null,
 			// 	orderable: false,
@@ -143,8 +144,24 @@ function clear_filter() {
 	$("#tanggal2").val("");
 }
 
-function edit_ret(id){
-	window.location.href =URL +'pembelian/edit_retur/'+id;
+function edit_ret(id) {
+	window.location.href = URL + "pembelian/edit_retur/" + id;
+}
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	window.open(
+		URL +
+			"pembelian/export_retur_pdf?tgl1=" +
+			tgl1 +
+			"&tgl2=" +
+			tgl2 +
+			"&text=" +
+			text,
+		"_blank"
+	);
 }
 
 function export_excel() {
@@ -153,7 +170,7 @@ function export_excel() {
 	var tgl2 = $("#tanggal2").val();
 	window.open(
 		URL +
-			"penjualan/export_data_penjualan?tgl1=" +
+			"pembelian/export_retur_excel?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

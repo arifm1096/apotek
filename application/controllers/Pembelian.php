@@ -366,11 +366,13 @@ class Pembelian extends CI_Controller {
 		$totalRecordsFilter = $records['allcount'];
 	
 		// Fetch Records
-		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,br.jumlah_diterima,s.nama_satuan,br.status_terima,br.id_rencana_beli
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,
+		br.jumlah_diterima,s.nama_satuan,br.status_terima,br.id_rencana_beli,sp.nama_supplier
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON bp.id_supplier = sp.id_supplier
 		WHERE $where
 		order by id_rencana_beli " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
@@ -565,10 +567,12 @@ class Pembelian extends CI_Controller {
 		s.nama_satuan as nama_satuan,
 		br.status_terima,br.id_rencana_beli,br.jumlah_diterima,
 		IF(br.status_terima = 1,'DITERIMA','BELUM DITERIMA') AS terima
+		sp.nama_supplier
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON bp.id_supplier = sp.id_supplier
 		WHERE $where";
 
 		$data_jual = $this->db->query($sql)->result_array();
@@ -579,11 +583,12 @@ class Pembelian extends CI_Controller {
           $sheet->setCellValue('A'.$numrow, $no);
           $sheet->setCellValue('B'.$numrow, $data['tgl']);
           $sheet->setCellValue('C'.$numrow, $data['no_sp']);
-          $sheet->setCellValue('D'.$numrow, $data['produk']);
-          $sheet->setCellValue('E'.$numrow, $data['jumlah_produk']);
-		  $sheet->setCellValue('F'.$numrow, $data['jumlah_diterima']);
-		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
-		  $sheet->setCellValue('H'.$numrow,  $data['terima']);
+		  $sheet->setCellValue('D'.$numrow, $data['nama_supplier']);
+          $sheet->setCellValue('E'.$numrow, $data['produk']);
+          $sheet->setCellValue('F'.$numrow, $data['jumlah_produk']);
+		  $sheet->setCellValue('G'.$numrow, $data['jumlah_diterima']);
+		  $sheet->setCellValue('H'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('I'.$numrow,  $data['terima']);
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
@@ -645,11 +650,13 @@ class Pembelian extends CI_Controller {
 		p.nama_produk as produk,
 		br.jumlah_produk as jumlah_produk,
 		s.nama_satuan as nama_satuan,
-		br.status_terima,br.id_rencana_beli,br.jumlah_diterima
+		br.status_terima,br.id_rencana_beli,br.jumlah_diterima,
+		sp.nama_supplier
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON br.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON bp.id_supplier = sp.id_supplier
 		WHERE $where";
 
 		$var['data'] = $this->db->query($sql)->result();
@@ -936,7 +943,7 @@ class Pembelian extends CI_Controller {
 						rd.id_produk, rd.jumlah_retur, 
 						if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) as jumlah_stok, 
 						(if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) - rd.jumlah_retur) as sisa,
-						r.id_supplier,rd.id_satuan,rd.tgl_exp
+						r.id_supplier,rd.id_satuan,rd.tgl_exp,rd.id_satuan
 						FROM `tx_retur_detail` as rd
 						LEFT JOIN tx_retur as r ON rd.id_retur = r.id_retur
 						LEFT JOIN tx_produk_stok as ps ON rd.id_produk = ps.id_produk
@@ -949,7 +956,7 @@ class Pembelian extends CI_Controller {
 				$up_qty = $this->db->query($sql_up);
 
 				$sql_in_detail = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_supplier,id_status_stok,jumlah_stok,insert_by,insert_date) VALUE
-									('$vall->id_produk','$id_gudang','$vall->id_supplier','6','$vall->jumlah_stok','$id','$datetime->time')";
+									('$vall->id_produk','$id_gudang','$vall->id_supplier','4','$vall->jumlah_retur','$id','$datetime->time')";
 				$in_detail = $this->db->query($sql_in_detail);
 			}
 
@@ -1025,6 +1032,7 @@ class Pembelian extends CI_Controller {
 		r.id_retur,
 		r.no_faktur,
 		r.tgl_retur,
+		sp.nama_supplier,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
 		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as satuan,
 		REPLACE(GROUP_CONCAT(rd.jumlah_retur),',','<br>') as jumlah_retur_p
@@ -1032,6 +1040,7 @@ class Pembelian extends CI_Controller {
 		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
 		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
 		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON r.id_supplier = sp.id_supplier
 		WHERE $where
 		GROUP BY r.id_retur
 		order by r.id_retur " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -1045,6 +1054,140 @@ class Pembelian extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function export_retur_pdf(){
+		$searchValue = $_GET['text'];
+		$tgl1p ="";
+		$tgl2p ="";
+
+		
+		$where = " r.is_delete = 0 AND rd.is_selesai = 2 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR r.no_faktur like '%" . $searchValue . "%'			
+			) ";
+			$where .=" $searchQuery";
+		}
+
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND r.tgl_retur BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1p .= $_GET['tgl1'];
+			$tgl2p .= $_GET['tgl2'];
+		}else{
+			$where .= "AND DATE_FORMAT(r.tgl_retur,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$tgl1p .=date('d-m-Y');
+			$tgl2p .=date('d-m-Y');
+		}
+
+		$var['tgl_awal'] = $tgl1p;
+		$var['tgl_akhir'] = $tgl2p;
+
+		// Fetch Records
+		$sql = "SELECT 
+		r.id_retur,
+		r.no_faktur,
+		r.tgl_retur,
+		sp.nama_supplier,
+		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as satuan,
+		REPLACE(GROUP_CONCAT(rd.jumlah_retur),',','<br>') as jumlah_retur_p
+		FROM `tx_retur` as r
+		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
+		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON r.id_supplier = sp.id_supplier
+		WHERE $where
+		GROUP BY r.id_retur
+		order by r.id_retur ";
+		$var['data'] = $this->db->query($sql)->result();
+
+		
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-lap-retur',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+	}
+
+	public function export_retur_excel(){
+		$searchValue = $_GET['text'];
+		$tgl1p ="";
+		$tgl2p ="";
+
+		
+		$where = " r.is_delete = 0 AND rd.is_selesai = 2 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR r.no_faktur like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND r.tgl_retur BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1p .= $_GET['tgl1'];
+			$tgl2p .= $_GET['tgl2'];
+		}else{
+			$where .= "AND DATE_FORMAT(r.tgl_retur,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$tgl1p .=date('d-m-Y');
+			$tgl2p .=date('d-m-Y');
+		}
+
+		$var['tgl_awal'] = $tgl1p;
+		$var['tgl_akhir'] = $tgl2p;
+
+		// Fetch Records
+		$sql = "SELECT 
+		r.id_retur,
+		r.no_faktur,
+		r.tgl_retur,
+		sp.nama_supplier,
+		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as satuan,
+		REPLACE(GROUP_CONCAT(rd.jumlah_retur),',','<br>') as jumlah_retur_p
+		FROM `tx_retur` as r
+		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
+		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
+		LEFT JOIN tm_supplier as sp ON r.id_supplier = sp.id_supplier
+		WHERE $where
+		GROUP BY r.id_retur
+		order by r.id_retur ";
+		$var['data'] = $this->db->query($sql)->result();
+
+		
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		$this->load->view('v-laporan-retur-excel',$var);
+		
 	}
 
 	public function edit_retur(){
