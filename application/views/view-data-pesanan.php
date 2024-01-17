@@ -22,18 +22,18 @@
                     </div>
                     <div class="col-md-2">
                         <div class="input-group">
-                            <input type="search" class="form-control" id="tgl_awal" name="tgl_awal"
-                                oninput="filter_data()" placeholder="Masukan Tgl Awal">
+                            <input type="search" class="form-control tgl_piker" id="tgl_awal" name="tgl_awal"
+                            onchange="filter_data()" placeholder="Tgl Pesan Awal">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="input-group">
-                            <input type="search" class="form-control" id="tgl_awal" name="tgl_awal"
-                                oninput="filter_data()" placeholder="Masukan Tgl Akhir">
+                            <input type="search" class="form-control tgl_piker" id="tgl_akhir" name="tgl_akhir"
+                            onchange="filter_data()" placeholder="Tgl Pesan Akhir">
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-success btn-md float-right ml-1" onclick="clear_list();"
+                        <button type="button" class="btn btn-success btn-md float-right ml-1" onclick="export_excel();"
                             data-toggle="tooltip" data-placement="top" title="Export Excel"><i class="fa fa-file-excel"
                                 aria-hidden="true"></i></button>
                         <button type="button" class="btn btn-warning btn-md float-right  " onclick="export_pdf();"

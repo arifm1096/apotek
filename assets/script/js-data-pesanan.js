@@ -1,6 +1,6 @@
 $(document).ready(function () {
-	load_pesanan("");
-	status_terima();
+	load_pesanan("","","","pil");
+	status_terima("pil");
 });
 
 $(".tgl_piker").datepicker({
@@ -42,7 +42,7 @@ function load_pesanan(text, tgl_awal, tgl_akhir, status) {
 		ajax: {
 			url: URL + "pembelian/load_data_pesan_beli",
 			type: "POST",
-			data: { text: text, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir, status },
+			data: { text: text, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir, status:status },
 		},
 		processing: true,
 		serverSide: true,
@@ -203,6 +203,7 @@ $("#pesan_diterima").submit(function (e) {
 					text: res.msg,
 				});
 				filter_data();
+				close_terima();
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -312,8 +313,22 @@ function hapus_pro(id) {
 
 function export_pdf() {
 	var text = $("#filter_text").val();
+	var status = $("#status_terima").val();
+	var tgl_awal = $("#tgl_awal").val();
+	var tgl_akhir = $("#tgl_akhir").val();
 	window.open(
-		URL + "pembelian/export_pdf_data_pesan?" + "&text=" + text,
+		URL + "pembelian/export_pdf_data_pesan?text=" + text+ "&status=" + status+ "&tgl_awal=" + tgl_awal+ "&tgl_akhir=" + tgl_akhir,
+		"_blank"
+	);
+}
+
+function export_excel() {
+	var text = $("#filter_text").val();
+	var status = $("#status_terima").val();
+	var tgl_awal = $("#tgl_awal").val();
+	var tgl_akhir = $("#tgl_akhir").val();
+	window.open(
+		URL + "pembelian/export_excel_data_pesan?text=" + text+ "&status=" + status+ "&tgl_awal=" + tgl_awal+ "&tgl_akhir=" + tgl_akhir,
 		"_blank"
 	);
 }

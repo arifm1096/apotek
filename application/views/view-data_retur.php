@@ -78,7 +78,8 @@
                             <th>No. Faktur</th>
                             <th>Produk</th>
                             <th>Total retur</th>
-                            <th style="width: 75px; ">Action</th>
+                            <th>Satuan</th>
+                            <!-- <th style="width: 75px; ">Action</th> -->
                         </tr>
                     </thead>
                     <tbody>

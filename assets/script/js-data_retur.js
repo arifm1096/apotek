@@ -102,26 +102,27 @@ function loda_retur(text, tgl1, tgl2) {
 			{ data: "no_faktur" },
 			{ data: "produk" },
 			{ data: "jumlah_retur_p" },
-			{
-				data: null,
-				orderable: false,
-				render: function (data, type, row) {
-					return (
-						`<div class="row">
-								<div class="col-md-12">
-									<button type="button" class="btn btn-outline-warning btn-sm" onclick="edit_ret('` +
-						row.id_retur +
-						`')"><i class="fa fa-pencil-alt"></i></button>
-						<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
-						row.id_retur +
-						`')"><i class="fa fa-trash"></i></button>
-								</div>
-							</div>
+			{data : "satuan"},
+			// {
+			// 	data: null,
+			// 	orderable: false,
+			// 	render: function (data, type, row) {
+			// 		return (
+			// 			`<div class="row">
+			// 					<div class="col-md-12">
+			// 						<button type="button" class="btn btn-outline-warning btn-sm" onclick="edit_ret('` +
+			// 			row.id_retur +
+			// 			`')"><i class="fa fa-pencil-alt"></i></button>
+			// 			<button type="button" class="btn btn-outline-danger btn-sm ml-1" onclick="detail_pen('` +
+			// 			row.id_retur +
+			// 			`')"><i class="fa fa-trash"></i></button>
+			// 					</div>
+			// 				</div>
 
-							`
-					);
-				},
-			},
+			// 				`
+			// 		);
+			// 	},
+			// },
 		],
 	});
 }

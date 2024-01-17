@@ -335,9 +335,16 @@ class Pembelian extends CI_Controller {
 			) ";
 		}
 
-		// if(){
-			
-		// }
+		if($_POST['tgl_awal'] !=='' && $_POST['tgl_akhir'] !==''){
+			$tgl_awal = date('Y-m-d',strtotime($_POST['tgl_awal']));
+			$tgl_akhir = date('Y-m-d',strtotime($_POST['tgl_akhir']));
+			$where .= " AND bp.tgl_pesan BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+		}
+
+		if($_POST['status'] !=='pil'){
+			$id = $_POST['status'];
+			$where .=" AND br.status_terima = $id";
+		}
 	
 		$where .=  $searchQuery;
 	
@@ -516,11 +523,13 @@ class Pembelian extends CI_Controller {
         $sheet = $spreadsheet->getActiveSheet();
      
         $sheet->setCellValue('A1', "No");
-        $sheet->setCellValue('B1', "No Nota");
-        $sheet->setCellValue('C1', "Nama Produk");
-        $sheet->setCellValue('D1', "Jumlah");
-        $sheet->setCellValue('E1', "Satuan");
-		$sheet->setCellValue('F1', "Total Penjualan");
+        $sheet->setCellValue('B1', "Tgl Pesan");
+        $sheet->setCellValue('C1', "No Sp");
+        $sheet->setCellValue('D1', "Produk");
+        $sheet->setCellValue('E1', "Qty Pesan");
+		$sheet->setCellValue('F1', "Qty Diterima");
+		$sheet->setCellValue('G1', "Satuan");
+		$sheet->setCellValue('H1', "Status");
 
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 ";
 
@@ -538,8 +547,24 @@ class Pembelian extends CI_Controller {
 			$where .=$searchQuery;
 		}
 
+		if($_GET['tgl_awal'] !=='' && $_GET['tgl_akhir'] !==''){
+			$tgl_awal = date('Y-m-d',strtotime($_GET['tgl_awal']));
+			$tgl_akhir = date('Y-m-d',strtotime($_GET['tgl_akhir']));
+			$where .= " AND bp.tgl_pesan BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+		}
 
-		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,p.nama_produk,br.jumlah_produk,s.nama_satuan,br.status_terima,br.id_rencana_beli
+		if($_GET['status'] !=='pil'){
+			$id = $_GET['status'];
+			$where .=" AND br.status_terima = $id";
+		}
+
+
+		$sql = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
+		p.nama_produk as produk,
+		br.jumlah_produk as jumlah_produk,
+		s.nama_satuan as nama_satuan,
+		br.status_terima,br.id_rencana_beli,br.jumlah_diterima,
+		IF(br.status_terima = 1,'DITERIMA','BELUM DITERIMA') AS terima
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
@@ -548,15 +573,17 @@ class Pembelian extends CI_Controller {
 
 		$data_jual = $this->db->query($sql)->result_array();
 		echo $this->db->last_query();
-        $no = 1; // Untuk penomoran tabel, di awal set dengan 1
-        $numrow = 3; // Set baris pertama untuk isi tabel adalah baris ke 4
-        foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
+        $no = 1; 
+        $numrow = 3; 
+        foreach($data_jual as $data){ 
           $sheet->setCellValue('A'.$numrow, $no);
-          $sheet->setCellValue('B'.$numrow, $data['no_nota']);
-          $sheet->setCellValue('C'.$numrow, $data['nama_produk']);
-          $sheet->setCellValue('D'.$numrow, $data['jumlah_produk']);
-          $sheet->setCellValue('E'.$numrow, $data['nama_satuan']);
-		  $sheet->setCellValue('f'.$numrow, $data['total_harga']);
+          $sheet->setCellValue('B'.$numrow, $data['tgl']);
+          $sheet->setCellValue('C'.$numrow, $data['no_sp']);
+          $sheet->setCellValue('D'.$numrow, $data['produk']);
+          $sheet->setCellValue('E'.$numrow, $data['jumlah_produk']);
+		  $sheet->setCellValue('F'.$numrow, $data['jumlah_diterima']);
+		  $sheet->setCellValue('G'.$numrow, $data['nama_satuan']);
+		  $sheet->setCellValue('H'.$numrow,  $data['terima']);
           $no++; // Tambah 1 setiap kali looping
           $numrow++; // Tambah 1 setiap kali looping
         }
@@ -589,6 +616,17 @@ class Pembelian extends CI_Controller {
 			$where .=$searchQuery;
 		}
 
+		if($_GET['tgl_awal'] !=='' && $_GET['tgl_akhir'] !==''){
+			$tgl_awal = date('Y-m-d',strtotime($_GET['tgl_awal']));
+			$tgl_akhir = date('Y-m-d',strtotime($_GET['tgl_akhir']));
+			$where .= " AND bp.tgl_pesan BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+		}
+
+		if($_GET['status'] !=='pil'){
+			$id = $_GET['status'];
+			$where .=" AND br.status_terima = $id";
+		}
+
 		
 
 		$sql1 = "SELECT DATE_FORMAT(bp.tgl_pesan,'%d-%m-%Y') as tgl,bp.no_sp,
@@ -607,7 +645,7 @@ class Pembelian extends CI_Controller {
 		p.nama_produk as produk,
 		br.jumlah_produk as jumlah_produk,
 		s.nama_satuan as nama_satuan,
-		br.status_terima,br.id_rencana_beli
+		br.status_terima,br.id_rencana_beli,br.jumlah_diterima
 		FROM `tx_beli_rencana` as br
 		LEFT JOIN tx_beli_pesan as bp ON br.id_pesan_beli = bp.id_pesan_beli
 		LEFT JOIN tx_produk as p ON br.id_produk = p.id_produk
@@ -862,6 +900,7 @@ class Pembelian extends CI_Controller {
 		$ext = 0;
 		$data = $this->input->post();
 		$id = $this->session->userdata('id_user');
+		$id_gudang = $this->session->userdata('gudang');
 		$datetime = $this->db->select('now() as time')->get()->row();
 		$this->load->model('Model_pembelian');
 		unset($data['tgl_retur']);
@@ -891,6 +930,29 @@ class Pembelian extends CI_Controller {
 			if($ext){
 				$ext += 0;
 			}
+
+			$sql_qty = "SELECT  
+						r.id_retur,
+						rd.id_produk, rd.jumlah_retur, 
+						if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) as jumlah_stok, 
+						(if(ps.jumlah_stok IS NULL,0,ps.jumlah_stok) - rd.jumlah_retur) as sisa,
+						r.id_supplier,rd.id_satuan,rd.tgl_exp
+						FROM `tx_retur_detail` as rd
+						LEFT JOIN tx_retur as r ON rd.id_retur = r.id_retur
+						LEFT JOIN tx_produk_stok as ps ON rd.id_produk = ps.id_produk
+						WHERE rd.is_delete = 0 AND rd.is_selesai = 2 AND rd.id_retur = $insert_id ";
+			$data_qty = $this->db->query($sql_qty)->result();
+
+			
+			foreach ($data_qty as $key => $vall) {
+				$sql_up = "UPDATE `tx_produk_stok` SET jumlah_stok ='$vall->sisa' WHERE id_produk = '$vall->id_produk' AND id_gudang = $id_gudang";
+				$up_qty = $this->db->query($sql_up);
+
+				$sql_in_detail = "INSERT INTO `tx_produk_stok_detail` (id_produk,id_gudang,id_supplier,id_status_stok,jumlah_stok,insert_by,insert_date) VALUE
+									('$vall->id_produk','$id_gudang','$vall->id_supplier','6','$vall->jumlah_stok','$id','$datetime->time')";
+				$in_detail = $this->db->query($sql_in_detail);
+			}
+
 		}else{
 			$data['update_by'] = $id;
 			$data['update_date'] = $datetime->time;
@@ -964,10 +1026,12 @@ class Pembelian extends CI_Controller {
 		r.no_faktur,
 		r.tgl_retur,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+		REPLACE(GROUP_CONCAT(s.nama_satuan),',','<br>') as satuan,
 		REPLACE(GROUP_CONCAT(rd.jumlah_retur),',','<br>') as jumlah_retur_p
 		FROM `tx_retur` as r
 		LEFT JOIN tx_retur_detail as rd ON r.id_retur = rd.id_retur
 		LEFT JOIN tx_produk  as p ON rd.id_produk = p.id_produk
+		LEFT JOIN tm_satuan as s ON rd.id_satuan = s.id_satuan
 		WHERE $where
 		GROUP BY r.id_retur
 		order by r.id_retur " . $columnSortOrder . " limit " . $row . "," . $rowperpage;

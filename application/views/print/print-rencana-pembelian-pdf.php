@@ -82,9 +82,10 @@
                <th width="10px">Tgl Pesan</th>
                <th style="width: 100px;">No. SP</th>
                <th>Nama Produk</th>
-               <th>Kuantitas</th>
+               <th>Qty. Pesan</th>
+               <th>Qty. Terima</th>
                <th>Satuan</th>
-               <!-- <th>Status</th> -->
+               <th>Status</th>
            </tr>
            <?php 
                 $no = 1;
@@ -97,16 +98,17 @@
                <!-- <td><?php echo wordwrap($val->produk,25,"<br>\n");?> </td> -->
                <td><?php echo $val->tgl;?> </td>
                <td><?php echo $val->no_sp;?></td>
-               <td style="width: 200px;"><?php echo wordwrap($val->produk,40,"<br>\n");?></td>
-               <td><?php echo $val->jumlah_produk;?></td>
+               <td style="width: 200px;"><?php echo wordwrap($val->produk,35,"<br>\n");?></td>
+               <td style="text-align: center;"><?php echo $val->jumlah_produk;?></td>
+               <td style="text-align: center;"><?php echo $val->jumlah_diterima;?></td>
                <td><?php echo $val->nama_satuan;?></td>
-               <!-- <td><?php if($val->status_terima == 0){ ?>
+               <td><?php if($val->status_terima == 0){ ?>
                     <span style="color:red;font-weight:bold">Belum Diterima</span>
                <?php }else{ ?>
                     <span style="color:green;font-weight:bold">Diterima</span>
                
                <?php };?>
-               </td> -->
+               </td>
            </tr>
            <?php     }
                 }
