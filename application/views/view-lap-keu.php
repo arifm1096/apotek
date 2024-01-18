@@ -13,7 +13,7 @@
                     </button>
 
                     <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
-                        onclick="export_excel();">
+                        onclick="export_pdf();">
                         <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>

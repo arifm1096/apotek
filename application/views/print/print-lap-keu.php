@@ -186,7 +186,7 @@
            </tr>
            <tr>
                <th>Total Penjualan</th>
-               <th><?php echo $tot_penjualan;?></th>
+               <th><?php echo $tot_penjualan_tot;?></th>
            </tr>
            <tr>
                <th>Total Pemasukan</th>

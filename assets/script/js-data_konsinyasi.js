@@ -90,7 +90,7 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 		processing: true,
 		serverSide: true,
 		searching: false,
-		order: [[1, 'desc']],
+		order: [[1, "desc"]],
 		serverMethod: "POST",
 		columns: [
 			{
@@ -101,8 +101,10 @@ function loda_konsinyasi(text, tgl1, tgl2) {
 			},
 			{ data: "tgl_terima" },
 			{ data: "no_faktur" },
+			{ data: "nama_supplier" },
 			{ data: "produk" },
 			{ data: "jumlah_konsinyasi_p" },
+			{ data: "nama_satuan" },
 			{
 				data: null,
 				orderable: false,
@@ -147,29 +149,29 @@ function edit_ret(id) {
 	window.location.href = URL + "konsinyasi/edit_konsinyasi/" + id;
 }
 
-function hapus_kon(id){
-		$.ajax({
-			url : URL +'konsinyasi/hapus_konsinyasi',
-			type : 'POST',
-			data : {id:id},
-			success : function(data){
-				var res = JSON.parse(data);
-				if (res.status == 1) {
-					Swal.fire({
-						icon: "success",
-						title: "Success",
-						text: res.msg,
-					});
-					filter_data();
-				} else {
-					Swal.fire({
-						icon: "error",
-						title: "Error",
-						text: res.msg,
-					});
-				}
+function hapus_kon(id) {
+	$.ajax({
+		url: URL + "konsinyasi/hapus_konsinyasi",
+		type: "POST",
+		data: { id: id },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success",
+					text: res.msg,
+				});
+				filter_data();
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: res.msg,
+				});
 			}
-		});
+		},
+	});
 }
 
 function export_excel() {
@@ -179,6 +181,22 @@ function export_excel() {
 	window.open(
 		URL +
 			"penjualan/export_data_penjualan?tgl1=" +
+			tgl1 +
+			"&tgl2=" +
+			tgl2 +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	window.open(
+		URL +
+			"konsinyasi/export_konsinyasi_pdf?tgl1=" +
 			tgl1 +
 			"&tgl2=" +
 			tgl2 +

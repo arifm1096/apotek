@@ -1658,11 +1658,15 @@ class Laporan extends CI_Controller {
 		$tot_p = (int) $pen_dok->tot_harga_jual + (int) $pen_kas->tot_harga_jual;
 		$var['tot_penjualan'] = number_format($tot_p,0,',','.');
 
+		$tot_pp = (int)$tot_p - (int)$var['total_akun_keluar'];
+		$var['tot_penjualan_tot'] = number_format($tot_pp,0,',','.');
+
 		$tot_pm = (int) $pem_dok->tot_harga_beli + (int) $pem_kas->tot_harga_beli;
 		$var['tot_pembelian'] = number_format($tot_pm,0,',','.');
 		// total_laba
-		$laba_rugi = $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
-		$var['laba_rugi'] = number_format($laba_rugi,0,',','.');
+		$laba_rugi = $tot_p + $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
+
+		$var['laba_rugi'] = number_format($tot_m,0,',','.');
 
 		$this->load->view('v-laporan-keuangan',$var);
 
@@ -1673,11 +1677,14 @@ class Laporan extends CI_Controller {
 		$tgl_awal = $_GET['tgl1'];
 		$tgl_akhir = $_GET['tgl2'];
 
+		$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+		$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+
 		$modal = $this->Model_laporan->get_lap_modal();
-		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl_awal,$tgl_akhir);
-		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl_awal,$tgl_akhir);
-		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl_awal,$tgl_akhir);
-		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl_awal,$tgl_akhir);
+		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl1,$tgl2);
+		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl1,$tgl2);
+		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl1,$tgl2);
+		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl1,$tgl2);
 		$pem_kas = $this->Model_laporan->get_lap_pem_kas($tgl_awal,$tgl_akhir);
 		$pem_dok = $this->Model_laporan->get_lap_pem_dok($tgl_awal,$tgl_akhir);
 		$var['akun_masuk'] = $this->Model_laporan->get_akun_masuk($tgl_awal,$tgl_akhir);
@@ -1712,11 +1719,93 @@ class Laporan extends CI_Controller {
 		$tot_p = (int) $pen_dok->tot_harga_jual + (int) $pen_kas->tot_harga_jual;
 		$var['tot_penjualan'] = number_format($tot_p,0,',','.');
 
+		$tot_pp = (int)$tot_p - (int)$var['total_akun_keluar'];
+		$var['tot_penjualan_tot'] = number_format($tot_pp,0,',','.');
+
+		$tot_pm = (int) $pem_dok->tot_harga_beli + (int) $pem_kas->tot_harga_beli;
+		$var['tot_pembelian'] = number_format($tot_pm,0,',','.');
+		// total_laba
+		$laba_rugi = $tot_p + $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
+
+		$var['laba_rugi'] = number_format($tot_m,0,',','.');
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+		$var['tgl_awal'] = $tgl_awal;
+		$var['tgl_akhir'] = $tgl_akhir;
+
+		
+		ob_start();
+		$this->load->view('print/print-lap-keu',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+
+	}
+
+	public function export_data_keu_pdff(){
+
+		$tgl_awal = $_GET['tgl1'];
+		$tgl_akhir = $_GET['tgl2'];
+
+		$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+		$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+
+		$modal = $this->Model_laporan->get_lap_modal();
+		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl1,$tgl2);
+		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl1,$tgl2);
+		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl1,$tgl2);
+		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl1,$tgl2);
+		$pem_kas = $this->Model_laporan->get_lap_pem_kas($tgl1,$tgl2);
+		$pem_dok = $this->Model_laporan->get_lap_pem_dok($tgl1,$tgl2);
+		$var['akun_masuk'] = $this->Model_laporan->get_akun_masuk($tgl1,$tgl2);
+		$var['akun_keluar'] = $this->Model_laporan->get_akun_keluar($tgl1,$tgl2);
+
+		$var['total_akun_masuk'] = 0;
+		$var['total_akun_keluar'] = 0;
+		
+		if(!empty($var['akun_masuk'])){
+			foreach ($var['akun_masuk'] as $key => $value) {
+				$var['total_akun_masuk'] += $value->nominal;
+			}
+		}
+		
+		if(!empty($var['akun_keluar'] )){
+			foreach ($var['akun_keluar'] as $key => $value) {
+				$var['total_akun_keluar'] += $value->nominal;
+			}
+		}
+		
+		$var['tot_modal'] = number_format($modal->total_modal,0,',','.');
+		$var['tot_margin_kas'] = number_format($margin_kas->tot_margin,0,',','.');
+		$var['tot_margin_res'] = number_format($margin_res->tot_margin,0,',','.');
+		$var['tot_pen_dok'] = number_format($pen_dok->tot_harga_jual,0,',','.');
+		$var['tot_pen_kas'] = number_format($pen_kas->tot_harga_jual,0,',','.');
+		$var['tot_pem_kas'] = number_format($pem_kas->tot_harga_beli,0,',','.');
+		$var['tot_pem_dok'] = number_format($pem_dok->tot_harga_beli,0,',','.');
+
+		$tot_m = (int) $margin_kas->tot_margin + (int) $margin_res->tot_margin;
+		$var['tot_margin'] = number_format($tot_m,0,',','.');
+
+		$tot_p = (int) $pen_dok->tot_harga_jual + (int) $pen_kas->tot_harga_jual;
+		$var['tot_penjualan'] = number_format($tot_p,0,',','.');
+
+		$tot_pp = (int)$tot_p - (int)$var['total_akun_keluar'];
+		$var['tot_penjualan_tot'] = number_format($tot_pp,0,',','.');
+
 		$tot_pm = (int) $pem_dok->tot_harga_beli + (int) $pem_kas->tot_harga_beli;
 		$var['tot_pembelian'] = number_format($tot_pm,0,',','.');
 		// total_laba
 		$laba_rugi = $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
-		$var['laba_rugi'] = number_format($laba_rugi,0,',','.');
+		$var['laba_rugi'] = number_format($tot_m,0,',','.');
 
 		$id_user = $this->session->userdata('id_user');
 		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
@@ -1745,11 +1834,14 @@ class Laporan extends CI_Controller {
 		$tgl_awal = $_GET['tgl1'];
 		$tgl_akhir = $_GET['tgl2'];
 
+		$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+		$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+
 		$modal = $this->Model_laporan->get_lap_modal();
-		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl_awal,$tgl_akhir);
-		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl_awal,$tgl_akhir);
-		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl_awal,$tgl_akhir);
-		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl_awal,$tgl_akhir);
+		$margin_kas = $this->Model_laporan->get_lap_margin_kasir($tgl1,$tgl2);
+		$margin_res = $this->Model_laporan->get_lap_margin_resep($tgl1,$tgl2);
+		$pen_dok = $this->Model_laporan->get_lap_pen_dok($tgl1,$tgl2);
+		$pen_kas = $this->Model_laporan->get_lap_pen_kas($tgl1,$tgl2);
 		$pem_kas = $this->Model_laporan->get_lap_pem_kas($tgl_awal,$tgl_akhir);
 		$pem_dok = $this->Model_laporan->get_lap_pem_dok($tgl_awal,$tgl_akhir);
 		$var['akun_masuk'] = $this->Model_laporan->get_akun_masuk($tgl_awal,$tgl_akhir);
@@ -1784,11 +1876,15 @@ class Laporan extends CI_Controller {
 		$tot_p = (int) $pen_dok->tot_harga_jual + (int) $pen_kas->tot_harga_jual;
 		$var['tot_penjualan'] = number_format($tot_p,0,',','.');
 
+		$tot_pp = (int)$tot_p - (int)$var['total_akun_keluar'];
+		$var['tot_penjualan_tot'] = number_format($tot_pp,0,',','.');
+
 		$tot_pm = (int) $pem_dok->tot_harga_beli + (int) $pem_kas->tot_harga_beli;
 		$var['tot_pembelian'] = number_format($tot_pm,0,',','.');
 		// total_laba
-		$laba_rugi = $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
-		$var['laba_rugi'] = number_format($laba_rugi,0,',','.');
+		$laba_rugi = $tot_p + $tot_m + $var['total_akun_masuk'] - $var['total_akun_keluar'];
+
+		$var['laba_rugi'] = number_format($tot_m,0,',','.');
 
 		$this->load->view('v-laporan-keuangan_excel',$var);
 		

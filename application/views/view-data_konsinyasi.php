@@ -10,7 +10,11 @@
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-excel"></i> Export PDF
                     </button>
                 </ol>
                 <ol class="breadcrumb float-sm-right">
@@ -76,8 +80,10 @@
                             <th style="width: 10px; text-align: right;">No.</th>
                             <th>Tgl. Terima Konsiyasi</th>
                             <th>No. Faktur</th>
+                            <th>Supplier</th>
                             <th>Produk</th>
                             <th>Qty. Konsiyasi</th>
+                            <th>Satuan</th>
                             <th style="width: 75px; ">Action</th>
                         </tr>
                     </thead>

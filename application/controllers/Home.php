@@ -150,7 +150,7 @@ class Home extends CI_Controller {
 		$var['persediaan_awal'] = $this->Model_home->get_persedian($tgl_a,$tgl_b);
 		$var['persediaan_akhir'] = $this->Model_home->get_persedian($tgl_a,$tgl2);
 		$var['pembelian'] = $this->Model_home->get_rencana_beli_tot($tgl1,$tgl2);
-		echo $this->db->last_query();
+		// echo $this->db->last_query();
 		$tot_kadaluarsa = $this->Model_home->get_tot_kadaluarsa();
 		$exp = [];
 		$data = [];

@@ -80,7 +80,7 @@
                             </p>
                             <p class="d-flex flex-column text-right">
                                 <span class="font-weight-bold">
-                                    <?php echo $pembelian->jumlah;?>
+                                    <?php echo $pembelian->tot_qty;?>
                                 </span>
                                 <span class="text-muted">Stok Pembelian</span>
                             </p>

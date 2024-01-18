@@ -189,7 +189,7 @@
 		public function get_rencana_beli_tot($tgl1,$tgl2){
 			$sql = "SELECT 
 						sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
-						sum(psd.ppn) as tot_ppn
+						sum(psd.ppn) as tot_ppn,sum(psd.jumlah_produk) as tot_qty
 						FROM `tx_beli_rencana` as psd
 						LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 						WHERE psd.is_delete = 0 AND psd.insert_date BETWEEN '$tgl1' AND '$tgl2'";

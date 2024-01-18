@@ -163,7 +163,7 @@ class Konsinyasi extends CI_Controller {
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 		$searchValue = $_POST['search']['value'];
 		// $searchValue = $_POST['text'];
-		$where ='kd.is_delete = 0 AND kd.status = 0 and kd.is_selesai = 2';
+		$where ='kd.is_delete = 0 AND kd.status = 0 and kd.is_selesai = 1';
 		
 		
 		if($_POST['id']==""){
@@ -411,7 +411,8 @@ class Konsinyasi extends CI_Controller {
 		$searchQuery = "";
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
-			 					OR k.no_faktur like '%" . $searchValue . "%'			
+			 					OR k.no_faktur like '%" . $searchValue . "%'
+								OR s.nama_supplier like '%" . $searchValue . "%'			
 			) ";
 		}
 
@@ -438,6 +439,8 @@ class Konsinyasi extends CI_Controller {
 		FROM `tx_konsinyasi` as k
 		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
 		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+		LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+		LEFT JOIN tm_satuan as sa ON kd.id_satuan = sa.id_satuan
 		WHERE $where";
 		$records = $this->db->query($sql_filter)->row_array();
 		$totalRecordsFilter = $records['allcount'];
@@ -447,11 +450,15 @@ class Konsinyasi extends CI_Controller {
 		k.id_konsinyasi,
 		k.no_faktur,
 		k.tgl_terima,
+		s.nama_supplier,
 		REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
-		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p
+		REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p,
+		REPLACE(GROUP_CONCAT(sa.nama_satuan),',','<br>') as nama_satuan
 		FROM `tx_konsinyasi` as k
 		LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
 		LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+		LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+		LEFT JOIN tm_satuan as sa ON kd.id_satuan = sa.id_satuan
 		WHERE $where
 		GROUP BY k.id_konsinyasi
 		order by k.id_konsinyasi " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -490,8 +497,65 @@ class Konsinyasi extends CI_Controller {
 		}
 	}
 
-	public function export_konsinyasi(){
+	public function export_konsinyasi_pdf(){
+		$searchValue = $_GET['text'];
 		
+		$where = " k.is_delete = 0 AND kd.is_selesai = 2 ";
+	
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.nama_produk like '%" . $searchValue . "%'
+			 					OR k.no_faktur like '%" . $searchValue . "%'
+								OR s.nama_supplier like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(k.tgl_terima,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$where .=  $searchQuery ;
+
+		$sql = "SELECT 
+				k.id_konsinyasi,
+				k.no_faktur,
+				k.tgl_terima,
+				s.nama_supplier,
+				REPLACE(GROUP_CONCAT(p.nama_produk),',','<br>') as produk,
+				REPLACE(GROUP_CONCAT(kd.jumlah_konsinyasi),',','<br>') as jumlah_konsinyasi_p,
+				REPLACE(GROUP_CONCAT(sa.nama_satuan),',','<br>') as nama_satuan
+				FROM `tx_konsinyasi` as k
+				LEFT JOIN tx_konsinyasi_detail as kd ON k.id_konsinyasi = kd.id_konsinyasi
+				LEFT JOIN tx_produk  as p ON kd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s ON k.id_supplier = s.id_supplier
+				LEFT JOIN tm_satuan as sa ON kd.id_satuan = sa.id_satuan
+				WHERE $where
+				GROUP BY k.id_konsinyasi
+				order by k.id_konsinyasi";
+
+		$var['data'] = $this->db->query($sql)->result();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-konsinyasi',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+
+	
+
 	}
 	// end retrun
 

@@ -833,13 +833,20 @@ function load_persediaan(text, jual, rak) {
 												<i class="fa fa-ellipsis-v"></i>
 											</a>
 											<div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-												<div class="dropdown-divider"></div>
-												<button type="button" class="dropdown-item" onclick="stok_produk('` +
+											<button type="button" class="dropdown-item" onclick="stok_produk('` +
 						row.id_produk +
 						"','" +
 						row.id_stok +
 						`')">
-													<i class="fa fa-plus mr-2"></i> Tambah Stok
+													<i class="fa fa-plus mr-2"></i>  Tambah Stok
+												</button>
+												<div class="dropdown-divider"></div>
+												<button type="button" class="dropdown-item" onclick="edit_produk('` +
+						row.id_produk +
+						"','" +
+						row.id_stok +
+						`')">
+													<i class="fa fa-pencil-alt mr-2"></i> Edit Stok
 												</button>
 												
 											</div>
@@ -947,6 +954,32 @@ function save_stok_produk() {
 
 function kartu_stok(id_produk) {
 	window.open(URL + "persediaan/kartu_stok/" + id_produk, "_blank");
+}
+
+function edit_produk(id_produk, id_stok) {
+	$.ajax({
+		url: URL + "persediaan/get_produk",
+		type: "POST",
+		data: { id_produk: id_produk, id_stok: id_stok },
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				$("#id_produk_stok").val(id_produk);
+				$("#id_stok").val(id_stok);
+				$("#nama_produk_stok").html(res.produk.nama_produk);
+				$("#nama_gudang_stok").html(res.gudang.nama_gudang);
+				$("#satuan_stok").html(res.produk.nama_satuan);
+				load_select_stok((p_supplier = null), res.produk.satuan_utama);
+				$("#modal_stok_produk").modal("show");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !",
+					text: res.msg,
+				});
+			}
+		},
+	});
 }
 
 function clear_data() {

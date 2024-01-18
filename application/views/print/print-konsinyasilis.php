@@ -71,7 +71,7 @@
                </tr>
            </table>
            <hr>
-           <p class="judul_content">DATA KONSINYASI</p>
+           <p class="judul_content">KARTU STOK</p>
            <p class="tex" style=" text-align: center; font-weight: bold;">Hari / Tgl :
                <?php echo longdate_indo('Y-m-d')." ".date('H:i:s');?></p>
        </page_header>
@@ -91,7 +91,6 @@
                </tr>
            </thead>
 
-
            <?php 
                 $no = 1;
                 if(!empty($data)){
@@ -102,8 +101,8 @@
                <td style="width:50px"><?php echo date('d-m-Y',strtotime($val->tgl_terima));?></td>
                <td style="width:100px"><?php echo $val->no_faktur;?></td>
                <td style="width:70px"><?php echo $val->nama_supplier;?></td>
-               <td style="width:200px"><?php echo wordwrap($val->produk,40,"<br>\n");?></td>
-               <td style="width:50px"><?php echo $val->jumlah_konsinyasi_p;?></td>
+               <td style="width:200px"><?php echo wordwrap($val->produk,50,"<br>\n");?></td>
+               <td style="width:50px;text-align: center;"><?php echo $val->jumlah_konsinyasi_p;?></td>
                <td style="width:50px"><?php echo $val->nama_satuan;?></td>
            </tr>
            <?php     }
@@ -113,10 +112,8 @@
        </table>
        <br><br><br>
 
-
-       <table style="padding-left:150px;">
+       <table style="padding-left:600px;">
            <tr>
-               <td style="width:300px;">Penerima</td>
                <td>Nama Apoteker</td>
            </tr>
            <tr>
@@ -125,7 +122,6 @@
                </td>
            </tr>
            <tr>
-               <td><b>(................................)</b></td>
                <td><b><?php echo $this->session->userdata('nama_user');?></b></td>
            </tr>
        </table>

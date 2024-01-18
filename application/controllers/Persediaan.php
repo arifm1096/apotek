@@ -488,8 +488,6 @@ class Persediaan extends CI_Controller {
 		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
 		$pdf->WriteHTML($html);
 		$pdf->Output('korwil.pdf', 'P');
-
-		
 	}
 
 	public function defecta(){
