@@ -273,8 +273,10 @@ class Persediaan extends CI_Controller {
 		if($ext > 0){
 			if($_POST['id_stok'] == "null"){
 				$data['insert_by'] = $user;
-				$sql_inStok = $this->db->insert('tx_produk_stok',$data);
-				if($sql_inStok){
+				$this->db->insert('tx_produk_stok',$data);
+				$insert_id = $this->db->insert_id();
+				if($insert_id !== 0){
+					$data_his['id_stok'] = $insert_id;
 					$sql_hisStok = $this->db->insert('tx_produk_stok_detail',$data_his);
 					if($sql_hisStok){
 						$ext += 1;
@@ -360,6 +362,63 @@ class Persediaan extends CI_Controller {
 			echo json_encode(array('status'=>1,'msg'=>'Data is Find','data'=>$data->result()));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Data not Found','data'=>null));
+		}
+	}
+
+	public function get_stok_produk(){
+		$id = $_POST['id_produk'];
+		$sql ="SELECT ps.id_stok,p.nama_produk,g.nama_gudang,psd.exp_date,p.satuan_utama,ps.id_supplier,p.harga_beli,ps.jumlah_stok
+				FROM `tx_produk_stok` as ps
+				LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+				LEFT JOIN tm_gudang as g ON ps.id_gudang = g.id_gudang
+				LEFT JOIN (SELECT id_stok,id_produk,harga_beli,exp_date,id_satuan,id_supplier
+				FROM `tx_produk_stok_detail`
+				WHERE id_produk = $id
+				ORDER BY id_stok_detail DESC
+				LIMIT 1) as psd ON ps.id_produk = psd.id_produk
+				WHERE ps.id_produk = $id";
+		
+		$ext = $this->db->query($sql);
+
+		if($ext){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find','data'=>$ext->row()));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Null','data'=>null));
+		}
+	}
+
+	public function save_edit_stok(){
+		$user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+		$id = $_POST['id_stok'];
+		$id_p = $_POST['id_produk'];
+		$jumlah = $_POST['jumlah_stok'];
+		if($id !==""){
+			$data = array(
+				'jumlah_stok' =>$jumlah,
+				'update_by'=> $user,
+				'update_date'=> $datetime->time
+			);
+			$sql = $this->db->where('id_stok',$id)->update('tx_produk_stok',$data);
+
+			$sql_d = "SELECT id_stok,id_produk,harga_beli,exp_date,id_satuan,id_supplier,id_stok_detail
+			FROM `tx_produk_stok_detail`
+			WHERE id_produk = $id_p
+			ORDER BY id_stok_detail DESC
+			LIMIT 1";
+
+			$data_p = $this->db->query($sql_d)->row();
+			$id_psd = $data_p->id_stok_detail;
+			// var_dump($id_psd);
+			$sql_psd = $this->db->where('id_stok_detail',$id_psd)->update('tx_produk_stok_detail',$data);
+
+			if($sql && $sql_psd){
+				echo json_encode(array('status'=>1,'msg'=>'Stok Success DiPerbarui'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Stok Gagal DiPerbarui'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Parameter Null'));
 		}
 	}
 
@@ -815,9 +874,10 @@ class Persediaan extends CI_Controller {
 		$user = $this->session->userdata('id_user');
 		$datetime = $this->db->select('now() as time')->get()->row();
 
-		if($data['status_op_ed'] !=="pil" ){
+		if($_POST['exp_date'] !=="" ){
 			$data['update_by'] = $user;
 			$data['update_date'] = $datetime->time;
+			$data['exp_date'] = date('Y-m-d',strtotime($_POST['exp_date']));
 			unset($data['id']);
 			$id = $_POST['id'];
 			

@@ -430,3 +430,98 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal add end -->
+
+<div class="modal fade" id="modal_edit_stok">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-plus"></i> Edit Stok</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>
+                            <div id="nama_produk_edit"></div>
+                        </h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><b>
+                                        Gudang : </b><div id="nama_gudang_edit"></div>
+                                    </h6>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>
+                                    <b>
+                                        Satuan Utama :</b><div id="satuan_edit"></div>
+                                    
+                                </h6>
+                            </div>
+                        </div>
+
+
+                        <hr>
+                        <form id="stok_produk">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Kuantitas</label>
+                                        <input type="hidden" id="id_stok_edit">
+                                        <input type="hidden" id="id_produk_edit">
+                                        <input type="text" id="jumlah_stok_edit" name="jumlah_stok_edit" class="form-control"
+                                            placeholder="Inputkan Jumlah Stok" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tgl. Expired</label>
+                                        <input type="text" id="exp_date_edit" name="exp_date_edit" class="form-control tgl_piker"
+                                            placeholder="Inputkan Tanggal Expire" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Satuan</label>
+                                        <select name="id_satuan_stok_edit" id="id_satuan_stok_edit" class="form-control select2"
+                                            required>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Supplier</label>
+                                        <select name="id_supplier_stok_edit" id="id_supplier_stok_edit"
+                                            class="form-control select2" required>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Beli Per Satuan</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="harga_beli_edit" id="harga_beli_edit" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         
+                            <div class="row">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-9">
+                                    <button class="btn btn-block btn-info" type="button" onclick="edit_stok_produk()">
+                                        <i class="fa fa-save fa-lg"></i> &nbsp;
+                                        <span id="save-button-produk">Simpan Data</span>
+                                        <span id="send-button-produk" style="display:none;">Sending…</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.login-card-body -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- modal add end -->

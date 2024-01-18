@@ -93,8 +93,8 @@
 		public function get_tot_kadaluarsa(){
 			$sql = "SELECT ps.id_produk,p.nama_produk,ps.jumlah_stok,ps.exp_date,ps.tgl_now
 					FROM(SELECT id_produk,jumlah_stok,exp_date,DATE_FORMAT(now(),'%Y-%m-%d') as tgl_now
-						FROM `tx_produk_stok` 
-						WHERE is_delete = 0
+						FROM `tx_produk_stok_detail` 
+						WHERE is_delete = 0 and status_op_ed = 0
 						GROUP BY id_produk
 						ORDER BY insert_date DESC
 					) as ps
@@ -114,8 +114,8 @@
 					FROM(
 						SELECT id_produk,jumlah_stok,exp_date,DATE_FORMAT(now(),'%Y-%m-%d') as tgl_now,
 						DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 3 MONTH), '%Y-%m-%d') as tgl_3m
-						FROM `tx_produk_stok`
-						WHERE is_delete = 0
+						FROM `tx_produk_stok_detail`
+						WHERE is_delete = 0 and status_op_ed = 0
 						GROUP BY id_produk
 						ORDER BY insert_date DESC
 					) as ps

@@ -1485,7 +1485,7 @@ public function load_detail_resep(){
 	$totalRecordsFilter = $records['allcount'];
 
 	// Fetch Records
-	$sql = "SELECT r.kode_resep,d.nama_dokter,p.nama_pelanggan,sp.nama_status_resep,r.`status`,pd.produk_detail,pd.total_harga
+	$sql = "SELECT r.kode_resep,d.nama_dokter,p.nama_pelanggan,sp.nama_status_resep,r.`status`,pd.produk_detail,pd.total_harga,r.id_resep
 	FROM `tx_resep` as r
 	LEFT JOIN tm_dokter as d ON r.id_dokter = d.id_dokter
 	LEFT JOIN tm_pelanggan as p ON r.id_pelanggan = p.id_pelanggan
@@ -1494,7 +1494,7 @@ public function load_detail_resep(){
 	SUM(rd.harga_jual) as total_harga
 	FROM `tx_resep_detail` as rd
 	LEFT JOIN tm_satuan as s ON rd.id_satuan_utama = s.id_satuan
-	WHERE rd.is_delete = 0 AND rd.is_selesai = 1 AND rd.`status` = 2
+	WHERE rd.is_selesai = 1 AND rd.`status` = 2
 	GROUP BY rd.id_resep)as pd ON r.id_resep = pd.id_resep
 	WHERE $where
 	order by r.id_resep " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
@@ -1529,6 +1529,45 @@ public function hapus_detail_resep(){
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error Data NUll || Error Code : 7231'));
 		}
+}
+
+public function print_resep(){
+	// Ukuran 10,5cm x 14,8cm 
+	$id = $this->input->get('id_resep');
+
+	$sql_h = "SELECT r.kode_resep,d.nama_dokter,d.alamat,d.no_hp,d.klinik_rs,p.nama_pelanggan,
+				p.alamat as alamat_p,p.no_hp as nohp_p,nama_status_resep
+				FROM `tx_resep` as r
+				LEFT JOIN tm_dokter as d on r.id_dokter = d.id_dokter
+				LEFT JOIN tm_pelanggan as p ON r.id_pelanggan = p.id_pelanggan
+				LEFT JOIN tm_status_resep as sp ON r.status = sp.id_status_resep
+				WHERE r.id_resep = $id";
+
+	$var['data_h'] = $this->db->query($sql_h)->row();
+
+	$sql_l = "SELECT rd.nama_produk,rd.jumlah_produk,s.nama_satuan
+				FROM `tx_resep_detail` as rd
+				LEFT JOIN tm_satuan as s on rd.id_satuan_utama = s.id_satuan
+				WHERE rd.status = 2 and rd.is_selesai = 1 and rd.id_resep = $id";
+	$var['data_l'] = $this->db->query($sql_l)->result();
+
+	$id_user = $this->session->userdata('id_user');
+	$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+			FROM tm_user as u 
+			LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+			WHERE u.id_user = $id_user";
+	$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-detail-resep',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(120, 170);
+		// $resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('resep_dokter.pdf', 'P');
 }
 // Detail Resep End
 }

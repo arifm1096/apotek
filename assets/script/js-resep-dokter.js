@@ -384,14 +384,15 @@ function add_resep() {
 
 function nota_resep() {
 	var id_resep = $("#id_resep").val();
-	$.ajax({
-		url: URL + "pelayanan/cetak_struk_resep",
-		type: "POST",
-		data: { id_resep: id_resep },
-		success: function (data) {
-			console.log(data);
-		},
-	});
+	// $.ajax({
+	// 	url: URL + "pelayanan/cetak_struk_resep",
+	// 	type: "POST",
+	// 	data: { id_resep: id_resep },
+	// 	success: function (data) {
+	// 		console.log(data);
+	// 	},
+	// });
+	window.open(URL + "pelayanan/print_resep?id_resep=" + id_resep, +"_blank");
 }
 
 function add_data() {

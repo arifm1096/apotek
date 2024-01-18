@@ -102,7 +102,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-info-circle"></i> Opname Produk Kadaluarsa
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-info-circle"></i> Edit Produk Kadaluarsa
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -142,7 +142,12 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
+                            <div class="form-group">
+                                    <label>Tgl. Kadaluarsa :</label>
+                                    <input type="hidden" name="id_stok_detail" id="id_stok_detail">
+                                    <input type="text" name="exp_date" id="exp_date" class="form-control tgl_piker" required>
+                                </div>
+                                <!-- <div class="form-group">
                                     <label>Satuan Utama :</label>
                                     <input type="hidden" name="id_stok_detail" id="id_stok_detail">
                                     <select name="status_op_ed" id="status_op_ed" class="form-control select2" required>
@@ -154,7 +159,7 @@
                                         <textarea class="form-control" name="ket_op_ed" id="ket_op_ed" cols="50"
                                             rows="2"></textarea>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                         </div>
@@ -163,7 +168,7 @@
                             <div class="col-md-9">
                                 <button class="btn btn-block btn-info" type="button" onclick="save_opname()">
                                     <i class="fa fa-save fa-lg"></i> &nbsp;
-                                    <span id="save-button">Opname Produk</span>
+                                    <span id="save-button">Update Produk</span>
                                     <span id="send-button" style="display:none;">Sending…</span>
                                 </button>
                             </div>

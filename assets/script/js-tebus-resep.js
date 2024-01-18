@@ -267,13 +267,14 @@ function cari_kode() {
 
 function hapus_list(id) {
 	$.ajax({
-		url: URL + "penjualan/hapus_produk_kasir",
+		url: URL + "pelayanan/hapus_produk_kasir",
 		type: "POST",
 		data: { id: id },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				load_tebus_resep();
+				var kode_resep = $("#kode_resep").val();
+				load_tebus_resep(kode_resep);
 				total();
 				Swal.fire({
 					icon: "success",

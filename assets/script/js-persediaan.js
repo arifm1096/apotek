@@ -767,6 +767,44 @@ function load_select_stok(p_supplier, p_satuan) {
 	});
 }
 
+function load_select_stok_edit(p_supplier, p_satuan) {
+	var html_supplier = "<option value='pil'>-- Pilih Supplier --</option>";
+	var html_satuan = "<option value='pil'>-- Pilih Satuan --</option>";
+	$.ajax({
+		url: URL + "persediaan/get_data_master_persediaan",
+		type: "POST",
+		data: {},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				res.supplier.forEach((e) => {
+					html_supplier +=
+						'<option value="' +
+						e.id_supplier +
+						'"' +
+						(e.id_supplier === p_supplier ? 'selected="selected"' : "") +
+						">" +
+						e.nama_supplier +
+						"</option>";
+				});
+
+				res.satuan.forEach((e) => {
+					html_satuan +=
+						'<option value="' +
+						e.id_satuan +
+						'"' +
+						(e.id_satuan === p_satuan ? 'selected="selected"' : "") +
+						">" +
+						e.nama_satuan +
+						"</option>";
+				});
+			}
+			$("#id_satuan_stok_edit").html(html_satuan);
+			$("#id_supplier_stok_edit").html(html_supplier);
+		},
+	});
+}
+
 function load_persediaan(text, jual, rak) {
 	$("#tbl_presediaan").DataTable({
 		ajax: {
@@ -842,7 +880,9 @@ function load_persediaan(text, jual, rak) {
 												</button>
 												<div class="dropdown-divider"></div>
 												<button type="button" class="dropdown-item" onclick="edit_produk('` +
-						row.id_stok +
+												row.id_produk +
+												"','" +
+												row.id_stok +
 						`')">
 													<i class="fa fa-pencil-alt mr-2"></i> Edit Stok
 												</button>
@@ -954,21 +994,48 @@ function kartu_stok(id_produk) {
 	window.open(URL + "persediaan/kartu_stok/" + id_produk, "_blank");
 }
 
+function edit_stok(p_status) {
+	var html = "<option value='pil'> Pilih Status </option>";
+	var data = [
+		{
+			id: "7",
+			title: "Salah Input Mengurangi",
+		},
+		{
+			id: "8",
+			title: "Salah Input Menambah",
+		},
+	];
+	data.forEach((e) => {
+		html +=
+			'<option value="' +
+			e.id +
+			'"' +
+			(e.id === p_status ? 'selected="selected"' : "") +
+			">" +
+			e.title +
+			"</option>";
+	});
+	$("#id_status_stok").html(html);
+}
+
 function edit_produk(id_produk, id_stok) {
 	$.ajax({
-		url: URL + "persediaan/get_produk",
+		url: URL + "persediaan/get_stok_produk",
 		type: "POST",
 		data: { id_produk: id_produk, id_stok: id_stok },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				$("#id_produk_stok").val(id_produk);
-				$("#id_stok").val(id_stok);
-				$("#nama_produk_stok").html(res.produk.nama_produk);
-				$("#nama_gudang_stok").html(res.gudang.nama_gudang);
-				$("#satuan_stok").html(res.produk.nama_satuan);
-				load_select_stok((p_supplier = null), res.produk.satuan_utama);
-				$("#modal_stok_produk").modal("show");
+				$("#id_stok_edit").val(id_stok);
+				$("#id_produk_edit").val(id_produk);
+				$("#nama_produk_edit").html(res.data.nama_produk);
+				$("#nama_gudang_edit").html(res.data.nama_gudang);
+				$("#satuan_edit").html(res.data.nama_satuan);
+				$("#harga_beli_edit").val(res.data.harga_beli);
+				$("#jumlah_stok_edit").val(res.data.jumlah_stok);
+				load_select_stok_edit(res.data.id_supplier, res.data.satuan_utama);
+				$("#modal_edit_stok").modal("show");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -978,6 +1045,37 @@ function edit_produk(id_produk, id_stok) {
 			}
 		},
 	});
+}
+
+function edit_stok_produk(){
+	var id_stok = $("#id_stok_edit").val();
+	var id_produk = $("#id_produk_edit").val();
+	var jumlah_stok = $("#jumlah_stok_edit").val();
+
+	$.ajax({
+		url: URL + "persediaan/save_edit_stok",
+		type: "POST",
+		data: {id_stok: id_stok, jumlah_stok:jumlah_stok,id_produk:id_produk},
+		success: function (data) {
+			var res = JSON.parse(data);
+			if (res.status == 1) {
+				Swal.fire({
+					icon: "success",
+					title: "Success..",
+					text: res.msg,
+				});
+				filter_data();
+				$("#modal_edit_stok").modal("hide");
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Perhatian !",
+					text: res.msg,
+				});
+			}
+		},
+	});
+
 }
 
 function clear_data() {

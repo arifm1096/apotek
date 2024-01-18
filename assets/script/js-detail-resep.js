@@ -77,13 +77,9 @@ function load_detail_resep() {
 				orderable: false,
 				render: function (data, type, row) {
 					return (
-						'<button type="button" class="btn btn-danger btn-sm" onclick="hapus(\'' +
+						'<button type="button" class="btn btn-warning btn-sm" onclick="export_pdf(\'' +
 						row.id_resep +
-						"','" +
-						row.kode_resep +
-						"','" +
-						row.nama_pelanggan +
-						'\')"><i class="fa fa-trash"></i></button>'
+						'\')"><i class="fa fa-print"></i> Cetak</button>'
 					);
 				},
 			},
@@ -128,6 +124,10 @@ $("#add_remik").submit(function (e) {
 	});
 });
 // hapus
+
+function export_pdf(id){
+	window.open(URL + "pelayanan/print_resep?id_resep=" + id, +"_blank");
+}
 function hapus(id, kode, nama_pelanggan) {
 	Swal.fire({
 		html:

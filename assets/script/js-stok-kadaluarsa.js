@@ -101,7 +101,7 @@ function load_kadaluarsa(text, bulan, filter_tanggal) {
 								<div class="col-md-12">
 									<button type="button" class="btn btn-outline-success btn-sm" onclick="stok_produk('` +
 						row.id_stok_detail +
-						`')">Opname</button>
+						`')">Edit</button>
 								</div>
 							</div>
 							
@@ -159,12 +159,13 @@ function stok_produk(id) {
 
 function save_opname() {
 	var id = $("#id_stok_detail").val();
-	var status_op_ed = $("#status_op_ed").val();
-	var ket_op_ed = $("#ket_op_ed").val();
+	var exp_date = $("#exp_date").val();
+	// var status_op_ed = $("#status_op_ed").val();
+	// var ket_op_ed = $("#ket_op_ed").val();
 	$.ajax({
 		url: URL + "persediaan/save_opname_ed",
 		type: "POST",
-		data: { id: id, status_op_ed: status_op_ed, ket_op_ed: ket_op_ed },
+		data: { id: id, exp_date: exp_date },
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
