@@ -441,6 +441,57 @@ class Persediaan extends CI_Controller {
         $writer->save('php://output');
 	}
 
+	public function export_pdf_kartu_stok(){
+		$id = $_GET['id_produk'];
+		$where = "";
+		if($_GET['bulan'] !=='pil' && $_GET['tahun'] !==""){
+			$bln_th = $_GET['tahun'].'-'.$_GET['bulan'];
+			$where .=" AND DATE_FORMAT(ps.insert_date, '%Y-%m') = '$bln_th'";
+		}
+
+		if($_GET['id_gudang'] !=='pil'){
+			$gd = $_GET['id_gudang'] ;
+			$where .=" AND ps.id_gudang = $gd ";
+		}
+
+		if($_GET['kode_batch'] !==""){
+			$kd = $_GET['kode_batch'];
+			$where .=" OR ps.kode_batch LIKE '%$kd%'";
+		}
+		
+		$sql = "SELECT ps.insert_date as tgl, ps.kode_batch, p.sku_kode_produk,ps.exp_date,u.nama as petugas,
+				sum(case when s.status_in_out = 1 then ps.jumlah_stok else 0 end) as masuk, 
+				sum(case when s.status_in_out = 0 then ps.jumlah_stok else 0 end) as keluar,
+				CONCAT(s.nama_status,' ','Stok',' ',p.nama_produk) as catat
+				FROM `tx_produk_stok_detail` as ps
+				LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+				LEFT JOIN tm_satus_stok as s ON ps.id_status_stok = s.id_status_stok
+				LEFT JOIN tm_user as u ON ps.insert_by = u.id_user
+				WHERE ps.is_delete = 0 AND p.id_produk =$id $where
+				GROUP BY ps.id_stok_detail";
+		$var['data'] = $this->db->query($sql)->result();
+		// var_dump($data);
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-kartu-stok',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
+
+		
+	}
+
 	public function defecta(){
 		$var['content'] = 'view-defecta';
 		$var['js'] = 'js-defecta';
@@ -615,6 +666,34 @@ class Persediaan extends CI_Controller {
 			"aaData" => $data
 		); 
 		echo json_encode($output);
+	}
+
+	public function get_status_ed(){
+		$data = $this->db->select('*')
+						->from('tm_status_op_ed')
+						->get();
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'data'=>$data->result()));
+		}else{
+			echo json_encode(array('status'=>0,'data'=>null));
+		}
+	}
+	public function get_stok_opname_ed(){
+		$id = $_POST['id'];
+		$sql ="SELECT psd.id_stok_detail,psd.id_produk,psd.jumlah_stok,psd.exp_date,p.nama_produk,s.nama_supplier,g.nama_gudang
+		FROM `tx_produk_stok_detail` as psd
+		LEFT JOIN tm_supplier as s on psd.id_supplier = s.id_supplier
+		LEFT JOIN tx_produk as p ON psd.id_produk = p.id_produk
+		LEFT JOIN tm_gudang as g ON psd.id_gudang = g.id_gudang
+		WHERE psd.id_stok_detail =  $id";
+
+		$data = $this->db->query($sql);
+
+		if(!empty($data)){
+			echo json_encode(array('status'=>1,'data'=>$data->row()));
+		}else{
+			echo json_encode(array('status'=>0,'data'=>null,'msg'=>'Data Not Found'));
+		}
 	}
 
 	public function load_kadaluarsa_home(){

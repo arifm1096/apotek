@@ -70,6 +70,15 @@
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                Total
+                            </td>
+                            <td><div id ="tot_pembelian"></div></td>
+                            <td><div id ="tot_ppn"></div></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 

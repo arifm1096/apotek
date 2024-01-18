@@ -163,7 +163,7 @@ class Konsinyasi extends CI_Controller {
 		$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 		$searchValue = $_POST['search']['value'];
 		// $searchValue = $_POST['text'];
-		$where ='kd.is_delete = 0 ';
+		$where ='kd.is_delete = 0 AND kd.status = 0 and kd.is_selesai = 2';
 		
 		
 		if($_POST['id']==""){

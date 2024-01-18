@@ -54,6 +54,13 @@ function load_margin(tgl1, tgl2) {
 		],
 		drawCallback: function (settings) {
 			$("#total_nominal").html(settings.json.total_nominal);
+			$("#total_nominal").html(settings.json.total_margin);
+			$("#total_margin").html(settings.json.total_margin);
+			$("#tot_harga_beli").html(settings.json.tot_harga_beli);
+			$("#sub_tot_harga_beli").html(settings.json.sub_tot_harga_beli);
+			$("#tot_harga_jual").html(settings.json.tot_harga_jual);
+			$("#sub_tot_harga_jual").html(settings.json.sub_tot_harga_jual);
+			$("#tot_produk").html(settings.json.tot_produk);
 		},
 	});
 }
@@ -80,6 +87,23 @@ function export_excel() {
 	if (tgl1 !== "" && tgl2 !== "") {
 		window.open(
 			URL + "laporan/export_excel_margin_dok?tgl1=" + tgl1 + "&tgl2=" + tgl2,
+			+"_blank"
+		);
+	} else {
+		Swal.fire({
+			icon: "warning",
+			title: "Perhatian !!",
+			text: "Pilih FIlter Terlebih Dahulu",
+		});
+	}
+}
+
+function export_pdf() {
+	var tgl1 = $("#tanggal1").val();
+	var tgl2 = $("#tanggal2").val();
+	if (tgl1 !== "" && tgl2 !== "") {
+		window.open(
+			URL + "laporan/export_pdf_margin_dok?tgl1=" + tgl1 + "&tgl2=" + tgl2,
 			+"_blank"
 		);
 	} else {

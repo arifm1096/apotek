@@ -143,3 +143,26 @@ function export_excel() {
 		"_blank"
 	);
 }
+
+function export_pdf() {
+	var id_produk = $("#id_produk").val();
+	var id_gudang = $("#gudang_filter").val();
+	var bulan = $("#bulan_filter").val();
+	var tahun = $("#tahun_filter").val();
+	var kode_batch = $("#no_batch").val();
+	window.open(
+		URL +
+			"persediaan/export_pdf_kartu_stok?id_produk=" +
+			id_produk +
+			"&id_gudang=" +
+			id_gudang +
+			"&kode_batch=" +
+			kode_batch+
+			"&bulan=" +
+			bulan+
+			"&tahun=" +
+			tahun,
+			
+		"_blank"
+	);
+}

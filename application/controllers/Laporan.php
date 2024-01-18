@@ -932,10 +932,16 @@ class Laporan extends CI_Controller {
 			) ";
 		}
 
+		// if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+		// 	$tgl1 = $_POST['tgl1'];
+		// 	$tgl2 = $_POST['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
 		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
-			$tgl1 = $_POST['tgl1'];
-			$tgl2 = $_POST['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+			$tgl1 = date('Y-m-d',strtotime($_POST['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_POST['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}
 		
 		$where .=  $searchQuery;
@@ -976,7 +982,13 @@ class Laporan extends CI_Controller {
 		order by id_resep_detail " . $columnSortOrder . " limit " . $row . "," . $rowperpage;
 		$data = $this->db->query($sql)->result();
 
-		$sql_tot = "SELECT sum(tx.margin) as tot_margin 
+		$sql_tot = "SELECT 
+		sum(tx.tot_produk_jual) as tot_produk_terjual,
+		sum(tx.harga_beli) as tot_harga_beli,
+		sum(tx.tot_harga_beli) as sub_tot_harga_beli,
+		sum(tx.harga_jual) as tot_harga_jual,
+		sum(tx.tot_harga_jual) as sub_tot_harga_jual,
+		sum(tx.margin) as tot_margin 
 		FROM
 		(SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
 		sum(j.jumlah_produk) as tot_produk_jual, 
@@ -984,7 +996,8 @@ class Laporan extends CI_Controller {
 		sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
 		j.harga_jual, 
 		sum(j.total_harga) as tot_harga_jual,
-		sum(j.total_harga) - sum(j.harga_beli) as margin
+		sum(j.total_harga) - (sum(j.jumlah_produk) * j.harga_beli) as margin
+		FROM `tx_resep_detail` as j
 		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
 		WHERE $where
 		GROUP BY p.id_produk) as tx";
@@ -999,6 +1012,12 @@ class Laporan extends CI_Controller {
 			"iTotalDisplayRecords" => $totalRecordsFilter,
 			"aaData" => $data,
 			"total_nominal" => "Rp. ".number_format($data_tot->tot_margin,0,',','.'),
+			"tot_produk" => $data_tot->tot_produk_terjual,
+			"tot_harga_beli" => "Rp. ".number_format($data_tot->tot_harga_beli,0,',','.'),
+			"sub_tot_harga_beli" => "Rp. ".number_format($data_tot->sub_tot_harga_beli,0,',','.'),
+			"tot_harga_jual" => "Rp. ".number_format($data_tot->tot_harga_jual,0,',','.'),
+			"sub_tot_harga_jual" => "Rp. ".number_format($data_tot->sub_tot_harga_jual,0,',','.'),
+			"total_margin" => "Rp. ".number_format($data_tot->tot_margin,0,',','.'),
 		); 
 		echo json_encode($output);
 	}
@@ -1020,10 +1039,16 @@ class Laporan extends CI_Controller {
 
 		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 1 or j.status = 3";
 		
-		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
-			$tgl1 = $_GET['tgl1'];
-			$tgl2 = $_GET['tgl2'];
-			$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+		// 	$tgl1 = $_GET['tgl1'];
+		// 	$tgl2 = $_GET['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_POST['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_POST['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
 		}
 
 		$sql = "SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
@@ -1078,9 +1103,81 @@ class Laporan extends CI_Controller {
         $tgl = date('Y-m-d_H-i');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Laporan_Margin_'.$tgl.'.xls'); 
+        header('Content-Disposition: attachment;filename=Laporan_Margin_Resep_Dokter_'.$tgl.'.xls'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+	}
+
+	public function export_pdf_margin_dok(){
+
+		$where = " j.is_delete = 0 AND j.is_selesai = 1 AND j.status = 1 or j.status = 3";
+		
+		// if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+		// 	$tgl1 = $_GET['tgl1'];
+		// 	$tgl2 = $_GET['tgl2'];
+		// 	$where .= " AND DATE_FORMAT(j.insert_date,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		// }
+
+		if($_GET['tgl1'] !=='' && $_GET['tgl2'] !==''){
+			$tgl1 = date('Y-m-d',strtotime($_GET['tgl1'])).' 00:00:00';
+			$tgl2 = date('Y-m-d',strtotime($_GET['tgl2'])).' 23:59:00';
+			$where .= " AND j.insert_date BETWEEN '$tgl1' AND '$tgl2'";
+		}
+
+		$sql = "SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
+		sum(j.jumlah_produk) as tot_produk_jual, 
+		j.harga_beli,
+		sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+		j.harga_jual, 
+		sum(j.total_harga) as tot_harga_jual,
+		sum(j.total_harga) - sum(j.harga_beli) as margin
+		FROM `tx_resep_detail` as j
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_resep_detail ";
+		$data_res = $this->db->query($sql)->result_array();
+
+		$sql_tot = "SELECT 
+		sum(tx.tot_produk_jual) as tot_produk_terjual,
+		sum(tx.harga_beli) as tot_harga_beli,
+		sum(tx.tot_harga_beli) as sub_tot_harga_beli,
+		sum(tx.harga_jual) as tot_harga_jual,
+		sum(tx.tot_harga_jual) as sub_tot_harga_jual,
+		sum(tx.margin) as tot_margin 
+		FROM
+		(SELECT j.id_resep_detail,p.id_produk,p.sku_kode_produk,p.nama_produk,
+		sum(j.jumlah_produk) as tot_produk_jual, 
+		j.harga_beli,
+		sum(j.jumlah_produk) * j.harga_beli as tot_harga_beli, 
+		j.harga_jual, 
+		sum(j.total_harga) as tot_harga_jual,
+		sum(j.total_harga) - (sum(j.jumlah_produk) * j.harga_beli) as margin
+		FROM `tx_resep_detail` as j
+		LEFT JOIN tx_produk as p ON j.id_produk = p.id_produk
+		WHERE $where
+		GROUP BY p.id_produk) as tx";
+
+		$var['data_tot'] = $this->db->query($sql_tot)->row();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+        
+		ob_start();
+		$this->load->view('print/print-margin-pdf-doc',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('REKAP DATA MARGIN.pdf', 'L');
+
+		
 	}
 
 	public function laporan_beli_langsung(){
@@ -1349,9 +1446,9 @@ class Laporan extends CI_Controller {
 		
 		// Fetch Records
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
-		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		psd.harga_beli as harga_beli,
 		sum(psd.jumlah_produk) as stok,
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		sum(psd.jumlah_produk) * psd.harga_beli as tot_harga_beli,
 		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
@@ -1362,7 +1459,8 @@ class Laporan extends CI_Controller {
 		$data = $this->db->query($sql)->result();
 
 		$sql_tot = "SELECT 
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		sum(psd.jumlah_produk *  psd.harga_beli) as tot_harga_beli,
+		sum(psd.ppn) as tot_ppn
 		FROM `tx_beli_rencana` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		WHERE $where";
@@ -1375,6 +1473,7 @@ class Laporan extends CI_Controller {
 			"iTotalDisplayRecords" => $totalRecordsFilter,
 			"aaData" => $data,
 			"total_nominal" => "Rp. ".number_format($data_tot->tot_harga_beli,0,',','.'),
+			"total_ppn" => "Rp. ".number_format($data_tot->tot_ppn,0,',','.'),
 		); 
 		echo json_encode($output);
 	}
@@ -1383,7 +1482,8 @@ class Laporan extends CI_Controller {
 		$spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 		$sheet->setCellValue('B1',"Apotik Nawasena 24 JAM");
-		$sheet->setCellValue('A2', "Total Modal");
+		$sheet->setCellValue('A2', "Total Pembelian");
+		$sheet->setCellValue('C2', "Total PPN");
         $sheet->setCellValue('A3', "No");
         $sheet->setCellValue('B3', "SKU");
         $sheet->setCellValue('C3', "Nama Produk");
@@ -1404,7 +1504,7 @@ class Laporan extends CI_Controller {
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
 		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
 		sum(psd.jumlah_produk) as stok,
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		sum(psd.jumlah_produk) *  psd.harga_beli as tot_harga_beli,
 		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
@@ -1415,7 +1515,8 @@ class Laporan extends CI_Controller {
 		$data_res = $this->db->query($sql)->result_array();
 
 		$sql_tot = "SELECT 
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli
+		sum(psd.jumlah_produk *  psd.harga_beli) as tot_harga_beli,
+		sum(psd.ppn) as tot_ppn
 		FROM `tx_beli_rencana` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
 		WHERE $where";
@@ -1423,6 +1524,7 @@ class Laporan extends CI_Controller {
 		$data_tot = $this->db->query($sql_tot)->row();
 
 		$sheet->setCellValue('B2', $data_tot->tot_harga_beli);
+		$sheet->setCellValue('D2', $data_tot->tot_ppn);
 		
         $no = 1; // Untuk penomoran tabel, di awal set dengan 1
         $numrow = 4;
@@ -1459,9 +1561,9 @@ class Laporan extends CI_Controller {
 		}
 
 		$sql = "SELECT p.sku_kode_produk,p.nama_produk,psd.harga_beli as hrpsd,p.harga_beli as hrp,
-		CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as harga_beli,
+		 psd.harga_beli as harga_beli,
 		sum(psd.jumlah_produk) as stok,
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		sum(psd.jumlah_produk) *  psd.harga_beli as tot_harga_beli,
 		s.nama_satuan,psd.ppn
 		FROM `tx_beli_rencana`as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk
@@ -1472,7 +1574,7 @@ class Laporan extends CI_Controller {
 		$var['data'] = $this->db->query($sql)->result();
 
 		$sql_tot = "SELECT 
-		sum(psd.jumlah_produk) * CASE WHEN psd.harga_beli = 0 THEN p.harga_beli ELSE psd.harga_beli END as tot_harga_beli,
+		sum(psd.jumlah_produk * psd.harga_beli ) as tot_harga_beli,
 		sum(psd.ppn) as tot_ppn
 		FROM `tx_beli_rencana` as psd
 		LEFT JOIN tx_produk as p on psd.id_produk = p.id_produk

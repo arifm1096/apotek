@@ -51,6 +51,8 @@ function load_rencana(tgl1, tgl2) {
 		],
 		drawCallback: function (settings) {
 			$("#total_nominal").html(settings.json.total_nominal);
+			$("#tot_pembelian").html(settings.json.total_nominal);
+			$("#tot_ppn").html(settings.json.total_ppn);
 		},
 	});
 }

@@ -9,7 +9,11 @@
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
                         onclick="export_excel();">
-                        <i class="fa fa-file-excel"></i> Export
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-excel"></i> Export PDF
                     </button>
                 </ol>
 
@@ -70,12 +74,24 @@
                     <tbody>
                     </tbody>
                     <tfoot>
-                        <th colspan="3">Total</th>
+                        <th colspan="2">Total</th>
                         <th>
-                            <div id="qty_pejualan"></div>
+                            <div id="tot_produk"></div>
                         </th>
                         <th>
-                            <div id="total_pejualan"></div>
+                            <div id="tot_harga_beli"></div>
+                        </th>
+                        <th>
+                            <div id="sub_tot_harga_beli"></div>
+                        </th>
+                        <th>
+                            <div id="tot_harga_jual"></div>
+                        </th>
+                        <th>
+                            <div id="sub_tot_harga_jual"></div>
+                        </th>
+                        <th>
+                            <div id="total_margin"></div>
                         </th>
                     </tfoot>
 

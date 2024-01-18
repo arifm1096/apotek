@@ -128,5 +128,19 @@
                         </tr>
                    
        </table>
+       <br><br><br>
 
+        <table style="padding-left:600px;">
+            <tr>
+                <td>Nama Apoteker</td>
+            </tr>
+            <tr>
+                <td>
+                    <br><br><br>
+                </td>
+            </tr>
+            <tr>
+                <td><b><?php echo $this->session->userdata('nama_user');?></b></td>
+            </tr>
+        </table>
    </page>
