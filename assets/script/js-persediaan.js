@@ -842,8 +842,6 @@ function load_persediaan(text, jual, rak) {
 												</button>
 												<div class="dropdown-divider"></div>
 												<button type="button" class="dropdown-item" onclick="edit_produk('` +
-						row.id_produk +
-						"','" +
 						row.id_stok +
 						`')">
 													<i class="fa fa-pencil-alt mr-2"></i> Edit Stok
