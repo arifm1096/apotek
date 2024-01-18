@@ -8,8 +8,12 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <button type="button" class="btn btn-success btn-sm" style="align-items: right; margin-left: 5px;"
-                        onclick="add_data();">
-                        <i class="fa fa-file-excel"></i> Export
+                        onclick="export_excel();">
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" style="align-items: right; margin-left: 5px;"
+                        onclick="export_pdf();">
+                        <i class="fa fa-file-pdf"></i> Export PDF
                     </button>
                 </ol>
 
@@ -98,7 +102,8 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-info-circle"></i> Opname Produk Kadaluarsa</h4>
+                <h6 class="modal-title" id="mediumModalLabel"><i class="fa fa-info-circle"></i> Opname Produk Kadaluarsa
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -106,53 +111,63 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <form id="add_produk">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p><h4><b>Nama Produk :</b> <div id="produk"></div></h4></p>
-                                </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>
+                                <h4><b>
+                                        <div id="produk">
+                                    </b>
+                                </h4>
+                                </p>
                             </div>
-                            <div class="row p-2">
-                                <div class="col-md-6">
-                                    <p><b>Supplier :</b> <div id="supplier"></div></p>
-                                    <p><b>Gudang :</b> <div id="gudang"></div></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><b>Tgl Exp :</b> <div id="tgl_exp"></div></p>
-                                    <p><b>Qty :</b> <div id="qty_x"></div></p>
-                                </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><b>Supplier :</b>
+                                <div id="supplier"></div>
+                                </p>
+                                <p><b>Gudang :</b>
+                                <div id="gudang"></div>
+                                </p>
                             </div>
-                            <hr>
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <label>Satuan Utama :</label>
-                                        <div class="col-md-6">
-                                            <select name="status_op_ed" id="status_op_ed" class="form-control select2" required>
-                                            </select>
-                                        </div>
+                            <div class="col-md-6">
+                                <p><b>Tgl Exp :</b>
+                                <div id="tgl_exp"></div>
+                                </p>
+                                <p><b>Qty :</b>
+                                <div id="qty_x"></div>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Satuan Utama :</label>
+                                    <input type="hidden" name="id_stok_detail" id="id_stok_detail">
+                                    <select name="status_op_ed" id="status_op_ed" class="form-control select2" required>
+                                    </select>
+                                </div>
+                                <div class="form-group row">
+                                    <label>Keterangan :</label>
+                                    <div class="col-md-12">
+                                        <textarea class="form-control" name="ket_op_ed" id="ket_op_ed" cols="50"
+                                            rows="2"></textarea>
                                     </div>
-                                    <div class="form-group row">
-                                        <label>Keterangan :</label>
-                                        <div class="col-md-12">
-                                          <textarea class="form-control" name="ket_op_ed" id="ket_op_ed" cols="50" rows="3"></textarea>
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-9">
+                                <button class="btn btn-block btn-info" type="button" onclick="save_opname()">
+                                    <i class="fa fa-save fa-lg"></i> &nbsp;
+                                    <span id="save-button">Opname Produk</span>
+                                    <span id="send-button" style="display:none;">Sending…</span>
+                                </button>
                             </div>
-                            <div class="row">
-                                <div class="col-md-2"></div>
-                                <div class="col-md-9">
-                                    <button class="btn btn-block btn-info" type="button" onclick="save_data_produk()">
-                                        <i class="fa fa-save fa-lg"></i> &nbsp;
-                                        <span id="save-button">Opname Produk</span>
-                                        <span id="send-button" style="display:none;">Sending…</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                     <!-- /.login-card-body -->
                 </div>

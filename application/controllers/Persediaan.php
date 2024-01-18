@@ -593,7 +593,7 @@ class Persediaan extends CI_Controller {
 		$searchValue = $_POST['text'];
 		$jual ='';
 		$rak ='';
-		$where = " p.is_delete = 0 ";
+		$where = " p.is_delete = 0 AND pd.status_op_ed = 0 ";
 	
 		// Search
 		$searchQuery = "";
@@ -668,6 +668,121 @@ class Persediaan extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function export_excel_ed(){
+
+		$where = " p.is_delete = 0 AND pd.status_op_ed = 0 ";
+		$searchValue = $_GET['text'];
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR s.nama_supplier like '%" . $searchValue . "%'	
+								 OR g.nama_gudang like '%" . $searchValue . "%'	
+								 OR pd.exp_date like '%" . $searchValue . "%'					
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'	
+			) ";
+		}
+
+
+		if($_GET['bulan'] !=="pil"){
+			$bulan = $_GET['bulan'];
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +$bulan month), '%Y-%m') = DATE_FORMAT(pd.exp_date,'%Y-%m')";
+		}
+		
+
+		if($_GET['filter_tanggal'] !==""){
+			$tgl = date('Y-m-d',strtotime($_GET['filter_tanggal']));
+			$where .= " AND pd.exp_date < '$tgl' ";
+		}
+
+		if($_GET['bulan'] =="pil" && $_GET['filter_tanggal'] ==""){
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +3 month), '%Y-%m') >= DATE_FORMAT(pd.exp_date,'%Y-%m')";
+		}
+	
+		$where .= " AND pd.is_delete = 0 ".$searchQuery;
+
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,s.nama_supplier,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,p.id_produk,
+				DATE_FORMAT(now(), '%Y-%m-%d') as now_date
+				FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		WHERE $where
+		GROUP BY pd.id_stok_detail
+		order by pd.id_stok_detail desc";
+
+		$var['data'] = $this->db->query($sql)->result();
+		$this->load->view('v-stok-kadaluarsa',$var);
+	}
+
+	public function export_pdf_ed(){
+
+		$where = " p.is_delete = 0 AND pd.status_op_ed = 0 ";
+		$searchValue = $_GET['text'];
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR s.nama_supplier like '%" . $searchValue . "%'	
+								 OR g.nama_gudang like '%" . $searchValue . "%'	
+								 OR pd.exp_date like '%" . $searchValue . "%'					
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'	
+			) ";
+		}
+
+
+		if($_GET['bulan'] !=="pil"){
+			$bulan = $_GET['bulan'];
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +$bulan month), '%Y-%m') = DATE_FORMAT(pd.exp_date,'%Y-%m')";
+		}
+		
+
+		if($_GET['filter_tanggal'] !==""){
+			$tgl = date('Y-m-d',strtotime($_GET['filter_tanggal']));
+			$where .= " AND pd.exp_date < '$tgl' ";
+		}
+
+		if($_GET['bulan'] =="pil" && $_GET['filter_tanggal'] ==""){
+			$where .= " AND DATE_FORMAT(DATE_ADD(now(),INTERVAL +3 month), '%Y-%m') >= DATE_FORMAT(pd.exp_date,'%Y-%m')";
+		}
+	
+		$where .= " AND pd.is_delete = 0 ".$searchQuery;
+
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,s.nama_supplier,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,pd.id_stok_detail,p.id_produk,
+				DATE_FORMAT(now(), '%Y-%m-%d') as now_date
+				FROM `tx_produk_stok_detail` as pd
+				LEFT JOIN tx_produk as p on pd.id_produk = p.id_produk
+				LEFT JOIN tm_supplier as s on pd.id_supplier = s.id_supplier
+				LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		WHERE $where
+		GROUP BY pd.id_stok_detail
+		order by pd.id_stok_detail desc";
+
+		$var['data'] = $this->db->query($sql)->result();
+		
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-stok-kadaluarsa',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('Stok Kadaluarsa.pdf', 'P');
+	}
+
 	public function get_status_ed(){
 		$data = $this->db->select('*')
 						->from('tm_status_op_ed')
@@ -678,6 +793,7 @@ class Persediaan extends CI_Controller {
 			echo json_encode(array('status'=>0,'data'=>null));
 		}
 	}
+
 	public function get_stok_opname_ed(){
 		$id = $_POST['id'];
 		$sql ="SELECT psd.id_stok_detail,psd.id_produk,psd.jumlah_stok,psd.exp_date,p.nama_produk,s.nama_supplier,g.nama_gudang
@@ -693,6 +809,29 @@ class Persediaan extends CI_Controller {
 			echo json_encode(array('status'=>1,'data'=>$data->row()));
 		}else{
 			echo json_encode(array('status'=>0,'data'=>null,'msg'=>'Data Not Found'));
+		}
+	}
+
+	public function save_opname_ed(){
+		$data = $this->input->post();
+		$user = $this->session->userdata('id_user');
+		$datetime = $this->db->select('now() as time')->get()->row();
+
+		if($data['status_op_ed'] !=="pil" ){
+			$data['update_by'] = $user;
+			$data['update_date'] = $datetime->time;
+			unset($data['id']);
+			$id = $_POST['id'];
+			
+			$up = $this->db->where('id_stok_detail',$id)->update('tx_produk_stok_detail',$data);
+
+			if($up){
+				echo json_encode(array('status'=>1,'msg'=>'Success Opname Produk'));
+			}else{
+				echo json_encode(array('status'=>0,'msg'=>'Gagal Opname Produk'));
+			}
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Lengkapi Inputan Terlebih Dahulu !'));
 		}
 	}
 
