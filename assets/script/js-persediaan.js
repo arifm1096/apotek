@@ -13,6 +13,27 @@ $(document).ready(function () {
 	$("#harga_option_param").val(1);
 });
 
+function get_margin(){
+	var harga_beli = $("#harga_beli").val();
+	var margin = $("#margin").val();
+	let persen = 0;
+	let harga_jual = 0;
+
+	if(harga_beli !==""){
+		persen = harga_beli * margin / 100;
+		harga_jual = parseInt(harga_beli) + parseInt(persen);
+		// console.log(harga_jual);
+		$("#harga_jual").val(harga_jual);
+	}else{
+		$("#margin").val("");
+		Swal.fire({
+			icon : 'error',
+			title : 'Perhatian !!',
+			text : 'Inputkan Harga Beli Terlebih Dahulu'
+		})
+	}
+}
+
 $(".tgl_piker").datepicker({
 	todayHighlight: "TRUE",
 	autoclose: true,
@@ -827,6 +848,7 @@ function load_persediaan(text, jual, rak) {
 			{ data: "sku_kode_produk" },
 			{ data: "stok" },
 			{ data: "harga_beli" },
+			{ data: "margin_persen" },
 			{
 				data: null,
 				orderable: false,

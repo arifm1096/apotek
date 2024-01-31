@@ -211,11 +211,23 @@
                                         <label>Harga Beli :</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">Rp.</span>
+                                                <span class="input-group-text"></span>
                                             </div>
                                             <input type="text" name="harga_beli" id="harga_beli" class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Margin (%) :</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Rp.</span>
+                                            </div>
+                                            <input type="text" name="margin" id="margin" oninput="get_margin();" class="form-control">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="satuan_harga_beli"> % </span>
                                             </div>
                                         </div>
                                     </div>
@@ -225,7 +237,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">Rp.</span>
                                             </div>
-                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control">
+                                            <input type="text" name="harga_jual" id="harga_jual" class="form-control" readonly>
                                             <div class="input-group-append">
                                                 <span class="input-group-text" id="satuan_harga_jual">/Satuan</span>
                                             </div>
@@ -449,6 +461,20 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <label>Margin (%) :</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"></span>
+                                            </div>
+                                            <input type="text" name="margin_edit" id="margin_edit" oninput="get_margin_edit();"
+                                                class="form-control">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"
+                                                    id="edit_satuan_margin">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Harga Jual Satuan :</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -456,7 +482,7 @@
                                             </div>
                                             <input type="hidden" id="id_harga">
                                             <input type="text" name="edit_harga_jual" id="edit_harga_jual"
-                                                class="form-control">
+                                                class="form-control" readonly>
                                             <div class="input-group-append">
                                                 <span class="input-group-text"
                                                     id="edit_satuan_harga_jual">/Satuan</span>

@@ -91,6 +91,7 @@ class Persediaan extends CI_Controller {
 	
 		// Fetch Records
 		$sql = "SELECT p.id_produk,p.sku_kode_produk,p.barcode,p.nama_produk,p.status_jual,p.jumlah_minimal,p.produk_by,
+		CONCAT(p.margin,' %') as margin_persen,
 		r.nama_rak,s.nama_satuan,ps.jumlah_stok as stok,
 		p.harga_beli,ps.id_stok,
 		REPLACE(GROUP_CONCAT(phg.harga_jual),',','<br>') as harga_jual,

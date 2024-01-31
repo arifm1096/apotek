@@ -439,6 +439,7 @@ class Produk extends CI_Controller {
 			'status_jual'=>$_POST['status_jual'],
 			'id_rak'=>$_POST['id_rak'],
 			'id_jenis_produk'=>$_POST['id_jenis_produk'],
+			'margin'=>$_POST['margin'],
 		);
 
 		$produk = $this->insert_produk($data_produk);
@@ -502,6 +503,7 @@ class Produk extends CI_Controller {
 							$data_fix_flek";
 							
 				$sql_flek = $this->db->query($str_sql_flek);
+
 				if ($sql_flek) {
 					$no += 1;
 				}
@@ -667,6 +669,7 @@ class Produk extends CI_Controller {
 			'status_jual'=>$_POST['status_jual'],
 			'id_rak'=>$_POST['id_rak'],
 			'id_jenis_produk'=>$_POST['id_jenis_produk'],
+			'margin'=>$_POST['margin'],
 		);
 
 		$produk = $this->db->where('id_produk',$id_produk)->update('tx_produk',$data_produk);

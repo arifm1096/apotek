@@ -15,6 +15,48 @@ $(document).ready(function () {
 //Initialize Select2 Elements
 $(".select2").select2();
 
+function get_margin(){
+	var harga_beli = $("#harga_beli").val();
+	var margin = $("#margin").val();
+	let persen = 0;
+	let harga_jual = 0;
+
+	if(harga_beli !==""){
+		persen = harga_beli * margin / 100;
+		harga_jual = parseInt(harga_beli) + parseInt(persen);
+		// console.log(harga_jual);
+		$("#harga_jual").val(harga_jual);
+	}else{
+		$("#margin").val("");
+		Swal.fire({
+			icon : 'error',
+			title : 'Perhatian !!',
+			text : 'Inputkan Harga Beli Terlebih Dahulu'
+		})
+	}
+}
+
+function get_margin_edit(){
+	var harga_beli = $("#edit_harga_beli").val();
+	var margin = $("#margin_edit").val();
+	let persen = 0;
+	let harga_jual = 0;
+
+	if(harga_beli !==""){
+		persen = harga_beli * margin / 100;
+		harga_jual = parseInt(harga_beli) + parseInt(persen);
+		// console.log(harga_jual);
+		$("#edit_harga_jual").val(harga_jual);
+	}else{
+		$("#margin_edit").val("");
+		Swal.fire({
+			icon : 'error',
+			title : 'Perhatian !!',
+			text : 'Inputkan Harga Beli Terlebih Dahulu'
+		})
+	}
+}
+
 function status_aktif(p_status) {
 	var html = "<option value='pil'> Pilih Status </option>";
 	var data = [
@@ -588,6 +630,7 @@ function save_data_produk() {
 	var status_jual = $("input[type=radio][name=harga_option]").val();
 	var harga_beli = $("#harga_beli").val();
 	var jenis_produk = $("#jenis_produk").val();
+	var margin = $("#margin").val();
 
 	// obejct satuan
 	var jumlah_produk = [];
@@ -670,6 +713,7 @@ function save_data_produk() {
 			harga_member: harga_member,
 			id_jenis_produk: jenis_produk,
 			status_aktif: status_aktif,
+			margin:margin
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
@@ -1411,6 +1455,7 @@ function save_edit_data_produk() {
 	var status_jual = $('input[name="edit_status_jual"]:checked').val();
 	var harga_beli = $("#edit_harga_beli").val();
 	var jenis_produk = $("#edit_jenis_produk").val();
+	var margin = $("#margin_edit").val();
 
 	// obejct satuan
 	var jumlah_produk = [];
@@ -1495,6 +1540,7 @@ function save_edit_data_produk() {
 			harga_member: harga_member,
 			id_jenis_produk: jenis_produk,
 			status_aktif: status_aktif,
+			margin:margin
 		},
 		success: function (data) {
 			var res = JSON.parse(data);

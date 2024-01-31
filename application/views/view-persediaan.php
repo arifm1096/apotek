@@ -85,6 +85,7 @@
                             <th>SKU </th>
                             <th>Stok</th>
                             <th>Harga Pokok (Rp.)</th>
+                            <th>Margin (%)</th>
                             <th>Harga Jual (Rp.)</th>
                             <th>Jenis Harga</th>
                             <th>Margin (Rp.)</th>
@@ -216,6 +217,18 @@
                                             <input type="text" name="harga_beli" id="harga_beli" class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text" id="satuan_harga_beli">/Satuan</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Margin :</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"></span>
+                                            </div>
+                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="satuan_harga_beli">%</span>
                                             </div>
                                         </div>
                                     </div>
