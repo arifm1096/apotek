@@ -211,7 +211,7 @@
                                         <label>Harga Beli :</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"></span>
+                                                <span class="input-group-text">Rp.</span>
                                             </div>
                                             <input type="text" name="harga_beli" id="harga_beli" class="form-control">
                                             <div class="input-group-append">
@@ -223,7 +223,7 @@
                                         <label>Margin (%) :</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">Rp.</span>
+                                                <span class="input-group-text"></span>
                                             </div>
                                             <input type="text" name="margin" id="margin" oninput="get_margin();" class="form-control">
                                             <div class="input-group-append">

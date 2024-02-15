@@ -424,6 +424,7 @@ class Produk extends CI_Controller {
 	
 	public function save_produk(){
 		$id_produk ="";
+		$data = $this->input->post();
 		$no = 0;
 		$user = $this->session->userdata('id_user');
 		$sql = "SELECT NOW() as jam";
@@ -444,29 +445,31 @@ class Produk extends CI_Controller {
 
 		$produk = $this->insert_produk($data_produk);
 		if(!empty($produk)){
-			
-			$id_satuan = $_POST['satuan'];
-			$jumlah_produk = $_POST['jumlah_produk'];
-			$jumlah_produk_p = $_POST['jumlah_produk_p'];
-			$arr_fix =[];
-			$count = 0;
-			foreach ($jumlah_produk as $key => $value) {
-				'"'.array_push($arr_fix, '("'.$produk.'"',
-					'"'.$id_satuan[$count].'"',
-					'"'.$jumlah_produk[$count].'"',
-					'"'.$jumlah_produk_p[$count].'"',
-					'"'.$user.'"',
-					'"'.$time->jam.'")',
-				);
-				$count++;
-			}
-			$data_fix = implode(",",$arr_fix);
-			$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
-						$data_fix";
-						
-			$sql = $this->db->query($str_sql);
-			if ($sql) {
-				$no += 1;
+			$no += 1;
+			if(isset($data['satuan']) && isset($data['jumlah_produk']) && isset($data['jumlah_produk_p'])){
+				$id_satuan = $data['satuan'];
+				$jumlah_produk = $data['jumlah_produk'];
+				$jumlah_produk_p = $data['jumlah_produk_p'];
+				$arr_fix =[];
+				$count = 0;
+				foreach ($jumlah_produk as $key => $value) {
+					'"'.array_push($arr_fix, '("'.$produk.'"',
+						'"'.$id_satuan[$count].'"',
+						'"'.$jumlah_produk[$count].'"',
+						'"'.$jumlah_produk_p[$count].'"',
+						'"'.$user.'"',
+						'"'.$time->jam.'")',
+					);
+					$count++;
+				}
+				$data_fix = implode(",",$arr_fix);
+				$str_sql = "INSERT INTO `tx_produk_detail` (`id_produk`, `id_satuan`, `jumlah_produk`, `jumlah_produk_p`, `insert_by`, `insert_date`) VALUES
+							$data_fix";
+							
+				$sql = $this->db->query($str_sql);
+				if ($sql) {
+					$no += 1;
+				}
 			}
 
 		// harga Produk
@@ -483,32 +486,36 @@ class Produk extends CI_Controller {
 					$no += 1;
 				}
 			// fleksibel
-				$harga_fleksibel = $_POST['harga_fleksibel'];
-				$ket = $_POST['ket'];
-				$jenis_harga = 1;
-				$arr_fix_flek =[];
-				$count_flek = 0;
-				foreach ($harga_fleksibel as $key => $value) {
-					'"'.array_push($arr_fix_flek, '("'.$produk.'"',
-						'"'.$harga_fleksibel[$count_flek].'"',
-						'"'.$ket[$count_flek].'"',
-						'"'.$jenis_harga.'"',
-						'"'.$user.'"',
-						'"'.$time->jam.'")',
-					);
-					$count_flek++;
-				}
-				$data_fix_flek = implode(",",$arr_fix_flek);
-				$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
-							$data_fix_flek";
-							
-				$sql_flek = $this->db->query($str_sql_flek);
+				if(isset($_POST['harga_fleksibel']) && isset($_POST['ket'])){
+					$harga_fleksibel = $_POST['harga_fleksibel'];
+					$ket = $_POST['ket'];
+					$jenis_harga = 1;
+					$arr_fix_flek =[];
+					$count_flek = 0;
+					foreach ($harga_fleksibel as $key => $value) {
+						'"'.array_push($arr_fix_flek, '("'.$produk.'"',
+							'"'.$harga_fleksibel[$count_flek].'"',
+							'"'.$ket[$count_flek].'"',
+							'"'.$jenis_harga.'"',
+							'"'.$user.'"',
+							'"'.$time->jam.'")',
+						);
+						$count_flek++;
+					}
+					$data_fix_flek = implode(",",$arr_fix_flek);
+					$str_sql_flek = "INSERT INTO `tx_produk_harga` (`id_produk`, `harga_jual`, `ket`, `id_jenis_harga`, `insert_by`, `insert_date`) VALUES
+								$data_fix_flek";
+								
+					$sql_flek = $this->db->query($str_sql_flek);
 
-				if ($sql_flek) {
-					$no += 1;
+					if ($sql_flek) {
+						$no += 1;
+					}
 				}
+				
 
 			// grosir
+			if(isset($_POST['harga_fleksibel']) && isset($_POST['ket'])){
 				$harga_grosir = $_POST['harga_grosir'];
 				$jumlah_satuan = $_POST['jumlah_satuan'];
 				$jenis_harga1 = 2;
@@ -532,8 +539,11 @@ class Produk extends CI_Controller {
 				if ($sql_gros) {
 					$no += 1;
 				}
+			}
+				
 
 			// Member
+			if(isset($_POST['harga_fleksibel']) && isset($_POST['ket'])){
 				$harga_member = $_POST['harga_member'];
 				// if($_POST['status_aktif']!=="y"){
 				// 	$status_ak = "n";
@@ -563,6 +573,8 @@ class Produk extends CI_Controller {
 				if ($sql_mem) {
 					$no += 1;
 				}
+			}
+				
 
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'Error param id | Kode : 5762'));
@@ -678,10 +690,10 @@ class Produk extends CI_Controller {
 			$no += 1;
 		}
 
-			if(!empty($_POST['satuan']) && !empty($_POST['jumlah_produk']) && !empty($_POST['jumlah_produk_p'])){
-				$id_satuan = $_POST['satuan'];
-				$jumlah_produk = $_POST['jumlah_produk'];
-				$jumlah_produk_p = $_POST['jumlah_produk_p'];
+			if(isset($data['satuan']) && isset($data['jumlah_produk']) && isset($data['jumlah_produk_p'])){
+				$id_satuan = $data['satuan'];
+				$jumlah_produk = $data['jumlah_produk'];
+				$jumlah_produk_p = $data['jumlah_produk_p'];
 				$arr_fix =[];
 				$count = 0;
 				foreach ($jumlah_produk as $key => $value) {
@@ -728,7 +740,7 @@ class Produk extends CI_Controller {
 				}
 				
 			// fleksibel
-				if(!empty($_POST['harga_fleksibel']) && !empty($_POST['ket']) ){
+				if(isset($_POST['harga_fleksibel']) && isset($_POST['ket']) ){
 					$harga_fleksibel = $_POST['harga_fleksibel'];
 					$ket = $_POST['ket'];
 					$jenis_harga = 1;
@@ -756,7 +768,7 @@ class Produk extends CI_Controller {
 				
 
 			// grosir
-				if(!empty($_POST['harga_grosir']) && !empty($_POST['jumlah_satuan'])){
+				if(isset($_POST['harga_grosir']) && isset($_POST['jumlah_satuan'])){
 					$harga_grosir = $_POST['harga_grosir'];
 					$jumlah_satuan = $_POST['jumlah_satuan'];
 					$jenis_harga1 = 2;
@@ -784,7 +796,7 @@ class Produk extends CI_Controller {
 				
 
 			// Member
-				if(!empty($_POST['harga_member']) && !empty($_POST['status_aktif'])){
+				if(isset($_POST['harga_member']) && isset($_POST['status_aktif'])){
 					$harga_member = $_POST['harga_member'];
 					// if($_POST['status_aktif']!=="y"){
 					// 	$status_ak = "n";
