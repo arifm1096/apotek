@@ -458,7 +458,7 @@ class Produk extends CI_Controller {
 						'"'.$jumlah_produk[$count].'"',
 						'"'.$jumlah_produk_p[$count].'"',
 						'"'.$user.'"',
-						'"'.$time->jam.'")',
+						'"'.$time->jam.'")'
 					);
 					$count++;
 				}
@@ -498,7 +498,7 @@ class Produk extends CI_Controller {
 							'"'.$ket[$count_flek].'"',
 							'"'.$jenis_harga.'"',
 							'"'.$user.'"',
-							'"'.$time->jam.'")',
+							'"'.$time->jam.'")'
 						);
 						$count_flek++;
 					}
@@ -527,7 +527,7 @@ class Produk extends CI_Controller {
 						'"'.$jumlah_satuan[$count_gros].'"',
 						'"'.$jenis_harga1.'"',
 						'"'.$user.'"',
-						'"'.$time->jam.'")',
+						'"'.$time->jam.'")'
 					);
 					$count_gros++;
 				}
@@ -561,7 +561,7 @@ class Produk extends CI_Controller {
 						'"'.$status_aktif[$count_mem].'"',
 						'"'.$jenis_harga2.'"',
 						'"'.$user.'"',
-						'"'.$time->jam.'")',
+						'"'.$time->jam.'")'
 					);
 					$count_mem++;
 				}
@@ -702,7 +702,7 @@ class Produk extends CI_Controller {
 						'"'.$jumlah_produk[$count].'"',
 						'"'.$jumlah_produk_p[$count].'"',
 						'"'.$user.'"',
-						'"'.$time->jam.'")',
+						'"'.$time->jam.'")'
 					);
 					$count++;
 				}
@@ -752,7 +752,7 @@ class Produk extends CI_Controller {
 							'"'.$ket[$count_flek].'"',
 							'"'.$jenis_harga.'"',
 							'"'.$user.'"',
-							'"'.$time->jam.'")',
+							'"'.$time->jam.'")'
 						);
 						$count_flek++;
 					}
@@ -780,7 +780,7 @@ class Produk extends CI_Controller {
 							'"'.$jumlah_satuan[$count_gros].'"',
 							'"'.$jenis_harga1.'"',
 							'"'.$user.'"',
-							'"'.$time->jam.'")',
+							'"'.$time->jam.'")'
 						);
 						$count_gros++;
 					}
@@ -814,7 +814,7 @@ class Produk extends CI_Controller {
 							'"'.$status_aktif[$count_mem].'"',
 							'"'.$jenis_harga2.'"',
 							'"'.$user.'"',
-							'"'.$time->jam.'")',
+							'"'.$time->jam.'")'
 						);
 						$count_mem++;
 					}
