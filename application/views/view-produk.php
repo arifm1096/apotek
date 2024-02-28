@@ -466,7 +466,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"></span>
                                             </div>
-                                            <input type="text" name="margin_edit" id="margin_edit" oninput="get_margin_edit();"
+                                            <input type="text" name="edit_margin" id="edit_margin" oninput="get_margin_edit();"
                                                 class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text"

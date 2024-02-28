@@ -226,7 +226,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"></span>
                                             </div>
-                                            <input type="text" name="harga_beli" id="harga_beli" class="form-control">
+                                            <input type="text" name="margin" id="margin" oninput="get_margin();" class="form-control">
                                             <div class="input-group-append">
                                                 <span class="input-group-text" id="satuan_harga_beli">%</span>
                                             </div>

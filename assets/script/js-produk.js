@@ -38,17 +38,17 @@ function get_margin(){
 
 function get_margin_edit(){
 	var harga_beli = $("#edit_harga_beli").val();
-	var margin = $("#margin_edit").val();
+	var margin = $("#edit_margin").val();
 	let persen = 0;
 	let harga_jual = 0;
 
 	if(harga_beli !==""){
 		persen = harga_beli * margin / 100;
 		harga_jual = parseInt(harga_beli) + parseInt(persen);
-		// console.log(harga_jual);
+		console.log(harga_jual);
 		$("#edit_harga_jual").val(harga_jual);
 	}else{
-		$("#margin_edit").val("");
+		$("#edit_margin").val("");
 		Swal.fire({
 			icon : 'error',
 			title : 'Perhatian !!',
@@ -56,6 +56,8 @@ function get_margin_edit(){
 		})
 	}
 }
+
+
 
 function status_aktif(p_status) {
 	var html = "<option value='pil'> Pilih Status </option>";
@@ -1431,6 +1433,7 @@ function edit(id) {
 				$("#edit_harga_beli").val(res.produk.harga_beli);
 				$("#edit_harga_jual").val(res.produk.harga_jual);
 				$("#edit_jumlah_minimal").val(res.produk.jumlah_minimal);
+				$("#edit_margin").val(res.produk.margin);
 				$("#modal_edit_produk").modal("show");
 			} else {
 				Swal.fire({
@@ -1455,7 +1458,7 @@ function save_edit_data_produk() {
 	var status_jual = $('input[name="edit_status_jual"]:checked').val();
 	var harga_beli = $("#edit_harga_beli").val();
 	var jenis_produk = $("#edit_jenis_produk").val();
-	var margin = $("#margin_edit").val();
+	var margin = $("#edit_margin").val();
 
 	// obejct satuan
 	var jumlah_produk = [];
