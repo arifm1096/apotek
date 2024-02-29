@@ -625,6 +625,7 @@ function save_data_produk() {
 	var status_jual = $("input[type=radio][name=harga_option]").val();
 	var harga_beli = $("#harga_beli").val();
 	var jenis_produk = $("#jenis_produk").val();
+	var margin = $("#margin").val();
 
 	// obejct satuan
 	var jumlah_produk = [];
@@ -707,6 +708,7 @@ function save_data_produk() {
 			harga_member: harga_member,
 			id_jenis_produk: jenis_produk,
 			status_aktif: status_aktif,
+			margin:margin
 		},
 		success: function (data) {
 			var res = JSON.parse(data);
@@ -717,9 +719,9 @@ function save_data_produk() {
 					title: "Berhasil !",
 					text: res.msg,
 				});
-				$("#tbl_produk").DataTable().destroy();
-				load_produk(text, jual, rak);
 				$("#modal_input_produk").modal("hide");
+				filter_data();
+				
 			} else {
 				Swal.fire({
 					icon: "warning",
@@ -1050,15 +1052,24 @@ function edit_produk(id_produk, id_stok) {
 		success: function (data) {
 			var res = JSON.parse(data);
 			if (res.status == 1) {
-				$("#id_stok_edit").val(id_stok);
-				$("#id_produk_edit").val(id_produk);
-				$("#nama_produk_edit").html(res.data.nama_produk);
-				$("#nama_gudang_edit").html(res.data.nama_gudang);
-				$("#satuan_edit").html(res.data.nama_satuan);
-				$("#harga_beli_edit").val(res.data.harga_beli);
-				$("#jumlah_stok_edit").val(res.data.jumlah_stok);
-				load_select_stok_edit(res.data.id_supplier, res.data.satuan_utama);
-				$("#modal_edit_stok").modal("show");
+				if(res.data !== null){
+					$("#id_stok_edit").val(id_stok);
+					$("#id_produk_edit").val(id_produk);
+					$("#nama_produk_edit").html(res.data.nama_produk);
+					$("#nama_gudang_edit").html(res.data.nama_gudang);
+					$("#satuan_edit").html(res.data.nama_satuan);
+					$("#harga_beli_edit").val(res.data.harga_beli);
+					$("#jumlah_stok_edit").val(res.data.jumlah_stok);
+					load_select_stok_edit(res.data.id_supplier, res.data.satuan_utama);
+					$("#modal_edit_stok").modal("show");
+				}else{
+					Swal.fire({
+						icon: "warning",
+						title: "Perhatian !",
+						html: "<b>Data Pesediaan Kosong!</b>,<br> Tambahakan Stok Terlebih Dahulu",
+					});
+				}
+				
 			} else {
 				Swal.fire({
 					icon: "error",
