@@ -408,7 +408,7 @@
                                             class="form-control select2" required>
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label>Harga Beli Per Satuan</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -416,7 +416,7 @@
                                             </div>
                                             <input type="text" name="harga_beli" id="harga_beli" class="form-control">
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                             </div>
@@ -504,7 +504,7 @@
                                             class="form-control select2" required>
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label>Harga Beli Per Satuan</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -512,7 +512,7 @@
                                             </div>
                                             <input type="text" name="harga_beli_edit" id="harga_beli_edit" class="form-control">
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                          

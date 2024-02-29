@@ -11,7 +11,7 @@
  Target Server Version : 100339
  File Encoding         : 65001
 
- Date: 29/02/2024 09:58:24
+ Date: 29/02/2024 12:50:26
 */
 
 SET NAMES utf8mb4;
@@ -476,7 +476,7 @@ CREATE TABLE `tx_beli_rencana`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_rencana_beli`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_jual
@@ -660,7 +660,7 @@ CREATE TABLE `tx_produk`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_produk`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2575 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2579 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_produk_detail
@@ -702,7 +702,7 @@ CREATE TABLE `tx_produk_harga`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_harga`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1255 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1259 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_produk_stok
@@ -725,7 +725,7 @@ CREATE TABLE `tx_produk_stok`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_stok`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1136 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1137 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_produk_stok_detail
@@ -744,6 +744,8 @@ CREATE TABLE `tx_produk_stok_detail`  (
   `harga_beli` int(11) NULL DEFAULT NULL,
   `exp_date` date NULL DEFAULT NULL,
   `flag_ver` int(11) NOT NULL DEFAULT 0,
+  `status_op_ed` int(11) NOT NULL DEFAULT 0,
+  `ket_op_ed` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `insert_by` int(11) NULL DEFAULT NULL,
   `insert_date` datetime(0) NULL DEFAULT NULL,
   `update_by` int(11) NULL DEFAULT NULL,
@@ -752,7 +754,7 @@ CREATE TABLE `tx_produk_stok_detail`  (
   `delete_date` datetime(0) NULL DEFAULT NULL,
   `is_delete` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_stok_detail`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12444 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12445 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tx_produk_stok_mutasi

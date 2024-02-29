@@ -195,13 +195,13 @@ class Laporan extends CI_Controller {
           $numrow++; // Tambah 1 setiap kali looping
 		  $fot++;
         }
+		
 		$sheet->setCellValue('C'.$fot, "Total :");
 		$sheet->setCellValue('D'.$fot, $data_sum->qty_pro);
 		$sheet->setCellValue('F'.$fot, $data_sum->total);
 		$sheet->getStyle('C'.$fot,)->getFont()->setBold(true);
 		$sheet->getStyle('F'.$fot,)->getFont()->setBold(true);
 		$sheet->getStyle('D'.$fot,)->getFont()->setBold(true);
-
         $writer = new Xlsx($spreadsheet);
         
         ob_end_clean();
