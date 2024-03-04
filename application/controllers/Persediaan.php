@@ -1061,6 +1061,70 @@ class Persediaan extends CI_Controller {
 
 	}
 
+	public function export_stok_opname_pdf(){
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'				
+			) ";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,p.id_produk,pd.id_stok,r.nama_rak,
+				IF (sp.tgl_so IS NULL ,'Belum Pernah',DATE_FORMAT(sp.tgl_so,'%d-%m-%Y')
+				) as status_so,sp.tgl_so
+				FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as pd on pd.id_produk = p.id_produk
+		LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_produk ";
+		$data = $this->db->query($sql)->result();
+	}
+
+	public function export_stok_opname_excel(){
+		$where = " p.is_delete = 0 ";
+	
+		// Search
+		$searchQuery = "";
+		if ($searchValue != '') {
+			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
+								 OR p.nama_produk like '%" . $searchValue . "%'	
+								 OR r.nama_rak like '%" . $searchValue . "%'	
+								 OR pd.jumlah_stok like '%" . $searchValue . "%'				
+			) ";
+		}
+
+		if($_POST['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		}
+
+		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
+				pd.exp_date,pd.jumlah_stok,p.id_produk,pd.id_stok,r.nama_rak,
+				IF (sp.tgl_so IS NULL ,'Belum Pernah',DATE_FORMAT(sp.tgl_so,'%d-%m-%Y')
+				) as status_so,sp.tgl_so
+				FROM tx_produk as p
+		LEFT JOIN tx_produk_stok as pd on pd.id_produk = p.id_produk
+		LEFT JOIN tm_gudang as g on pd.id_gudang = g.id_gudang
+		LEFT JOIN tx_produk_stok_opname as sp ON pd.id_stok = sp.id_stok
+		LEFT JOIN tm_rak as r ON p.id_rak = r.id_rak
+		WHERE $where
+		GROUP BY p.id_produk
+		order by id_produk ";
+		$data = $this->db->query($sql)->result();
+	}
+
 	// startr Riwayat SO
 
 	public function riwayat_stok_opname(){
@@ -1142,6 +1206,43 @@ class Persediaan extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	public function cek_data_riwayat_so(){
+		$where = " sd.is_delete = 0";
+
+		$searchValue = $_POST['text'];
+		if ($searchValue != '') {
+			$where .= " AND (p.sku_kode_produk like '%" . $searchValue . "%'
+							OR p.nama_produk like '%" . $searchValue . "%'
+							OR sd.catatan like '%" . $searchValue . "%'
+							OR u.nama like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_POST['tgl1'] !=='' && $_POST['tgl2'] !==''){
+			$tgl1 = $_POST['tgl1'];
+			$tgl2 = $_POST['tgl2'];
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+
+		$sql ="SELECT sd.id_stok_opname_detail,p.nama_produk,p.sku_kode_produk,ps.jumlah_stok,sd.stok_fisik,
+		sd.penyesuaian,sd.catatan,sd.verifikasi,u.nama,sd.tgl_so
+		FROM `tx_produk_stok_opname_detail` as sd
+		LEFT JOIN tx_produk_stok as ps ON sd.id_stok = ps.id_stok
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_user as u ON sd.insert_by = u.id_user
+		WHERE $where";
+
+		$data_jual = $this->db->query($sql);
+
+		if($data_jual->num_rows() > 0){
+			echo json_encode(array('status'=>1,'msg'=>'Data Is Find'));
+		}else{
+			echo json_encode(array('status'=>0,'msg'=>'Data Kosong'));
+		}
+	}
+
 	public function export_data_riwayat_so(){
 		$spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -1173,7 +1274,7 @@ class Persediaan extends CI_Controller {
 			$tgl2 = $_GET['tgl2'];
 			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
 		}else{
-			$where .= "AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
 		}
 
 		$sql ="SELECT sd.id_stok_opname_detail,p.nama_produk,p.sku_kode_produk,ps.jumlah_stok,sd.stok_fisik,
@@ -1185,7 +1286,7 @@ class Persediaan extends CI_Controller {
 		WHERE $where";
 
 		$data_jual = $this->db->query($sql)->result_array();
-		echo $this->db->last_query();
+		// echo $this->db->last_query();
         $no = 1; // Untuk penomoran tabel, di awal set dengan 1
         $numrow = 3;
         foreach($data_jual as $data){ // Lakukan looping pada variabel siswa
@@ -1210,6 +1311,56 @@ class Persediaan extends CI_Controller {
         header('Content-Disposition: attachment;filename=Riwayat_SO'.$time->wkt.'.xls');
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
+	}
+
+	public function export_data_riwayat_so_pdf(){
+		$where = " sd.is_delete = 0";
+
+		$searchValue = $_GET['text'];
+		if ($searchValue != '') {
+			$where .= " AND (p.sku_kode_produk like '%" . $searchValue . "%'
+							OR p.nama_produk like '%" . $searchValue . "%'
+							OR sd.catatan like '%" . $searchValue . "%'
+							OR u.nama like '%" . $searchValue . "%'			
+			) ";
+		}
+
+		if($_GET['tgl1'] !='' && $_GET['tgl2'] !=''){
+			$tgl1 = $_GET['tgl1'];
+			$tgl2 = $_GET['tgl2'];
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') BETWEEN '$tgl1' AND '$tgl2'";
+		}else{
+			$where .= " AND DATE_FORMAT(sd.tgl_so,'%d-%m-%Y') = DATE_FORMAT(NOW(),'%d-%m-%Y')";
+		}
+
+		$sql ="SELECT sd.id_stok_opname_detail,p.nama_produk,p.sku_kode_produk,ps.jumlah_stok,sd.stok_fisik,
+		sd.penyesuaian,sd.catatan,sd.verifikasi,u.nama,sd.tgl_so
+		FROM `tx_produk_stok_opname_detail` as sd
+		LEFT JOIN tx_produk_stok as ps ON sd.id_stok = ps.id_stok
+		LEFT JOIN tx_produk as p ON ps.id_produk = p.id_produk
+		LEFT JOIN tm_user as u ON sd.insert_by = u.id_user
+		WHERE $where";
+
+		$var['data'] = $this->db->query($sql)->result();
+		$var['tgl_awal'] = $tgl1;
+		$var['tgl_akhir'] = $tgl2;
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-riwayat-so',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('korwil.pdf', 'P');
 	}
 
 	
