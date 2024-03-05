@@ -170,3 +170,32 @@ function save_stok_opname() {
 		},
 	});
 }
+
+
+function export_pdf() {
+	var text = $("#filter_text").val();
+	var id_rak = $("#filter_rak").val();
+
+	window.open(
+		URL +
+			"persediaan/export_stok_opname_pdf?id_rak=" +
+			id_rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}
+
+function export_excel() {
+	var text = $("#filter_text").val();
+	var id_rak = $("#filter_rak").val();
+
+	window.open(
+		URL +
+			"persediaan/export_stok_opname_excel?id_rak=" +
+			id_rak +
+			"&text=" +
+			text,
+		"_blank"
+	);
+}

@@ -1066,6 +1066,7 @@ class Persediaan extends CI_Controller {
 	
 		// Search
 		$searchQuery = "";
+		$searchValue = $_GET['text'];
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
 								 OR p.nama_produk like '%" . $searchValue . "%'	
@@ -1074,8 +1075,8 @@ class Persediaan extends CI_Controller {
 			) ";
 		}
 
-		if($_POST['id_rak'] !='pil'){
-			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		if($_GET['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['id_rak']."'";
 		}
 
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
@@ -1090,14 +1091,31 @@ class Persediaan extends CI_Controller {
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk ";
-		$data = $this->db->query($sql)->result();
+		$var['data'] = $this->db->query($sql)->result();
+
+		$id_user = $this->session->userdata('id_user');
+		$sql = "SELECT w.nama_wilayah,w.alamat,w.no_hp,w.logo
+				FROM tm_user as u 
+				LEFT JOIN tm_wilayah as w ON u.gudang = w.id_wilayah
+				WHERE u.id_user = $id_user";
+		$var['kop'] = $this->db->query($sql)->row();
+
+		ob_start();
+		$this->load->view('print/print-so',$var);
+		$html = ob_get_contents();
+			ob_end_clean();
+			require_once('./assets/html2pdf/html2pdf.class.php');
+		$resolution = array(215, 330);
+		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
+		$pdf->WriteHTML($html);
+		$pdf->Output('riwayat_so.pdf', 'P');
 	}
 
 	public function export_stok_opname_excel(){
 		$where = " p.is_delete = 0 ";
-	
 		// Search
 		$searchQuery = "";
+		$searchValue = $_GET['text'];
 		if ($searchValue != '') {
 			$searchQuery .= " and (p.sku_kode_produk like '%" . $searchValue . "%'
 								 OR p.nama_produk like '%" . $searchValue . "%'	
@@ -1106,8 +1124,8 @@ class Persediaan extends CI_Controller {
 			) ";
 		}
 
-		if($_POST['id_rak'] !='pil'){
-			$where .= " AND p.id_rak ='".$_POST['id_rak']."'";
+		if($_GET['id_rak'] !='pil'){
+			$where .= " AND p.id_rak ='".$_GET['id_rak']."'";
 		}
 
 		$sql = "SELECT p.nama_produk,p.sku_kode_produk,g.nama_gudang,
@@ -1122,7 +1140,9 @@ class Persediaan extends CI_Controller {
 		WHERE $where
 		GROUP BY p.id_produk
 		order by id_produk ";
-		$data = $this->db->query($sql)->result();
+		$var['data'] = $this->db->query($sql)->result();
+
+		$this->load->view('v-stok-opname-excel',$var);
 	}
 
 	// startr Riwayat SO
@@ -1360,7 +1380,7 @@ class Persediaan extends CI_Controller {
 		$resolution = array(215, 330);
 		$pdf = new HTML2PDF('P',$resolution,'en', true, 'UTF-8', array(4, 2, 3, 2));
 		$pdf->WriteHTML($html);
-		$pdf->Output('korwil.pdf', 'P');
+		$pdf->Output('riwayat_so.pdf', 'P');
 	}
 
 	

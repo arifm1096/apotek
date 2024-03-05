@@ -95,10 +95,10 @@
           ?>
            <tr>
                <td style="text-align: center;"><?php echo $no++; ?></td>
-               <td style="width:150px"><?php echo wordwrap($val->nama_produk,30,"<br>\n");?></td>
-               <td style="width:70px"><?php echo $val->stok;?></td>
-               <td style="width:50px"><?php echo date('d-m-Y',strtotime($val->tgl_so));?></td>
-               <td style="width:50px"><?php echo $val->stok_fisik;?></td>
+               <td style="width:250px"><?php echo wordwrap($val->nama_produk,45,"<br>\n");?></td>
+               <td align="center" style="width:50px;"><?php echo $val->jumlah_stok;?></td>
+               <td style="width:80px"><?php echo $val->nama_rak;?></td>
+               <td style="width:50px"><?php if(date('d-m-Y',strtotime($val->tgl_so)) !=="01-01-1970") { echo date('d-m-Y',strtotime($val->tgl_so)); }?></td>
            </tr>
            <?php     }
                 }
@@ -110,7 +110,7 @@
 
        <table style="padding-left:150px;">
            <tr>
-               <td style="width:300px;">Penerima</td>
+               <td style="width:300px;"></td>
                <td>Nama Apoteker</td>
            </tr>
            <tr>
@@ -119,7 +119,7 @@
                </td>
            </tr>
            <tr>
-               <td><b>(................................)</b></td>
+               <td><b></b></td>
                <td><b><?php echo $this->session->userdata('nama_user');?></b></td>
            </tr>
        </table>
