@@ -113,14 +113,33 @@ function export_pdf() {
 	var tgl1 = $("#tanggal1").val();
 	var tgl2 = $("#tanggal2").val();
 
-	window.open(
-		URL +
-			"persediaan/export_data_riwayat_so_pdf?tgl1=" +
-			tgl1 +
-			"&tgl2=" +
-			tgl2 +
-			"&text=" +
-			text,
-		"_blank"
-	);
+	$.ajax({
+		url : URL +'persediaan/cek_data_riwayat_so',
+		type : 'POST',
+		data : {text : text,tgl1:tgl1,tgl2:tgl2},
+		success :function(data){
+			var res = JSON.parse(data);
+
+			if(res.status==1){
+				window.open(
+					URL +
+						"persediaan/export_data_riwayat_so_pdf?tgl1=" +
+						tgl1 +
+						"&tgl2=" +
+						tgl2 +
+						"&text=" +
+						text,
+					"_blank"
+				);
+			}else{
+				Swal.fire({
+					icon: "error",
+					title: "Pehatian !",
+					text: res.msg,
+				});
+			}
+		}
+	});	
+
+	
 }
