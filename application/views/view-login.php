@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>APOTEK NAWASENA</title>
+    <title>APOTEK SYSTEM</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -33,7 +33,7 @@
         <div class="card">
             <div class="card-body login-card-body">
                 <div class="login-logo">
-                    <a href="<?php echo base_url();?>"><b>APOTEK</b> NAWASENA</a>
+                    <a href="<?php echo base_url();?>"><b>APOTEK</b> SYSTEM</a>
                 </div>
                 <p class="login-box-msg">Login Page</p>
 

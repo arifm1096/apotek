@@ -19,7 +19,7 @@
         <!-- <img src="<?php echo base_url();?>assets/images/logo/logo.png" alt="apotek logo"
             class="brand-image img-circle elevation-5" style="opacity: .8"> -->
         <span class="brand-text font-weight-light">
-            Nawasena
+            APOTEK
         </span>
     </a>
 

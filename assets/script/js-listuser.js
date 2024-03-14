@@ -166,16 +166,16 @@ function save() {
 					Swal.fire({
 						icon: "success",
 						title: "Success",
-						text: res.message,
+						text: res.msg,
 					});
 					$("#modal_input_user").modal("hide");
 					$("#tbl_user").DataTable().clear().destroy();
 					loadUser();
 				} else {
 					Swal.fire({
-						icon: "error",
+						icon: "Perhatian",
 						title: "Error",
-						text: res.message,
+						text: res.msg,
 					});
 				}
 			},

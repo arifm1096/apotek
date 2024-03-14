@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-        RewriteBase /nawasena/
+        RewriteBase /apotek/
         # if in root : RewriteBase /
         # if in folder : RewriteBase /foldername/
 
