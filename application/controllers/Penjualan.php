@@ -461,10 +461,10 @@ class Penjualan extends CI_Controller {
 
 			function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-				 $lebar_kolom_1 = 8;
-				 $lebar_kolom_2 = 6;
-				 $lebar_kolom_3 = 6;
-				 $lebar_kolom_4 = 9;
+				 $lebar_kolom_1 = 15;
+				 $lebar_kolom_2 = 8;
+				 $lebar_kolom_3 = 7;
+				 $lebar_kolom_4 = 10;
 
 				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
 				$kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
@@ -503,7 +503,7 @@ class Penjualan extends CI_Controller {
 
 			function buatBaris2Kolom($kolom1, $kolom2) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-				 $lebar_kolom_1 = 15;
+				 $lebar_kolom_1 = 25;
 				 $lebar_kolom_2 = 15;
 
 				$kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
@@ -553,14 +553,14 @@ class Penjualan extends CI_Controller {
 
 			// Membuat tabel
 			$printer->initialize(); 
-			$printer->text("--------------------------------\n");
+			$printer->text("-----------------------------------------------\n");
 			$printer->text(buatBaris4Kolom("Produk", "qty", "Harga", "Subtotal"));
-			$printer->text("--------------------------------\n");
+			$printer->text("-----------------------------------------------\n");
 			foreach ($jual as $key => $val) {
 				$printer->text(buatBaris4Kolom($val->nama_produk, $val->jumlah_produk." ".$val->nama_satuan, number_format($val->harga_jual,0,',','.'), number_format($val->total_harga,0,',','.')));
 			}
 			
-			$printer->text("--------------------------------\n");
+			$printer->text("-----------------------------------------------\n");
 			
 			$printer->text(buatBaris2Kolom("Service", number_format($kasir->service,0,',','.')));
 			$printer->text(buatBaris2Kolom("Embalase", number_format($kasir->embalase,0,',','.')));

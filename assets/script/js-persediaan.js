@@ -998,8 +998,9 @@ function save_stok_produk() {
 					text: res.msg,
 				});
 				$("#modal_stok_produk").modal("hide");
-				$("#tbl_presediaan").DataTable().destroy();
-				load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				// $("#tbl_presediaan").DataTable().destroy();
+				// load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				filter_data();
 				clear_data();
 			} else {
 				Swal.fire({
@@ -1007,8 +1008,9 @@ function save_stok_produk() {
 					title: "Perhatian !",
 					text: res.msg,
 				});
-				$("#tbl_presediaan").DataTable().destroy();
-				load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				// $("#tbl_presediaan").DataTable().destroy();
+				// load_persediaan((text = ""), (jual = "pil"), (rak = "pil"));
+				filter_data();
 				clear_data();
 			}
 		},
