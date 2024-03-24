@@ -285,12 +285,12 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan/remik'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Rekamedik Dasar</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
@@ -352,30 +352,30 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan/remik'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Rekamedik Dasar</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penerimaan Resep Dokter</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan/tebus_resep'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penebusan Resep</p>
                             </a>
-                        </li>
-                        <li class="nav-item">
+                        </li> -->
+                        <!-- <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan/list_racikan'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p> Penggunaan Reacian</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="<?php echo base_url('pelayanan/detail_resep'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
